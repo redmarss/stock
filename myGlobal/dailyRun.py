@@ -12,7 +12,6 @@ def getAllStock():
     soup = BeautifulSoup(page, 'html5lib')
     links = soup.findAll('a')
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='test', charset='utf8')
-    dfStock = pd.DataFrame()
     for link in links:
         if link.text.find('(') > 0:
             pos = link.text.find('(')
@@ -20,11 +19,12 @@ def getAllStock():
             stockCode = link.text[pos+1:-1]
             if stockCode.startswith('30') or stockCode.startswith('60') or stockCode.startswith('00'):
                 #写入dfStock
-                df_insert = pd.DataFrame({'code':stockCode, 'name':stockName}, index=[0])
-                dfStock = dfStock.append(df_insert)
-    dfStock.set_index('code')
+                read_sql = dbObject.fetchone(field='stockname', table='stocktable', where='stockcode=%s'%stockCode)
+                if read_sql is None:
+                    dbObject.insert(table='stocktable', stockcode=stockCode, stockname=stockName)
+                else:
+                    dbObject.update(table='stocktable', where='stockcode="%s"'%stockCode,stockname=stockName)
 
-    dbObject.DataframeToSql(dfStock,'stockTable')
 
 
 getAllStock()

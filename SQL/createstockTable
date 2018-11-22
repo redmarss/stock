@@ -1,0 +1,8 @@
+CREATE TABLE `test`.`stocktable` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `stockcode` VARCHAR(45) NOT NULL,
+  `stockname` VARCHAR(45) NOT NULL,
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
