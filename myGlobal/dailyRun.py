@@ -19,7 +19,7 @@ def getAllStock():
             stockCode = link.text[pos+1:-1]
             if stockCode.startswith('30') or stockCode.startswith('60') or stockCode.startswith('00'):
                 #写入dfStock
-                read_sql = dbObject.fetchone(field='stockname', table='stock_basic_table', where='stockcode=%s'%stockCode)
+                read_sql = dbObject.fetchone(field='stockname', table='stock_basic_table', where='stockcode="%s"'%stockCode)
                 if read_sql is None:
                     dbObject.insert(table='stock_basic_table', stockcode=stockCode, stockname=stockName)
                 else:
