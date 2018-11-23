@@ -8,7 +8,7 @@ import csv
 from urllib.request import urlopen,Request
 
 #获取所有股票代码
-def getAllStockCode()
+def getAllStockCode():
     
 
 #判断是否涨停板,若涨停，返回True，否则返回False;含S的股票名称（ST,S）,涨幅为5%
