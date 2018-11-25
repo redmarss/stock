@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import myGlobal.myCls.mysqlCls as msql
 
 
-#将股票代码及名称写入数据库
+#将股票代码及名称写入数据库(每月运行）
 def getAllStock():
     url = "http://quote.eastmoney.com/stocklist.html"
     page = urlopen(url).read().decode('gbk')
@@ -44,5 +44,19 @@ def getStauts(code):
     else:
         return False
 
+#将机构代码、机构名称写入broker_info表（每月运行）
+def getBrokerInfo():
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8',mycursor='list')
+    list_broker = dbObject.fetchall(table='broker_buy_summary', field='broker_code,broker_name')
+    list_broker = list(set(list_broker))
 
-getAllStock()
+    for i in range(len(list_broker)):
+        broker_code = list_broker[i][0]
+        broker_name = list_broker[i][1]
+        getcode = dbObject.fetchone(table='broker_info',where="broker_code='%s'"%broker_code)
+        if getcode is None:
+            dbObject.insert(table='broker_info',broker_code=broker_code,broker_name=broker_name)
+        else:
+            dbObject.update(table='broker_info',where="broker_code='%s'"%broker_code,broker_name=broker_name)
+
+getBrokerInfo()

@@ -10,6 +10,13 @@ def getAllStockCode():
     liststcok = dbObject.fetchall(table='stock_basic_table', field='stockcode,stockname')
     return liststcok
 
+#生成代码标志
+def _code_to_symbol(code):
+    if len(code) != 6:
+        return code
+    else:
+        return 'sh%s' % code if code[:1] in ['5', '6', '9'] else 'sz%s' % code
+
 #判断是否涨停板,若涨停，返回True，否则返回False;含S的股票名称（ST,S）,涨幅为5%,超出涨幅返回空
 def isLimit(code, openPrice, nowPrice):
     if isinstance(code,str)==False:
@@ -120,3 +127,42 @@ def diffDay(strdate,day=0):
         return str(date)
     except:
         print("日期或天数输入有误")
+
+#将byte数据Post至jar服务中
+def postData(textByte,urlPost,code=None):
+    if isinstance(textByte,str):
+        textByte=bytes(textByte,encoding='utf8')
+    elif isinstance(textByte,bytes):
+        pass
+    else:
+        print('输入文件格式错误')
+        return None
+    try:
+        req=Request(urlPost)
+        req.add_header('Content-Type','application/json;charset=utf-8')
+        req.add_header('Content-Length',len(textByte))
+        response=urlopen(req,textByte)
+        if response.status==200:
+            if code is None:
+                print("龙虎榜数据完成")
+            else:
+                print("%s完成"%code)
+    except Exception as e:
+        if e.code==500:
+            print("%s或已退市"%code)
+        else:
+            print(e)
+
+
+##获取某股票N个交易日内的所有数据,返回元组
+def getStockPrice(code, startdate=None, days=7):
+    code = _code_to_symbol(code)
+    if startdate==None:
+        startdate=str(datetime.datetime.today().date())
+
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8',mycursor='list')
+    t = dbObject.fetchall(table='stock_trade_history_info',where="stock_code='%s' and ts_date>'%s'"%(code,startdate),limit=str(days))
+    print(liStock)
+
+getStockPrice('600000','2017-01-01')
+
