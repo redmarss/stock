@@ -161,8 +161,12 @@ def getStockPrice(code, startdate=None, days=7):
         startdate=str(datetime.datetime.today().date())
 
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8',mycursor='list')
-    t = dbObject.fetchall(table='stock_trade_history_info',where="stock_code='%s' and ts_date>'%s'"%(code,startdate),limit=str(days))
-    print(liStock)
+    try:
+        t = dbObject.fetchall(table='stock_trade_history_info',where="stock_code='%s' and ts_date>'%s'"%(code,startdate),limit=str(days))
+        return t
+    except:
+        print("code或startdate错误")
+        return None
 
 getStockPrice('600000','2017-01-01')
 
