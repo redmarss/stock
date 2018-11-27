@@ -168,5 +168,5 @@ def getStockPrice(code, startdate=None, days=7):
         print("code或startdate错误")
         return None
 
-getStockPrice('600000','2017-01-01')
+print(getStockPrice('600000','2017-01-01'))
 
