@@ -5,7 +5,6 @@
 #输入一个长度为8的元组作为参数，只读。参数分别是index,stock_code,tsdate,open,close,high,low,volumne
 #参数从globalFunction.getStockPrice取
 class StockPrice(object):
-    test = None
     __stocktuple = None
 
     # 初始化
