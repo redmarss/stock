@@ -143,6 +143,7 @@ class SingletonModel:
         #limit
         limit = 'limit' in kwargs and 'limit '+kwargs['limit'] or ''
 
+
         sql = 'select %s from %s %s %s %s'%(field,table,where,order,limit)
         print(sql)
 

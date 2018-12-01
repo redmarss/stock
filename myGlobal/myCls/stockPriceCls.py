@@ -1,11 +1,18 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
+import myGlobal.myCls.StockCls
 
 #stockPrice类
 #输入一个长度为8的元组作为参数，只读。参数分别是index,stock_code,tsdate,open,close,high,low,volumne
 #参数从globalFunction.getStockPrice取
-class StockPrice(object):
+class StockPrice(StockCls):
     __stocktuple = None
+
+    def __init__(self,list1):
+        if list(map(lambda x:isinstance(x,StockPriceCls.StockPrice), list1)).count(True) == len(list1):       #判断是否list1中每个元素都是StockPrice类
+            print(True)
+        else:
+            print(False)
 
     # 初始化
     def __init__(self, tuple):
