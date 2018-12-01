@@ -4,6 +4,8 @@ import myGlobal.myCls.mysqlCls as msql
 import myGlobal.globalFunction as gf
 from pandas import Series
 
+#Stock类
+#输入股票代码，日期作为参数
 class Stock(object):
     _listDict = dict()
     _ts_date = None
