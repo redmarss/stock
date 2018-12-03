@@ -26,7 +26,6 @@ class Stock(object):
         dbObject = msql.SingletonModel(host='localhost',port='3306',user='root',passwd='redmarss',db='tushare',charset='utf8')
         try:
             self._listDict = dbObject.fetchone(table='stock_trade_history_info', where='stock_code="%s" and ts_date="%s"'%(code,ts_date))
-            print(self._listDict)
         except:
             print("code或ts_date有误或不是交易日")
             self._listDict = None
@@ -66,15 +65,20 @@ class Stock(object):
             return float(self._listDict['volume'])
 
     #根据输入参数（code,ts_date）返回下一个(或多个)交易的开盘价、收盘价、最高价、最低价、量
-    def next_someday_price(self,day=1):
-        try:
-            nextdate = gf.diffDay(self._ts_date, day)
-
-            return Stock(self._code,nextdate)
-        except:
-            print("日期输入有误")
-            return
-
+    # def next_someday_list(self,day=7):
+    #     try:
+    #         nextdate = gf.diffDay(self._ts_date, day)
+    #
+    #         return Stock(self._code,nextdate)
+    #     except:
+    #         print("日期输入有误")
+    #         return
+    #
+    # def StockList(self,days=7):
+    #     stocklist=[]
+    #     for i in range(1,days+1):
+    #         stocklist.append(self.next_someday_price(i))
+    #     return stocklist
 
     #计算均线价格
     def MA(self,days=5):
@@ -89,6 +93,7 @@ class Stock(object):
         s = Series(list_MA)
         return round(s.mean(),2)
 
-# s=Stock('600000','2018-01-08')
-# s.next_someday_price(1)
+s=Stock('600000','2018-01-08')
+s1=s.StockList(7)
+print(s1[0].ts_date)
 # input()

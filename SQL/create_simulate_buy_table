@@ -1,7 +1,7 @@
 CREATE TABLE `tushare`.`simulate_buy` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `ts_date` VARCHAR(45) NOT NULL,
-  `broke_code` VARCHAR(45) NOT NULL,
+  `broker_code` VARCHAR(45) NOT NULL,
   `stock_code` VARCHAR(45) NOT NULL,
   `buy_price` VARCHAR(45) NULL,
   `sell_price` VARCHAR(45) NULL,

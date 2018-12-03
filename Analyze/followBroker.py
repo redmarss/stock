@@ -33,7 +33,7 @@ def buy_stock(t,amount = 1000):
         stock_code = stock.code
         sell_price = (stock_next2day.high_price+stock_next2day.low_price)/2
         gainmoney = round((sell_price-buy_price)*amount,2)
-        gainpercent = round((sell_price*amount-buy_price*amount)/(buy_price)*amount,4)
+        gainpercent = round((sell_price*amount-buy_price*amount)/(buy_price*amount),4)
         #如果第二天开盘涨幅小于5%，则买入
         if gf.ChangeRange(stock.close_price,stock_next.open_price) <0.05:
             #模拟买入并写入数据库
@@ -52,5 +52,6 @@ if __name__ =='__main__':
     for i in range(len(d)):
         t=getStockCode(d[i]['broker_code'],str(d[i]['ts_date']))
         buy_stock(t,1000)
+
 
 
