@@ -58,15 +58,15 @@ def RaiseOrFall(open, close):
     else:
         return False
 
+
 #输入三个价格，返回幅度
-def ChangeRange(priceLastClose,priceOpen,priceClose):
+def ChangeRange(priceLastClose,priceNow):
     '''
         priceLastClose:昨日收盘价（今日开盘基准价）
-        priceOpen:今日开盘价
-        priceClose：今日收盘价或当前价格
-        返回：收盘-开盘的涨幅，保留4位小数
+        priceNow:今日开盘价或现价
+        返回：涨幅，保留4位小数
     '''
-    range=(priceClose-priceOpen)/priceLastClose
+    range=(priceNow-priceLastClose)/priceLastClose
     return round(range,4)
 
 #判断是否为交易日，返回工作日返回False or 节假日返回True
@@ -163,7 +163,7 @@ def getStockPrice(code, startdate=None, days=7):
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8',mycursor='list')
     if days > 0:            #days大于0，则往后取数字
         try:
-            t = dbObject.fetchall(table='stock_trade_history_info',where="stock_code='%s' and ts_date>'%s'"%(code,startdate),limit=str(days))
+            t = dbObject.fetchall(table='stock_trade_history_info',where="stock_code='%s' and ts_date>='%s'"%(code,startdate),limit=str(days))
             return t
         except:
             print("code或startdate错误")

@@ -1,0 +1,12 @@
+CREATE TABLE `tushare`.`simulate_buy` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `ts_date` VARCHAR(45) NOT NULL,
+  `broke_code` VARCHAR(45) NOT NULL,
+  `stock_code` VARCHAR(45) NOT NULL,
+  `buy_price` VARCHAR(45) NULL,
+  `sell_price` VARCHAR(45) NULL,
+  `amount` VARCHAR(45) NULL,
+  `gainmoney` VARCHAR(45) NULL,
+  `gainpercent` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC));

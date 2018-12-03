@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 import myGlobal.myCls.mysqlCls as msql
 import myGlobal.globalFunction as gf
+import datetime
 from pandas import Series
 
 #Stock类
@@ -14,6 +15,11 @@ class Stock(object):
     def __init__(self, code, ts_date):
         self._code = code
         self._ts_date = ts_date
+        if gf.is_holiday(ts_date):
+            print("不是交易日")
+            self._listDict = None
+            return
+
         if not code.lower().startswith('s'):
             code = gf._code_to_symbol(code)
 
@@ -24,6 +30,7 @@ class Stock(object):
         except:
             print("code或ts_date有误或不是交易日")
             self._listDict = None
+            return
 
     @property
     def code(self):
@@ -58,7 +65,18 @@ class Stock(object):
         if self._listDict is not None:
             return float(self._listDict['volume'])
 
+    #根据输入参数（code,ts_date）返回下一个(或多个)交易的开盘价、收盘价、最高价、最低价、量
+    def next_someday_price(self,day=1):
+        try:
+            nextdate = gf.diffDay(self._ts_date, day)
 
+            return Stock(self._code,nextdate)
+        except:
+            print("日期输入有误")
+            return
+
+
+    #计算均线价格
     def MA(self,days=5):
         if self._listDict is None:
             print("%s不是交易日"%self.ts_date)
@@ -71,6 +89,6 @@ class Stock(object):
         s = Series(list_MA)
         return round(s.mean(),2)
 
-s=Stock('600000','2018-01-07')
-
-input()
+# s=Stock('600000','2018-01-08')
+# s.next_someday_price(1)
+# input()

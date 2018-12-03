@@ -31,7 +31,7 @@ class SingletonModel:
 
 
             #打开数据库连接
-            print('连接数据库')
+            #print('连接数据库')
             self.__db = pymysql.connect(host=host,port=int(port),user=user,passwd=passwd,db=db,charset=charset)
 
             #创建一个游标对象
@@ -59,7 +59,7 @@ class SingletonModel:
         for k,v in kwargs.items():
             sql += "%s='%s',"%(k,v)
         sql=sql.rstrip(',')
-        print(sql)
+        #print(sql)
         try:
             #执行SQL语句
             self.__cursor.execute(sql)
@@ -75,7 +75,7 @@ class SingletonModel:
         table = kwargs['table']
         where = kwargs['where']
         sql = 'delete from %s where %s'%(table,where)
-        print(sql)
+        #print(sql)
         try:
             self.__cursor.execute(sql)
             self.__db.commit()
@@ -100,7 +100,7 @@ class SingletonModel:
             sql += "%s='%s',"%(k,v)
         sql = sql.rstrip(',')
         sql += ' where %s'%where
-        print(sql)
+        #print(sql)
         try:
             self.__cursor.execute(sql)
             self.__db.commit()
@@ -122,7 +122,7 @@ class SingletonModel:
         order = 'order' in kwargs and 'order by '+kwargs['order'] or ''
 
         sql = 'select %s from %s %s %s limit 1'%(field,table,where,order)
-        print(sql)
+        #print(sql)
 
         try:
             self.__cursor.execute(sql)
@@ -145,7 +145,7 @@ class SingletonModel:
 
 
         sql = 'select %s from %s %s %s %s'%(field,table,where,order,limit)
-        print(sql)
+        #print(sql)
 
         try:
             self.__cursor.execute(sql)
@@ -161,7 +161,7 @@ class SingletonModel:
         engine = create_engine(self.__strEngine)
         try:
             pd.io.sql.to_sql(df, table, engine, if_exists='append')
-            print("成功")
+            #print("成功")
             engine.dispose()
         except:
             print("重复")
@@ -171,6 +171,53 @@ class SingletonModel:
     def __del__(self):
         #关闭数据库连接
         self.__db.close()
-        print('关闭数据库连接')
+        #print('关闭数据库连接')
 
+
+#主函数
+# if __name__ == '__main__':
 #     dbObject = SingletonModel(host="localhost", port=3306, user="root", passwd="redmarss", db="test", charset="utf8")
+
+# 创建表
+#     print("创建表")
+#     sql = "drop table if exists user"
+#     dbObject.execute(sql)
+#     sql='''CREATE TABLE `user` (
+#     `id` int(11) NOT NULL AUTO_INCREMENT,
+#     `name` varchar(50) NOT NULL,
+#     `pwd` char(32) NOT NULL,
+#     `insert_time` int(11) NOT NULL,
+#     PRIMARY KEY (`id`)
+#     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+#     '''
+#     res=dbObject.execute(sql)
+#     print(res)
+
+#写入数据
+    # print("\n写入数据")
+    # pwd = makeMd5("123456")
+    # insert_time = getTime()
+    # # timeArray=time.localtime(insert_time)
+    # # print(time.strftime("%Y-%m-%d %H:%M:%S",timeArray))
+    # res = dbObject.insert(table='user',name='dddd',pwd=pwd,insert_time=insert_time)
+    # print("插入数据id为%s"%res)
+
+#查询单条
+    # print("\n查询数据-单条")
+    # res = dbObject.fetchone(table='user', where="name='bbbb'")
+    # print(res)
+
+#查询多条
+    # print("/n查询多条")
+    # res =dbObject.fetchall(table='user',order='id desc',where="id>=3")
+    # print(res,type(res))
+
+#修改数据
+    # print("\n修改数据")
+    # res = dbObject.update(table="user",where="id=2",name="zzzz")
+    # print("影响%s行"%res)
+
+#删除数据
+    # print("\n删除数据")
+    # res = dbObject.delete(table="user", where="id=2")
+    # print("影响%s行"%res)
