@@ -16,7 +16,7 @@ class Stock(object):
         self._code = code
         self._ts_date = ts_date
         if gf.is_holiday(ts_date):
-            print("不是交易日")
+            print("不是交易日或非法日期")
             self._listDict = None
             return
 
@@ -64,21 +64,13 @@ class Stock(object):
         if self._listDict is not None:
             return float(self._listDict['volume'])
 
-    #根据输入参数（code,ts_date）返回下一个(或多个)交易的开盘价、收盘价、最高价、最低价、量
-    # def next_someday_list(self,day=7):
-    #     try:
-    #         nextdate = gf.diffDay(self._ts_date, day)
-    #
-    #         return Stock(self._code,nextdate)
-    #     except:
-    #         print("日期输入有误")
-    #         return
-    #
-    # def StockList(self,days=7):
-    #     stocklist=[]
-    #     for i in range(1,days+1):
-    #         stocklist.append(self.next_someday_price(i))
-    #     return stocklist
+    #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
+    def next_some_days(self,days=7):
+        stocklist=[]
+        for i in range(1,days+1):
+            date = gf.diffDay(self.ts_date,i)
+            stocklist.append(Stock(self._code,date))
+        return stocklist
 
     #计算均线价格
     def MA(self,days=5):
@@ -94,6 +86,6 @@ class Stock(object):
         return round(s.mean(),2)
 
 s=Stock('600000','2018-01-08')
-s1=s.StockList(7)
+s1=s.next_some_days(7)
 print(s1[0].ts_date)
 # input()

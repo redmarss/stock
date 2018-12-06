@@ -1,14 +1,16 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
 import myGlobal.myCls.mysqlCls as msql
+import myGlobal.myCls.StockCls as mstock
 
 class Broker(object):
     _brokercode = None
     _brokername = None
     _buylist = None
+    _tsdate = None
 
     # 构造函数，如果ts_date不为None,则返回当日该机构买入的股票列表至_buylist
-    def __init__(self, broker_code, ts_date = None):
+    def __init__(self, broker_code, ts_date=None):
         dbObject = msql.SingletonModel(host='localhost', port='3306',
                                        user='root', passwd='redmarss',
                                        charset='utf8',db='tushare', mycursor='list')
@@ -23,6 +25,7 @@ class Broker(object):
 
         #如果传入参数中包含ts_date，则返回buy_list
         if ts_date is not None:
+            self._tsdate = ts_date
             t_broker_buy = dbObject.fetchall(table='broker_buy_stock_info as a,broker_buy_summary as b', field='a.stock_code',
                                         where='a.broker_buy_summary_id=b.id and b.broker_code="%s" and b.ts_date="%s"' % (broker_code, ts_date))
             if len(t_broker_buy) != 0:                       #tbroker长度为0，说明找不到对应的数据
@@ -32,9 +35,18 @@ class Broker(object):
         else:
             self._buylist = None
 
+
+    #模拟买入，存入数据库，并计算盈利
+    def simulate_buy(self):
+        if self._tsdate is not None and self._buylist is not None:
+            for code in self._buylist:
+                s = mstock.Stock(code,self._tsdate)
+
+
     @property
     def broker_code(self):
         return self._brokercode
+
 
     @property
     def broker_name(self):
