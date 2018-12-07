@@ -28,7 +28,7 @@ class notTradeDateError(Exception):
         self.message = "该日期非交易日"
         self.code = 300
 
-def RaiseError(error):
+def RaiseError(error)1:
     try:
         raise error
     except error as e:
