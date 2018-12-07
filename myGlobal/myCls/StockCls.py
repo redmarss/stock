@@ -87,7 +87,7 @@ class Stock(object):
         s = Series(list_MA)
         return round(s.mean(),2)
 
-s=Stock('600000','2018-01-081')
-s1=s.next_some_days(7)
-print(s1[0].ts_date)
+# s=Stock('600000','2018-01-08')
+# s1=s.next_some_days(7)
+# print(s1[0].ts_date)
 # input()

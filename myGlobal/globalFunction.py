@@ -14,19 +14,24 @@ def strConvertdate(strdate):
         mexception.RaiseError(mexception.dateError)
         return None
 
-
-
-
 #获取所有股票代码
+#返回格式为列表[{'stockcode':'600000','stockname':'浦发银行'},{}...{}]
 def getAllStockCode():
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
     liststcok = dbObject.fetchall(table='stock_basic_table', field='stockcode,stockname')
     return liststcok
 
 #生成代码标志
+#存在多种形式，如"600000","6000000.sh","sh600000"
+#需转换成"sh600000"
 def _code_to_symbol(code):
     if len(code) != 6:
-        return code
+        if code[:1] in ['5','6','9']:
+            return 'sh%s'%code[:6]
+        elif code[:1] in ['0','1','2','3','4','7','8']:
+            return 'sz%s'%code[:6]
+        else:
+            return code
     else:
         return 'sh%s' % code if code[:1] in ['5', '6', '9'] else 'sz%s' % code
 
@@ -44,8 +49,9 @@ def isLimit(code, openPrice, nowPrice):
     if namedict is not None:
         name=str(namedict['stockname'])
     else:
-        print("找不到此代码对应的股票")
+        mexception.RaiseError(mexception.codeError)
         return
+
     if name.upper().find('S')>0:                #名字中包含S，涨幅为5%
         if price == round(1.05*open, 2):
             return True
@@ -72,7 +78,7 @@ def RaiseOrFall(open, close):
         return False
 
 
-#输入三个价格，返回幅度
+#输入两个价格，返回幅度
 def ChangeRange(priceLastClose,priceNow):
     '''
         priceLastClose:昨日收盘价（今日开盘基准价）
@@ -97,7 +103,11 @@ def is_holiday(date):
     '''
     if not isinstance(date, str):
         date = str(date)
-
+    try:
+        strConvertdate(date)
+    except:
+        mexception.RaiseError(mexception.dateError)
+        return None
     apiUrl = "http://api.goseek.cn/Tools/holiday?date="+str(date)
     request = Request(apiUrl)
     try:
@@ -189,4 +199,4 @@ def getStockPrice(code, startdate=None, days=7):
             print("code或startdate错误")
             return None
 
-
+print(is_holiday("1"))
