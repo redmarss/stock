@@ -2,4 +2,4 @@ CREATE TABLE `tushare`.`broker_info` (
   `broker_code` VARCHAR(50) NOT NULL,
   `broker_name` VARCHAR(100) NULL,
   PRIMARY KEY (`broker_code`),
-  UNIQUE INDEX `broker_code_UNIQUE` (`broker_code` ASC) VISIBLE);
+  UNIQUE INDEX `broker_code_UNIQUE` (`broker_code` ASC));

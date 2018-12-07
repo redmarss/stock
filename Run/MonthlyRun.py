@@ -12,7 +12,8 @@ def getAllStock():
     page = urlopen(url).read().decode('gbk')
     soup = BeautifulSoup(page, 'html5lib')
     links = soup.findAll('a')
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
+                                   db='tushare', charset='utf8')
     for link in links:
         if link.text.find('(') > 0:
             pos = link.text.find('(')
@@ -46,7 +47,8 @@ def getStauts(code):
 
 #将机构代码、机构名称写入broker_info表（每月运行）
 def getBrokerInfo():
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8',mycursor='list')
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
+                                   db='tushare', charset='utf8',mycursor='list')
     list_broker = dbObject.fetchall(table='broker_buy_summary', field='broker_code,broker_name')
     list_broker = list(set(list_broker))
 

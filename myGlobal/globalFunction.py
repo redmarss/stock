@@ -1,8 +1,21 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
 import myGlobal.myCls.mysqlCls as msql
+import myGlobal.myCls.myException as mexception
 from urllib.request import Request,urlopen
 import datetime
+
+#将字符串格式的日期形式转换为date形式，出错则返回None
+def strConvertdate(strdate):
+    try:
+        date = datetime.datetime.strptime(strdate, "%Y-%m-%d").date()
+        return date
+    except:
+        mexception.RaiseError(mexception.dateError)
+        return None
+
+
+
 
 #获取所有股票代码
 def getAllStockCode():
