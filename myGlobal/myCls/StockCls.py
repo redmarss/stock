@@ -8,17 +8,19 @@ from pandas import Series
 #Stock类
 #输入股票代码，日期作为参数
 class Stock(object):
-    _listDict = dict()
+    _listDict = None
     _ts_date = None
     _code = None
 
     def __init__(self, code, ts_date):
-        self._code = code
-        self._ts_date = ts_date
         if gf.is_holiday(ts_date):
             print("不是交易日或非法日期")
             self._listDict = None
             return
+
+        self._code = code
+        self._ts_date = ts_date
+
 
         if not code.lower().startswith('s'):
             code = gf._code_to_symbol(code)
@@ -85,7 +87,7 @@ class Stock(object):
         s = Series(list_MA)
         return round(s.mean(),2)
 
-s=Stock('600000','2018-01-08')
+s=Stock('600000','2018-01-081')
 s1=s.next_some_days(7)
 print(s1[0].ts_date)
 # input()
