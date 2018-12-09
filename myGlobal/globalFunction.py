@@ -69,14 +69,12 @@ def isLimit(code, openPrice, nowPrice):
         else:
             return False
 
-
 #判断股票涨或跌，涨返回True，跌或平返回False
 def RaiseOrFall(open, close):
     if open < close:
         return True
     else:
         return False
-
 
 #输入两个价格，返回幅度
 def ChangeRange(priceLastClose,priceNow):
@@ -85,10 +83,10 @@ def ChangeRange(priceLastClose,priceNow):
         priceNow:今日开盘价或现价
         返回：涨幅，保留4位小数
     '''
-    range=(priceNow-priceLastClose)/priceLastClose
-    return round(range,4)
+    range = (priceNow-priceLastClose)/(priceLastClose)
+    return round(range, 4)
 
-#判断是否为交易日，返回工作日返回False or 节假日返回True
+#判断是否为交易日，工作日返回False or 节假日返回True
 def is_holiday(date):
     '''
             1、接口地址：http://api.goseek.cn/Tools/holiday?date=数字日期，支持https协议。
@@ -108,7 +106,7 @@ def is_holiday(date):
     except:
         mexception.RaiseError(mexception.dateError)
         return None
-    apiUrl = "http://api.goseek.cn/Tools/holiday?date="+str(date)
+    apiUrl = "http://api.goseek.cn/Tools/holiday?date="+date
     request = Request(apiUrl)
     try:
         response = urlopen(request)
@@ -118,7 +116,7 @@ def is_holiday(date):
     else:
         response_data = response.read()
 
-    if str(response_data)[-3]=='0':
+    if str(response_data)[-3] == '0':
         return False                    #工作日返回False
     else:
         return True                     #节假日返回True
@@ -135,8 +133,8 @@ def lastTddate(strdate):
 
 #输入一个日期及天数，返回该日期加上/减去该数量的交易日的结果
 def diffDay(strdate,day=0):
-    try:
-        date = datetime.datetime.strptime(strdate, "%Y-%m-%d").date()
+    date = strConvertdate(strdate)
+    if date is not None:
         if day > 0:
             while day > 0:
                 date = date+datetime.timedelta(days=1)
@@ -148,8 +146,8 @@ def diffDay(strdate,day=0):
                 if not is_holiday(date):
                     day = day+1
         return str(date)
-    except:
-        print("日期或天数输入有误")
+    else:
+        return None
 
 #将byte数据Post至jar服务中
 def postData(textByte,urlPost,code=None):
@@ -176,27 +174,32 @@ def postData(textByte,urlPost,code=None):
         else:
             print(e)
 
-
-##获取某股票N个交易日内的所有数据,返回元组
+#获取某股票N个交易日内的所有数据,返回元组
 def getStockPrice(code, startdate=None, days=7):
     code = _code_to_symbol(code)
     if startdate==None:
-        startdate=str(datetime.datetime.today().date())
+        mexception.RaiseError(mexception.dateError)
+        return
 
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8',mycursor='list')
+    dbObject = msql.SingletonModel(host='localhost', port='3306',
+                                   user='root', passwd='redmarss',
+                                   db='tushare', charset='utf8',mycursor='list')
     if days > 0:            #days大于0，则往后取数字
         try:
-            t = dbObject.fetchall(table='stock_trade_history_info',where="stock_code='%s' and ts_date>='%s'"%(code,startdate),limit=str(days))
+            t = dbObject.fetchall(table='stock_trade_history_info',
+                                  where="stock_code='%s' and ts_date>='%s'" % (code, startdate),
+                                  limit=str(days))
             return t
         except:
-            print("code或startdate错误")
+            mexception.RaiseError(mexception.sqlError)
             return None
     else:                   #days小于0，往前取
         try:
-            t = dbObject.fetchall(table='stock_trade_history_info',where="stock_code='%s' and ts_date<='%s'"%(code,startdate),order='ts_date desc',limit=str(abs(days)))
+            t = dbObject.fetchall(table='stock_trade_history_info',
+                                  where="stock_code='%s' and ts_date<='%s'" % (code, startdate),
+                                  order='ts_date desc',
+                                  limit=str(abs(days)))
             return t
         except:
-            print("code或startdate错误")
+            mexception.RaiseError(mexception.sqlError)
             return None
-
-print(is_holiday("1"))

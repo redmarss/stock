@@ -28,6 +28,7 @@ class Stock(object):
         dbObject = msql.SingletonModel(host='localhost',port='3306',user='root',passwd='redmarss',db='tushare',charset='utf8')
         try:
             self._listDict = dbObject.fetchone(table='stock_trade_history_info', where='stock_code="%s" and ts_date="%s"'%(code,ts_date))
+            dbObject.__del__()
         except:
             print("code或ts_date有误或不是交易日")
             self._listDict = None

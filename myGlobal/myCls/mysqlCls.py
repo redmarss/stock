@@ -24,10 +24,11 @@ class SingletonModel:
             host = 'host' in kwargs and kwargs['host'] or 'localhost'
             port ='port' in kwargs and kwargs['port'] or '3306'
             user ='user' in kwargs and kwargs['user'] or 'root'
-            passwd ='passwd' in kwargs and kwargs['passwd'] or '123456'
+            passwd ='passwd' in kwargs and kwargs['passwd']
             db = 'db' in kwargs and kwargs['db'] or 'test'
             charset = 'charset' in kwargs and kwargs['charset'] or 'utf8'
-            mycursor = 'mycursor' in kwargs and kwargs['mycursor'] or 'dict'
+
+
 
 
             #打开数据库连接
@@ -35,10 +36,9 @@ class SingletonModel:
             self.__db = pymysql.connect(host=host,port=int(port),user=user,passwd=passwd,db=db,charset=charset)
 
             #创建一个游标对象
-            if mycursor == 'dict':
-                self.__cursor = self.__db.cursor(cursor=pymysql.cursors.DictCursor)  # 返回值为字典形式或字典形式
-            elif mycursor == 'list':
-                self.__cursor = self.__db.cursor()  # 返回值为字典形式或字典形式
+            #self.__cursor = self.__db.cursor(cursor=pymysql.cursors.DictCursor)  # 返回值为字典形式
+            self.__cursor = self.__db.cursor()  # 返回值为列表形式
+
 
 
             self.__strEngine =  "mysql+pymysql://" + user + ':' + passwd + '@' + host + ':' + str(
