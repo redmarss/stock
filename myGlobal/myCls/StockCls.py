@@ -13,6 +13,7 @@ class Stock(object):
     _code = None                #股票代码
     _buyprice = None            #股票买入价格
     _sellprice = None           #股票卖出价格
+    _dbObject = None            #数据库对象
 
     def __init__(self, code, ts_date):
         #判断日期合规性
@@ -28,10 +29,10 @@ class Stock(object):
         if not code.lower().startswith('s'):
             code = gf._code_to_symbol(code)
 
-        dbObject = msql.SingletonModel(host='localhost',port='3306',user='root',passwd='redmarss',db='tushare',charset='utf8')
+        self._dbObject = msql.SingletonModel(host='localhost',port='3306',user='root',passwd='redmarss',db='tushare',charset='utf8')
         try:
-            self._tuplebroker= dbObject.fetchone(table='stock_trade_history_info', where='stock_code="%s" and ts_date="%s"'%(code,ts_date))
-            print(self._tuplebroker)
+            self._tuplebroker= self._dbObject.fetchone(table='stock_trade_history_info',
+                                                       where='stock_code="%s" and ts_date="%s"'%(code,ts_date))
         except:
             print("code或ts_date有误或不是交易日")
             self._tuplebroker = None
@@ -96,7 +97,7 @@ class Stock(object):
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
     def next_some_days(self,days=7):
         stocklist=[]
-        for i in range(1,days+1):
+        for i in range(0,days):
             date = gf.diffDay(self.ts_date,i)
             stocklist.append(Stock(self._code,date))
         return stocklist
@@ -114,6 +115,6 @@ class Stock(object):
         s = Series(list_MA)
         return round(s.mean(),2)
 
-s=Stock('600000','2018-01-08')
+# s=Stock('600000','2018-01-08')
 # s1=s.next_some_days(7)
 # print(s1[0].ts_date)
