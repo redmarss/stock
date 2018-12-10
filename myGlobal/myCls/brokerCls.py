@@ -10,19 +10,22 @@ class Broker(object):
     _brokername = None          #机构名称
     _buylist = None             #若构造函数中有日期参数，则返回机构当日购买的股票列表
     _tsdate = None              #交易日期
-    _stocklist = None
+    _stocklist = None           #购买股票列表
+    _dbObject = None
+
+
     # 构造函数，如果ts_date不为None,则返回当日该机构买入的股票列表至_buylist
     def __init__(self, broker_code, ts_date=None):
-        dbObject = msql.SingletonModel(host='1localhost', port='3306',
+        self._dbObject = msql.SingletonModel(host='1localhost', port='3306',
                                        user='root', passwd='redmarss',
-                                       charset='utf8',db='tushare',mycursor='list')
+                                       charset='utf8',db='tushare')
 
         # 先获得机构名称及机构代码
-        broker_info = dbObject.fetchone(table='broker_info', field='broker_code,broker_name',
+        broker_info = self._dbObject.fetchone(table='broker_info', field='broker_code,broker_name',
                                         where="broker_code='%s'" % (broker_code))
         if broker_info is not None:             #查询出来的机构不为空
-            self._brokercode = broker_info[0]['broker_code']
-            self._brokername = broker_code[0]['broker_name']
+            self._brokercode = broker_info[0]
+            self._brokername = broker_code[1]
         else:
             mexception.RaiseError(mexception.brokerError)
             return
@@ -30,7 +33,7 @@ class Broker(object):
         #如果传入参数中包含ts_date，则返回buy_list
         if ts_date is not None:
             self._tsdate = ts_date
-            t_broker_buy = dbObject.fetchall(table='broker_buy_stock_info as a,broker_buy_summary as b',
+            t_broker_buy = self._dbObject.fetchall(table='broker_buy_stock_info as a,broker_buy_summary as b',
                                              field='a.stock_code',
                                              where='a.broker_buy_summary_id=b.id and b.broker_code="%s" and b.ts_date="%s"' % (broker_code, ts_date))
             if len(t_broker_buy) != 0:                       #tbroker长度为0，说明找不到对应的数据
@@ -42,11 +45,20 @@ class Broker(object):
 
     #将模拟买入信息存入数据库
     #需存入字段为：ts_date,broker_code,stock_code,buy_price,sell_price,amount,gainmoney,gainpercent
-    def simulate_tosql(self, stockbuy, stocksell):
+    def simulate_tosql(self, code, buyprice, sellprice):
         #若参数stockbuy或stocksell不为Stock类型，则报错
-        if not isinstance(stockbuy,mstock.Stock) or not isinstance(stocksell,mstock.Stock):
-            mexception.RaiseError(mexception.typeError)
+        if not isinstance(buyprice,float) or not isinstance(sellprice,float):
+            raise ValueError("买入价格及卖出价格应为float类型")
             return
+
+        self._dbObject.insert(table="simulate_buy",
+                              ts_date=self._tsdate,
+                              broker_code= self.broker_code,
+                              stock_code = code,
+                              buy_price = buyprice,
+                              sell_price = sellprice,
+                              )
+
 
     #模拟买入，存入数据库，并计算盈利
     def simulate_buy(self,amount):
@@ -78,5 +90,6 @@ class Broker(object):
 if __name__ == '__main__':
     #b=Broker('80467525')
     A=mstock.Stock('600000','2018-01-08')
+    B=mstock.Stock('600000','2018-01-09')
     b=Broker('80467525','2018-06-22')
-    b.simulate_tosql("test",A)
+    b.simulate_tosql(B,A)

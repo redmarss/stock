@@ -24,12 +24,9 @@ class SingletonModel:
             host = 'host' in kwargs and kwargs['host'] or 'localhost'
             port ='port' in kwargs and kwargs['port'] or '3306'
             user ='user' in kwargs and kwargs['user'] or 'root'
-            passwd ='passwd' in kwargs and kwargs['passwd']
+            passwd ='passwd' in kwargs and kwargs['passwd'] or '123456'
             db = 'db' in kwargs and kwargs['db'] or 'test'
             charset = 'charset' in kwargs and kwargs['charset'] or 'utf8'
-
-
-
 
             #打开数据库连接
             #print('连接数据库')
@@ -123,7 +120,6 @@ class SingletonModel:
 
         sql = 'select %s from %s %s %s limit 1'%(field,table,where,order)
         #print(sql)
-
         try:
             self.__cursor.execute(sql)
             data=self.__cursor.fetchone()
