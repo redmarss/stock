@@ -17,10 +17,10 @@ class Stock(object):
 
     def __init__(self, code, ts_date):
         #判断日期合规性
-        if gf.is_holiday(ts_date):
-            print("不是交易日或非法日期")
-            self._tuplebroker = None
-            return
+        # if gf.is_holiday(ts_date):
+        #     print("不是交易日或非法日期")
+        #     self._tuplebroker = None
+        #     return
 
         self._code = code
         self._ts_date = ts_date

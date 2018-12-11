@@ -21,8 +21,8 @@ class notTradeDateError(Exception):
 
 class sqlError(Exception):
     def __init__(self):
-        self.args = ("sql语句错误",)
-        self.message = "sql语句错误"
+        self.args = ("数据库错误",)
+        self.message = "数据库错误"
         self.code = 400
 
 class brokerError(Exception):
@@ -36,6 +36,12 @@ class typeError(Exception):
         self.args = ("输入参数类型错误",)
         self.message = "输入参数类型错误"
         self.code = 600
+
+class valueError(Exception):
+    def __init__(self):
+        self.args = ("数值错误",)
+        self.message = "数值错误"
+        self.code = 700
 
 def RaiseError(error):
     try:

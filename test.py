@@ -1,6 +1,6 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
 
-import myGlobal.myCls.brokerCls
+import myGlobal.myCls.BrokerCls
 
 

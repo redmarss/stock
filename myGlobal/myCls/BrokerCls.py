@@ -10,9 +10,10 @@ class Broker(object):
     _brokername = None          #机构名称
     _buylist = None             #若构造函数中有日期参数，则返回机构当日购买的股票列表
     _tsdate = None              #交易日期
-    _stocklist = None           #用来存放购买股票后几天内的Stock集合
+    # _stocklist = None           #用来存放购买股票后几天内的Stock集合
     _dbObject = None            #数据库连接对象
-
+    # _buyprice = None            #（如果机构有买入股票）买入价
+    # _sellprice = None           #(如果机构有买入股票)卖出价
 
     # 构造函数，如果ts_date不为None,则返回当日该机构买入的股票列表至_buylist
     def __init__(self, broker_code, ts_date=None):
@@ -25,7 +26,7 @@ class Broker(object):
                                         where="broker_code='%s'" % (broker_code))
         if broker_info is not None:             #查询出来的机构不为空
             self._brokercode = broker_info[0]
-            self._brokername = broker_code[1]
+            self._brokername = broker_info[1]
         else:
             mexception.RaiseError(mexception.brokerError)
             return
@@ -39,7 +40,7 @@ class Broker(object):
             if len(t_broker_buy) != 0:                       #tbroker长度为0，说明找不到对应的数据
                 self._buylist = [gf._code_to_symbol(item[0]) for item in t_broker_buy]
             else:
-                print("该机构当天没有买卖股票")
+                print("%s机构%s没有买卖股票"%(broker_code,ts_date))
         else:
             self._buylist = None
 
@@ -48,26 +49,35 @@ class Broker(object):
     def _simulate_tosql(self, code, buyprice, sellprice, amount=1000):
         #若参数stockbuy或stocksell不为Stock类型，则报错
         if not isinstance(buyprice,float) or not isinstance(sellprice,float):
-            raise ValueError("买入价格及卖出价格应为float类型")
+            mexception.RaiseError(mexception.valueError)
             return
 
         gainmoney = round(sellprice*1000-buyprice*1000, 2)
         gainpercent = round(gainmoney/(buyprice*amount),4)
-        self._dbObject.insert(table="simulate_buy",
-                              ts_date=self._tsdate,
-                              broker_code= self.broker_code,
-                              stock_code = code,
-                              buy_price = buyprice,
-                              sell_price = sellprice,
-                              gainmoney = gainmoney,
-                              gainpercent = gainpercent
-                              )
+        try:
+            self._dbObject.insert(table="simulate_buy",ts_date=self._tsdate,broker_code=self.broker_code,
+                                  stock_code=code,buy_price=buyprice,sell_price=sellprice,
+                                  amount = amount,gainmoney=gainmoney,gainpercent=gainpercent)
+            print("%s机构%s买入%s记录成功"%(self.broker_code,self._tsdate,code))
+        except:
+            mexception.RaiseError(mexception.sqlError)
+            return
 
-    def find_buy_sell_stock(self,s):
+
+    def _find_buy_sell_stock_price(self,s):
         if not isinstance(s, mstock.Stock):
             raise ValueError("_find_buy_sell_stock函数参数需为Stock类型")
-        self._stocklist = s.next_some_days(7)
-        self._b
+        stocklist = s.next_some_days(7)
+        try:
+            if gf.ChangeRange(stocklist[0].close_price,stocklist[1].open_price)<0.08:       #第二天开盘涨幅不超过8%
+                buyprice = stocklist[1].open_price  #买入价等于第二天的开盘价
+                sellprice = round((stocklist[2].high_price+stocklist[2].low_price)/2.0,2)
+                return buyprice, sellprice
+            else:
+                return None
+        except:
+            mexception.RaiseError(mexception.valueError)
+            return None
 
 
     #模拟买入，存入数据库，并计算盈利
@@ -78,10 +88,11 @@ class Broker(object):
         if self._buylist is not None:                       #买卖股票参数不为空（交易日期必不为空）
             for code in self._buylist:
                 s = mstock.Stock(code, self._tsdate)
-                t = self._find_buy_sell_stock(s)
-
-
-
+                t = self._find_buy_sell_stock_price(s)
+                if t is not None:
+                    buyprice = t[0]
+                    sellprice = t[1]
+                    self._simulate_tosql(code,buyprice,sellprice,amount)
 
     @property
     def broker_code(self):
@@ -94,8 +105,6 @@ class Broker(object):
 
 
 
-if __name__ == '__main__':
-    #b=Broker('80467525')
-    A=mstock.Stock('600000','2017-01-04')
-    b=Broker('80467525','2018-06-22')
-    b.find_buy_sell_stock(A)
+# if __name__ == '__main__':
+#     b=Broker('80467525','2018-06-22')
+#     b.simulate_buy()

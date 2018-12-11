@@ -1,9 +1,12 @@
 #!/bin/usr/env python
 # -*-coding:utf-8 -*-
 
-from urllib.request import urlopen
+from urllib.request import urlopen,Request
 from bs4 import BeautifulSoup
 import myGlobal.myCls.mysqlCls as msql
+import datetime
+import myGlobal.globalFunction as gf
+import myGlobal.myCls.myException as mexception
 
 
 #将股票代码及名称写入数据库(每月运行）
@@ -61,4 +64,34 @@ def getBrokerInfo():
         else:
             dbObject.update(table='broker_info',where="broker_code='%s'"%broker_code,broker_name=broker_name)
 
-getBrokerInfo()
+
+#判断是否交易日，并写入数据库
+def is_holiday(startdate='2017-01-01'):
+    date = datetime.datetime.strptime(startdate, "%Y-%m-%d").date()
+    while date<=datetime.date(2018,12,31):
+        isholiday = 3
+
+        apiUrl = "http://api.goseek.cn/Tools/holiday?date=" + str(date)
+        request = Request(apiUrl)
+        try:
+            response = urlopen(request)
+        except:
+            mexception.RaiseError(mexception.dateError)
+        else:
+            response_data = response.read()
+        if str(response_data)[-3] == '0':
+            isholiday = 0   # 工作日返回0
+        else:
+            isholiday = 1   # 节假日返回1
+
+        dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
+                                       db='tushare', charset='utf8')
+        try:
+            if not dbObject.fetchone(table="is_holiday",field=date,where="date='%s'"%str(date)):
+                dbObject.insert(table="is_holiday",date=str(date),isholiday=str(isholiday))
+        except:
+            mexception.RaiseError(mexception.sqlError)
+        date = date + datetime.timedelta(days=1)
+
+
+is_holiday()
