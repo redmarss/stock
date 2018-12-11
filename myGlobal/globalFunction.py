@@ -88,38 +88,16 @@ def ChangeRange(priceLastClose,priceNow):
 
 #判断是否为交易日，工作日返回False or 节假日返回True
 def is_holiday(date):
-    '''
-            1、接口地址：http://api.goseek.cn/Tools/holiday?date=数字日期，支持https协议。
-            2、返回数据：工作日对应结果为 0, 休息日对应结果为 1, 节假日对应的结果为 2
-            3、节假日数据说明：本接口包含2017年起的中国法定节假日数据，数据来源国务院发布的公告，每年更新1次，确保数据最新
-            4、示例：
-            http://api.goseek.cn/Tools/holiday?date=20170528
-            https://api.goseek.cn/Tools/holiday?date=20170528
-            返回数据：
-            {"code":10001,"data":2}
-
-    '''
     if not isinstance(date, str):
         date = str(date)
-    try:
-        strConvertdate(date)
-    except:
-        mexception.RaiseError(mexception.dateError)
-        return None
-    apiUrl = "http://api.goseek.cn/Tools/holiday?date="+date
-    request = Request(apiUrl)
-    try:
-        response = urlopen(request)
-    except Exception as e:
-        print(e)
-        print("时间输入有误")
+    strConvertdate(date)
+    dbObject = msql.SingletonModel(host='localhost',port='3306',user='root',passwd='redmarss',db='tushare',charset='utf8')
+    flag = dbObject.fetchone(table='is_holiday',field='isholiday',where='date="%s"'%date)
+    if flag[0] == '1':
+        return True
     else:
-        response_data = response.read()
+        return False
 
-    if str(response_data)[-3] == '0':
-        return False                    #工作日返回False
-    else:
-        return True                     #节假日返回True
 
 #返回上一交易日（字符串格式）
 def lastTddate(strdate):
@@ -183,7 +161,7 @@ def getStockPrice(code, startdate=None, days=7):
 
     dbObject = msql.SingletonModel(host='localhost', port='3306',
                                    user='root', passwd='redmarss',
-                                   db='tushare', charset='utf8',mycursor='list')
+                                   db='tushare', charset='utf8')
     if days > 0:            #days大于0，则往后取数字
         try:
             t = dbObject.fetchall(table='stock_trade_history_info',
@@ -203,3 +181,4 @@ def getStockPrice(code, startdate=None, days=7):
         except:
             mexception.RaiseError(mexception.sqlError)
             return None
+
