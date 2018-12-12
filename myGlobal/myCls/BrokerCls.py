@@ -10,10 +10,10 @@ class Broker(object):
     _brokername = None          #机构名称
     _buylist = None             #若构造函数中有日期参数，则返回机构当日购买的股票列表
     _tsdate = None              #交易日期
-    # _stocklist = None           #用来存放购买股票后几天内的Stock集合
     _dbObject = None            #数据库连接对象
     # _buyprice = None            #（如果机构有买入股票）买入价
     # _sellprice = None           #(如果机构有买入股票)卖出价
+    # _stocklist = None           #用来存放购买股票后几天内的Stock集合
 
     # 构造函数，如果ts_date不为None,则返回当日该机构买入的股票列表至_buylist
     def __init__(self, broker_code, ts_date=None):

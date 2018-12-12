@@ -37,48 +37,65 @@ class Stock(object):
                                                                where='stock_code="%s" and ts_date="%s"' %
                                                                      (code, ts_date)
                                                                )
+                    self._tsdate = ts_date
+                    self._code = code
                 except:
                     print("code或ts_date有误或不是交易日")
                     return
+            else:                           #非沪深A股，返回
+                return
         except:
             mexception.RaiseError(mexception.sqlError)
             return
-
 
     @property
     def code(self):
         if self._tuplestock is not None:
             return str(self._tuplestock[1][-6:])
+        else:
+            return None
 
     @property
     def ts_date(self):
         if self._tuplestock is not None:
             return str(self._tuplestock[2])
+        else:
+            return None
 
     @property
     def open_price(self):
         if self._tuplestock is not None:
             return float(self._tuplestock[3])
+        else:
+            return None
 
     @property
     def close_price(self):
         if self._tuplestock is not None:
             return float(self._tuplestock[4])
+        else:
+            return None
 
     @property
     def high_price(self):
         if self._tuplestock is not None:
             return float(self._tuplestock[5])
+        else:
+            return None
 
     @property
     def low_price(self):
         if self._tuplestock is not None:
             return float(self._tuplestock[6])
+        else:
+            return None
 
     @property
     def volume(self):
         if self._tuplestock is not None:
             return float(self._tuplestock[7])
+        else:
+            return None
 
     @property
     def buyprice(self):
@@ -109,7 +126,10 @@ class Stock(object):
         i = 0
         while len(stocklist) < days:
             date = gf.diffDay(self._tsdate,i)
-            s = Stock(self._code,date)
+            if self._code is not None:
+                s = Stock(self._code,date)
+            else:
+                return
             if s.open_price is not None:
                 stocklist.append(s)
             i+=1
@@ -117,17 +137,13 @@ class Stock(object):
 
     #计算均线价格
     def MA(self,days=5):
-        if self._listDict is None:
-            print("%s不是交易日"%self._tsdate)
-            return
-
         list_MA=[]
-        t_MA = gf.getStockPrice(self.code,self._ts_date,0-days)
+        t_MA = gf.getStockPrice(self._code,self._tsdate,0-days)
         for i in range(len(t_MA)):
-            list_MA.append(t_MA[i]['close_price'])
+            list_MA.append(t_MA[i][4])          #收盘价
         s = Series(list_MA)
         return round(s.mean(),2)
 
-# s=Stock('600000','2018-01-08')
-# s1=s.next_some_days(7)
+s=Stock('600000','2018-01-08')
+s.MA(5)
 # print(s1[0].ts_date)

@@ -43,6 +43,12 @@ class valueError(Exception):
         self.message = "数值错误"
         self.code = 700
 
+class noneTypeError(Exception):
+    def __init__(self):
+        self.args = ("空值错误",)
+        self.message = "空值错误"
+        self.code = 800
+
 def RaiseError(error):
     try:
         raise error
