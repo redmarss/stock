@@ -88,6 +88,8 @@ def ChangeRange(priceLastClose,priceNow):
 
 #判断是否为交易日，工作日返回False or 节假日返回True
 def is_holiday(date):
+    if date is None:
+        return None
     if not isinstance(date, str):
         date = str(date)
     strConvertdate(date)

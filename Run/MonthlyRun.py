@@ -23,6 +23,7 @@ def getAllStock():
             stockName = link.text[:pos]
             stockCode = link.text[pos+1:-1]
             if stockCode.startswith('30') or stockCode.startswith('60') or stockCode.startswith('00'):
+                stockCode = gf._code_to_symbol(stockCode)
                 #写入数据库
                 read_sql = dbObject.fetchone(field='stockname', table='stock_basic_table', where='stockcode="%s"'%stockCode)
                 if read_sql is None:
@@ -105,4 +106,5 @@ def is_holiday(startdate='2017-01-01'):
         date = date + datetime.timedelta(days=1)
 
 
-is_holiday()
+# is_holiday()
+getAllStock()
