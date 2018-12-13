@@ -40,7 +40,7 @@ class Broker(object):
             if len(t_broker_buy) != 0:                       #tbroker长度为0，说明找不到对应的数据
                 self._buylist = [gf._code_to_symbol(item[0]) for item in t_broker_buy]
             else:
-                print("%s机构%s没有买卖股票"%(broker_code,ts_date))
+                print("%s机构%s没有买卖股票（当天只有卖出股票）"%(broker_code,ts_date))
         else:
             self._buylist = None
 
@@ -55,10 +55,16 @@ class Broker(object):
         gainmoney = round(sellprice*1000-buyprice*1000, 2)
         gainpercent = round(gainmoney/(buyprice*amount),4)
         try:
-            self._dbObject.insert(table="simulate_buy",ts_date=self._tsdate,broker_code=self.broker_code,
-                                  stock_code=code,buy_price=buyprice,sell_price=sellprice,
-                                  amount = amount,gainmoney=gainmoney,gainpercent=gainpercent)
-            print("%s机构%s买入%s记录成功"%(self.broker_code,self._tsdate,code))
+            hasRecord = self._dbObject.fetchall(table="simulate_buy",
+                                                where="ts_date='%s' and broker_code='%s' and stock_code='%s'"
+                                                      %(self._tsdate,self.broker_code,code))
+            if hasRecord is not None:
+                self._dbObject.insert(table="simulate_buy",ts_date=self._tsdate,broker_code=self.broker_code,
+                                      stock_code=code,buy_price=buyprice,sell_price=sellprice,
+                                      amount = amount,gainmoney=gainmoney,gainpercent=gainpercent)
+                print("%s机构%s买入%s记录成功"%(self.broker_code,self._tsdate,code))
+            else:                           #数据库中已有这条数据
+                return
         except:
             mexception.RaiseError(mexception.sqlError)
             return
@@ -68,10 +74,12 @@ class Broker(object):
         if not isinstance(s, mstock.Stock):
             raise ValueError("_find_buy_sell_stock函数参数需为Stock类型")
         stocklist = s.next_some_days(7)
+        if stocklist is None:
+            return
         try:
-            if gf.ChangeRange(stocklist[0].close_price,stocklist[1].open_price)<0.08:       #第二天开盘涨幅不超过8%
+            if gf.ChangeRange(stocklist[0].close_price, stocklist[1].open_price) < 0.08:       #第二天开盘涨幅不超过8%
                 buyprice = stocklist[1].open_price  #买入价等于第二天的开盘价
-                sellprice = round((stocklist[2].high_price+stocklist[2].low_price)/2.0,2)
+                sellprice = round((stocklist[2].high_price+stocklist[2].low_price)/2.0, 2)
                 return buyprice, sellprice
             else:
                 return None
@@ -81,7 +89,7 @@ class Broker(object):
 
 
     #模拟买入，存入数据库，并计算盈利
-    def simulate_buy(self, amount = 1000):
+    def simulate_buy(self, amount=1000):
         if self._tsdate == None:
             print("构造函数未输入日期参数，所以找不到买卖股票信息")
             return
@@ -93,6 +101,8 @@ class Broker(object):
                     buyprice = t[0]
                     sellprice = t[1]
                     self._simulate_tosql(code,buyprice,sellprice,amount)
+        else:                                               #当天没有买入股票，则返回
+            return
 
     @property
     def broker_code(self):
@@ -105,6 +115,6 @@ class Broker(object):
 
 
 
-# if __name__ == '__main__':
-#     b=Broker('80467525','2018-06-22')
-#     b.simulate_buy()
+if __name__ == '__main__':
+    b=Broker('80467525','2018-06-22')
+    b.simulate_buy()
