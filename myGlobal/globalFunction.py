@@ -89,16 +89,21 @@ def ChangeRange(priceLastClose,priceNow):
 #判断是否为交易日，工作日返回False or 节假日返回True
 def is_holiday(date):
     if date is None:
-        return None
+        print("is_holiday函数参数不能为空")
+        return
     if not isinstance(date, str):
-        date = str(date)
-    strConvertdate(date)
-    dbObject = msql.SingletonModel(host='localhost',port='3306',user='root',passwd='redmarss',db='tushare',charset='utf8')
-    flag = dbObject.fetchone(table='is_holiday',field='isholiday',where='date="%s"'%date)
-    if flag[0] == '1':
-        return True
+        print("is_holiday函数参数必须为str类型")
+        return
+    isValid = strConvertdate(date)
+    if isValid is not None:
+        dbObject = msql.SingletonModel(host='localhost',port='3306',user='root',passwd='redmarss',db='tushare',charset='utf8')
+        flag = dbObject.fetchone(table='is_holiday',field='isholiday',where='date="%s"'%date)
+        if flag[0] == '1':
+            return True
+        else:
+            return False
     else:
-        return False
+        return None
 
 
 #返回上一交易日（字符串格式）
@@ -183,4 +188,16 @@ def getStockPrice(code, startdate=None, days=7):
         except:
             mexception.RaiseError(mexception.sqlError)
             return None
+
+
+#判断股票代码是否属于沪深A股
+def isStockA(code):
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
+                                   charset='utf8')
+    stock_info = dbObject.fetchone(table="stock_basic_table", field='stockcode',
+                                         where="stockcode='%s'" % code)
+    if stock_info is None:
+        return False
+    else:
+        return True
 

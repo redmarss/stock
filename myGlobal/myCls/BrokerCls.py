@@ -17,6 +17,7 @@ class Broker(object):
 
     # 构造函数，如果ts_date不为None,则返回当日该机构买入的股票列表至_buylist
     def __init__(self, broker_code, ts_date=None):
+
         self._dbObject = msql.SingletonModel(host='localhost', port='3306',
                                        user='root', passwd='redmarss',
                                        charset='utf8',db='tushare')
@@ -33,6 +34,10 @@ class Broker(object):
 
         #如果传入参数中包含ts_date，则返回buy_list
         if ts_date is not None:
+            #检查ts_date是否为日期类型
+            if not isinstance(ts_date,str):
+                print("日期参数必须为str类型")
+                return
             self._tsdate = ts_date
             t_broker_buy = self._dbObject.fetchall(table='broker_buy_stock_info as a,broker_buy_summary as b',
                                              field='a.stock_code',
@@ -94,6 +99,8 @@ class Broker(object):
             print("构造函数未输入日期参数，所以找不到买卖股票信息")
             return
         if self._buylist is not None:                       #买卖股票参数不为空（交易日期必不为空）
+            if self._tsdate is None:
+                print("error")
             for code in self._buylist:
                 s = mstock.Stock(code, self._tsdate)
                 t = self._find_buy_sell_stock_price(s)
