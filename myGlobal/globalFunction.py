@@ -179,3 +179,12 @@ def getStockPrice(code, startdate=None, days=7):
             mexception.RaiseError(mexception.sqlError)
             return None
 
+#获取code是否是沪深A股股票
+def isStockA(code):
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
+                                   charset='utf8')
+    isStockA = dbObject.fetchone(table="stock_basic_table", where="stockcode='%s'"%code)
+    if isStockA is not None:
+        return True
+    else:
+        return False

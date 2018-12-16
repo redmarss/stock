@@ -117,6 +117,12 @@ class Stock(object):
 
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
     def next_some_days(self,days=7):
+        if not isinstance(days, int):
+            try:
+                days = int(days)
+            except:
+                print("next_some_days函数days参数错误")
+                return
         stocklist=[]
         i = 0
         while len(stocklist) < days:
@@ -132,6 +138,12 @@ class Stock(object):
 
     #计算均线价格
     def MA(self,days=5):
+        if not isinstance(days, int):
+            try:
+                days = int(days)
+            except:
+                print("MA函数days参数错误")
+                return
         list_MA=[]
         t_MA = gf.getStockPrice(self._code,self._tsdate,0-days)
         for i in range(len(t_MA)):
