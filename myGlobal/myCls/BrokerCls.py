@@ -16,7 +16,9 @@ class Broker(object):
     # _stocklist = None           #用来存放购买股票后几天内的Stock集合
 
     # 构造函数，如果ts_date不为None,则返回当日该机构买入的股票列表至_buylist
-    def __init__(self, broker_code, ts_date=None):
+    def __init__(self, broker_code, ts_date=None):              #输入日期参数则返回买入股票，否则只返回机构信息
+
+
         self._dbObject = msql.SingletonModel(host='localhost', port='3306',
                                        user='root', passwd='redmarss',
                                        charset='utf8',db='tushare')
@@ -116,5 +118,5 @@ class Broker(object):
 
 
 if __name__ == '__main__':
-    b=Broker('80467525','2018-06-22')
+    b=Broker('80467525','2018-06-221')
     b.simulate_buy()

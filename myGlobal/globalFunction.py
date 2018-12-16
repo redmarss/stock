@@ -5,14 +5,7 @@ import myGlobal.myCls.myException as mexception
 from urllib.request import Request,urlopen
 import datetime
 
-#将字符串格式的日期形式转换为date形式，出错则返回None
-def strConvertdate(strdate):
-    try:
-        date = datetime.datetime.strptime(strdate, "%Y-%m-%d").date()
-        return date
-    except:
-        mexception.RaiseError(mexception.dateError)
-        return None
+
 
 #获取所有股票代码
 #返回格式为列表[{'stockcode':'600000','stockname':'浦发银行'},{}...{}]
@@ -92,13 +85,15 @@ def is_holiday(date):
         return None
     if not isinstance(date, str):
         date = str(date)
-    strConvertdate(date)
     dbObject = msql.SingletonModel(host='localhost',port='3306',user='root',passwd='redmarss',db='tushare',charset='utf8')
     flag = dbObject.fetchone(table='is_holiday',field='isholiday',where='date="%s"'%date)
-    if flag[0] == '1':
-        return True
+    if flag is not None:
+        if flag[0] == '1':
+            return True
+        else:
+            return False
     else:
-        return False
+        return None
 
 
 #返回上一交易日（字符串格式）
@@ -113,12 +108,12 @@ def lastTddate(strdate):
 
 #输入一个日期及天数，返回该日期加上/减去该数量的交易日的结果
 def diffDay(strdate,day=0):
-    date = strConvertdate(strdate)
-    if date is not None:
+    if is_holiday(strdate) == False:
+        date = datetime.datetime.strptime(strdate, "%Y-%m-%d").date()
         if day > 0:
             while day > 0:
                 date = date+datetime.timedelta(days=1)
-                if not is_holiday(date):                #若非休息日，day-1
+                if not is_holiday(date):                #若非休息日，不计入运算
                     day = day-1
         else:
             while day < 0:

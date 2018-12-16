@@ -13,10 +13,11 @@ class Stock(object):
     _dbObject = None            #数据库对象
     _tsdate = None              #交易日期
     _code = None                #股票代码
+
     def __init__(self, code, ts_date):
         #判断日期合规性
         if gf.is_holiday(ts_date) != False:                   #可能返回None,True,False
-            print("不是交易日或非法日期")
+            print("'%s'不是交易日或非法日期"%ts_date)
             return
         #判断股票代码合规性
         if code is None:
@@ -28,25 +29,20 @@ class Stock(object):
         #判断股票代码是否属于沪深A股
         self._dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                              db='tushare', charset='utf8')
-        try:
-            stock_info = self._dbObject.fetchone(table="stock_basic_table", field='stockcode',
-                                                 where="stockcode='%s'"%code)
-            if stock_info is not None:
-                try:
-                    self._tuplestock = self._dbObject.fetchone(table='stock_trade_history_info',
-                                                               where='stock_code="%s" and ts_date="%s"' %
-                                                                     (code, ts_date)
-                                                               )
-                    self._tsdate = ts_date
-                    self._code = code
-                except:
-                    print("code或ts_date有误或不是交易日")
-                    return
-            else:                           #非沪深A股，返回
-                return
-        except:
-            mexception.RaiseError(mexception.sqlError)
+
+        stock_info = self._dbObject.fetchone(table="stock_basic_table", field='stockcode',
+                                             where="stockcode='%s'"%code)
+        if stock_info is not None:
+            self._tuplestock = self._dbObject.fetchone(table='stock_trade_history_info',
+                                                       where='stock_code="%s" and ts_date="%s"' %
+                                                             (code, ts_date)
+                                                       )
+            self._tsdate = ts_date
+            self._code = code
+        else:                           #非沪深A股，返回
+            print("'%s'不属于沪深A股"%code)
             return
+
 
     @property
     def code(self):
@@ -97,31 +93,16 @@ class Stock(object):
         else:
             return None
 
-    @property
-    def buyprice(self):
-        return float(self._buyprice)
-
-    @buyprice.setter
-    def buyprice(self,value):
-        if not isinstance(value,float):
-            raise ValueError("购买价格必须为float类型")
-        self._buyprice = value
-
-
-    @property
-    def sellprice(self):
-        return float(self._sellprice)
-
-    @sellprice.setter
-    def sellprice(self,value):
-        if not isinstance(value,float):
-            raise ValueError("卖出价格必须为float类型")
-        self._sellprice = value
-
-
-
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
     def next_some_days(self,days=7):
+        #判断days参数合规性
+        if not isinstance(days, int):
+            try:
+                days = int(days)
+            except:
+                mexception.RaiseError(mexception.typeError)
+                print("next-some_days函数日期参数错误")
+                return
         stocklist=[]
         i = 0
         while len(stocklist) < days:
@@ -137,6 +118,14 @@ class Stock(object):
 
     #计算均线价格
     def MA(self,days=5):
+        #判断days参数合规性
+        if not isinstance(days,int):
+            try:
+                days = int(days)
+            except:
+                mexception.RaiseError(mexception.typeError)
+                print("MA函数日期参数错误")
+                return
         list_MA=[]
         t_MA = gf.getStockPrice(self._code,self._tsdate,0-days)
         for i in range(len(t_MA)):
@@ -144,6 +133,5 @@ class Stock(object):
         s = Series(list_MA)
         return round(s.mean(),2)
 
-# s=Stock('600000','2018-01-08')
-# s.MA(5)
+#s=Stock('600000','2018-01-08')
 # print(s1[0].ts_date)
