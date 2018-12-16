@@ -15,32 +15,32 @@ class Stock(object):
     _code = None                #股票代码
 
     def __init__(self, code, ts_date):
-        #判断日期合规性
+        #判断参数合规性
+        if code is None or ts_date is None:
+            print("Stock类的构造函数中存在空值")
+            return
+        if not isinstance(code,str) or not isinstance(ts_date,str):
+            print("Stock类的参数必须为str类型")
+            return
         if gf.is_holiday(ts_date) != False:                   #可能返回None,True,False
-            print("'%s'不是交易日或非法日期"%ts_date)
+            print("不是交易日或非法日期")
             return
-        #判断股票代码合规性
-        if code is None:
-            print("股票代码不能为空")
-            return
-        else:
-            code = gf._code_to_symbol(code)
-
-        #判断股票代码是否属于沪深A股
+        #创建数据库对象（单例模式）
         self._dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                              db='tushare', charset='utf8')
+        #股票代码标准化
+        code = gf._code_to_symbol(code)
 
-        stock_info = self._dbObject.fetchone(table="stock_basic_table", field='stockcode',
-                                             where="stockcode='%s'"%code)
-        if stock_info is not None:
+        if gf.isStockA(code) == True:               #如果是沪深A股
             self._tuplestock = self._dbObject.fetchone(table='stock_trade_history_info',
                                                        where='stock_code="%s" and ts_date="%s"' %
                                                              (code, ts_date)
-                                                       )
+                                                       )            #获取股票当日交易信息
             self._tsdate = ts_date
             self._code = code
-        else:                           #非沪深A股，返回
-            print("'%s'不属于沪深A股"%code)
+
+        else:                                       #非沪深A股，返回
+            print("该股票代码非沪深A股代码")
             return
 
 
@@ -93,20 +93,34 @@ class Stock(object):
         else:
             return None
 
+    @property
+    def buyprice(self):
+        return None
+
+    @buyprice.setter
+    def buyprice(self,value):
+        if not isinstance(value,float):
+            raise ValueError("购买价格必须为float类型")
+        self._buyprice = value
+
+
+    @property
+    def sellprice(self):
+        return None
+
+    @sellprice.setter
+    def sellprice(self,value):
+        if not isinstance(value,float):
+            raise ValueError("卖出价格必须为float类型")
+        self._sellprice = value
+
+
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
     def next_some_days(self,days=7):
-        #判断days参数合规性
-        if not isinstance(days, int):
-            try:
-                days = int(days)
-            except:
-                mexception.RaiseError(mexception.typeError)
-                print("next-some_days函数日期参数错误")
-                return
         stocklist=[]
         i = 0
         while len(stocklist) < days:
-            date = gf.diffDay(self._tsdate,i)
+            date = gf.diffDay(str(self._tsdate),i)
             if self._code is not None:
                 s = Stock(self._code,date)
             else:
@@ -118,14 +132,6 @@ class Stock(object):
 
     #计算均线价格
     def MA(self,days=5):
-        #判断days参数合规性
-        if not isinstance(days,int):
-            try:
-                days = int(days)
-            except:
-                mexception.RaiseError(mexception.typeError)
-                print("MA函数日期参数错误")
-                return
         list_MA=[]
         t_MA = gf.getStockPrice(self._code,self._tsdate,0-days)
         for i in range(len(t_MA)):
@@ -133,5 +139,6 @@ class Stock(object):
         s = Series(list_MA)
         return round(s.mean(),2)
 
-#s=Stock('600000','2018-01-08')
+s=Stock('600000','2018-01-08')
+# s.MA(5)
 # print(s1[0].ts_date)
