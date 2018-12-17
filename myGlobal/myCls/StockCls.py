@@ -14,7 +14,7 @@ class Stock(object):
     _tsdate = None              #交易日期
     _code = None                #股票代码
 
-    def __init__(self, code, ts_date):
+    def __init__(self, code=None, ts_date=None):
         #判断参数合规性
         if code is None or ts_date is None:
             print("Stock类的构造函数中存在空值")
@@ -93,30 +93,15 @@ class Stock(object):
         else:
             return None
 
-    @property
-    def buyprice(self):
-        return None
-
-    @buyprice.setter
-    def buyprice(self,value):
-        if not isinstance(value,float):
-            raise ValueError("购买价格必须为float类型")
-        self._buyprice = value
-
-
-    @property
-    def sellprice(self):
-        return None
-
-    @sellprice.setter
-    def sellprice(self,value):
-        if not isinstance(value,float):
-            raise ValueError("卖出价格必须为float类型")
-        self._sellprice = value
 
 
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
     def next_some_days(self,days=7):
+        '''
+            参数示例：7，‘7’，‘7s'
+            返回类型：list,list,None
+            len(list)应等于days，list中每个元素应为Stock类型
+        '''
         if not isinstance(days, int):
             try:
                 days = int(days)
@@ -138,6 +123,10 @@ class Stock(object):
 
     #计算均线价格
     def MA(self,days=5):
+        '''
+            参数示例：5，‘5’，‘5s'
+            返回类型：float,float,None
+        '''
         if not isinstance(days, int):
             try:
                 days = int(days)
@@ -152,5 +141,6 @@ class Stock(object):
         return round(s.mean(),2)
 
 s=Stock('600000','2018-01-08')
-# s.MA(5)
+print(s.next_some_days())
+input()
 # print(s1[0].ts_date)
