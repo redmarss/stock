@@ -188,3 +188,16 @@ def isStockA(code):
         return True
     else:
         return False
+
+#寻找数据库中最后一天（最大的一天）
+def find_biggest_day():
+    '''
+    return:日期类型
+    '''
+    dbObject = msql.SingletonModel(host='localhost', port='3306',
+                                   user='root', passwd='redmarss',
+                                   db='tushare', charset='utf8')
+    t_date = dbObject.fetchone(table="broker_buy_summary order by ts_date desc", field="ts_date")
+    return t_date[0]
+
+

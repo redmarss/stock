@@ -110,15 +110,13 @@ class Stock(object):
                 return
         stocklist=[]
         i = 0
+        date = self._tsdate
+        #当stocklist函数长度小于days或者 最终日期小于数据库中最后一天（否则会死循环）
         while len(stocklist) < days:
-            date = gf.diffDay(str(self._tsdate),i)
-            if self._code is not None:
+            if date is not None:
                 s = Stock(self._code,date)
-            else:
-                return
-            if s.open_price is not None:
                 stocklist.append(s)
-            i+=1
+            date = gf.diffDay(date, 1)
         return stocklist
 
     #计算均线价格
@@ -140,7 +138,7 @@ class Stock(object):
         s = Series(list_MA)
         return round(s.mean(),2)
 
-s=Stock('600000','2018-01-08')
-print(s.next_some_days())
-input()
+# s=Stock('600000','2018-01-08')
+# print(s.next_some_days())
+# input()
 # print(s1[0].ts_date)
