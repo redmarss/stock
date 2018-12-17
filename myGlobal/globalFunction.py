@@ -76,8 +76,11 @@ def ChangeRange(priceLastClose,priceNow):
         priceNow:今日开盘价或现价
         返回：涨幅，保留4位小数
     '''
-    range = (priceNow-priceLastClose)/(priceLastClose)
-    return round(range, 4)
+    if priceLastClose and priceNow is not None:
+        range = (priceNow-priceLastClose)/(priceLastClose)
+        return round(range, 4)
+    else:
+        return
 
 #判断是否为交易日，工作日返回False or 节假日返回True
 def is_holiday(date):

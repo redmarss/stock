@@ -105,6 +105,7 @@ class Broker(object):
             print("_find_buy_sell_stock函数参数需为Stock类型")
             return
         stocklist = s.next_some_days(7)
+        print()
         if stocklist is None:
             print("未知错误")
             return
@@ -126,6 +127,3 @@ class Broker(object):
 
 
 
-if __name__ == '__main__':
-    b=Broker('80467525','2018-06-22')
-    b.simulate_buy()

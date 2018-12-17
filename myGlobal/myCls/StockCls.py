@@ -111,12 +111,18 @@ class Stock(object):
         stocklist=[]
         i = 0
         date = self._tsdate
-        #当stocklist函数长度小于days或者 最终日期小于数据库中最后一天（否则会死循环）
+        #当stocklist函数长度小于days且数据库中有数据
         while len(stocklist) < days:
-            if date is not None:
+            has_record = self._dbObject.fetchone(table="stock_trade_history_info",
+                                                 where="stock_code='%s' and ts_date='%s'"
+                                                       %(self._code,date))
+            if has_record is not None:
                 s = Stock(self._code,date)
                 stocklist.append(s)
             date = gf.diffDay(date, 1)
+            # 如果日期最终大于”今天”，则中断循环，否则死循环
+            if datetime.datetime.strptime(date,"%Y-%m-%d").date()>datetime.datetime.today().date():
+                break
         return stocklist
 
     #计算均线价格
