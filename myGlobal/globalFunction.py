@@ -88,7 +88,7 @@ def is_holiday(date):
         return None
     if not isinstance(date, str):
         date = str(date)
-    dbObject = msql.SingletonModel(host='localhost',port='3306',user='root',passwd='redmarss',db='tushare',charset='utf8')
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
     flag = dbObject.fetchone(table='is_holiday',field='isholiday',where='date="%s"'%date)
     if flag is not None:
         if flag[0] == '1':
@@ -98,6 +98,21 @@ def is_holiday(date):
     else:
         return None
 
+
+def is_tradeday(code,tsdate):
+    '''
+    判断股票是否停牌
+    :param code: 股票代码
+    :param tsdate: 交易日期
+    :return: True or False
+    '''
+    code = _code_to_symbol(code)
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
+    istradeday = dbObject.fetchone(table='stock_trade_history_info',where="stock_code='%s' and ts_date='%s'"%(code,tsdate))
+    if istradeday is not None:
+        return True
+    else:
+        return False
 
 #返回上一交易日（字符串格式）
 def lastTddate(strdate):

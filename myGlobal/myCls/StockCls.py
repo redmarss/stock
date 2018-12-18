@@ -113,10 +113,7 @@ class Stock(object):
         date = self._tsdate
         #当stocklist函数长度小于days且数据库中有数据
         while len(stocklist) < days:
-            has_record = self._dbObject.fetchone(table="stock_trade_history_info",
-                                                 where="stock_code='%s' and ts_date='%s'"
-                                                       %(self._code,date))
-            if has_record is not None:
+            if gf.is_tradeday(self.ts_date,self.ts_date) == True:
                 s = Stock(self._code,date)
                 stocklist.append(s)
             date = gf.diffDay(date, 1)
