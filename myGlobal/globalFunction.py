@@ -18,6 +18,9 @@ def getAllStockCode():
 #存在多种形式，如"600000","6000000.sh","sh600000"
 #需转换成"sh600000"
 def _code_to_symbol(code):
+    if code is None:
+        print("_code_to_symbol的参数不应为None")
+        return
     if len(code) != 6:
         if code[:1] in ['5','6','9']:
             return 'sh%s'%code[:6]

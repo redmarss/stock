@@ -22,8 +22,11 @@ class Stock(object):
         if not isinstance(code,str) or not isinstance(ts_date,str):
             print("Stock类的参数必须为str类型")
             return
-        if gf.is_holiday(ts_date) != False:                   #可能返回None,True,False
-            print("不是交易日或非法日期")
+        if gf.isStockA(code) != True:
+            print("%s不是沪深A股"%code)
+            return
+        if gf.is_tradeday(code,ts_date) != True:                   #可能返回None,True,False
+            print("%s在%s未查询到交易记录"%(code,ts_date))
             return
         #创建数据库对象（单例模式）
         self._dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
@@ -31,17 +34,14 @@ class Stock(object):
         #股票代码标准化
         code = gf._code_to_symbol(code)
 
-        if gf.isStockA(code) == True:               #如果是沪深A股
-            self._tuplestock = self._dbObject.fetchone(table='stock_trade_history_info',
-                                                       where='stock_code="%s" and ts_date="%s"' %
-                                                             (code, ts_date)
-                                                       )            #获取股票当日交易信息
-            self._tsdate = ts_date
-            self._code = code
 
-        else:                                       #非沪深A股，返回
-            print("该股票代码非沪深A股代码")
-            return
+        self._tuplestock = self._dbObject.fetchone(table='stock_trade_history_info',
+                                                   where='stock_code="%s" and ts_date="%s"' %
+                                                         (code, ts_date)
+                                                   )            #获取股票当日交易信息
+        self._tsdate = ts_date
+        self._code = code
+
 
 
     @property
@@ -102,6 +102,8 @@ class Stock(object):
             返回类型：list,list,None
             len(list)应等于days，list中每个元素应为Stock类型
         '''
+        if self._tsdate is None:
+            return
         if not isinstance(days, int):
             try:
                 days = int(days)
@@ -113,7 +115,7 @@ class Stock(object):
         date = self._tsdate
         #当stocklist函数长度小于days且数据库中有数据
         while len(stocklist) < days:
-            if gf.is_tradeday(self.ts_date,self.ts_date) == True:
+            if gf.is_tradeday(self._code,date) == True:
                 s = Stock(self._code,date)
                 stocklist.append(s)
             date = gf.diffDay(date, 1)

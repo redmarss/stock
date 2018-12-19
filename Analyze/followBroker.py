@@ -5,12 +5,19 @@ import myGlobal.myCls.StockCls as mstock
 import myGlobal.globalFunction as gf
 import myGlobal.myCls.BrokerCls as mbroker
 
-if __name__ =='__main__':
-    dbObject = msql.SingletonModel(host='localhost',port='3306',user='root',passwd='redmarss',db='tushare',charset='utf8')
-    d = dbObject.fetchall(table="broker_buy_summary", field="broker_code,ts_date", where="ts_date<='2017-01-31' order by ts_date")
+def simulate_buy(startdate='2017-01-01',enddate='2018-12-31', amount=1000):
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
+                                   charset='utf8')
+    d = dbObject.fetchall(table="broker_buy_summary", field="broker_code,ts_date",
+                          where="ts_date between '%s' and '%s' order by ts_date"%(startdate,enddate))
     for i in range(len(d)):
-        b=mbroker.Broker(d[i][0],str(d[i][1]))              #日期参数必须为str类型
-        b.simulate_buy(1000)
+        broker_code = d[i][0]
+        ts_date = str(d[i][1])
+        b=mbroker.Broker(broker_code,ts_date)              #日期参数必须为str类型
+        b.simulate_buy(amount)
+
+if __name__ =='__main__':
+    simulate_buy("2017-04-01","2018-11-30",1000)
 
 
 
