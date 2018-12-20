@@ -67,7 +67,7 @@ class Broker(object):
         if self._tsdate == None:
             print("构造函数日期参数不正确，所以无法模拟买入")
             return
-        if self._buylist is not None:                       #买卖股票参数不为空（交易日期必不为空）
+        if len(self._buylist)!=0:                       #买卖股票参数不为空（交易日期必不为空）
             # if self._tsdate is None:
             #     print("错误：_buylist不为空，日期却为空")
             #     return
@@ -107,12 +107,15 @@ class Broker(object):
             return
 
     #找出买入卖出价
-    def _find_buy_sell_stock_price(self,s):
+    def _find_buy_sell_stock_price(self,s,day=7):
         if not isinstance(s, mstock.Stock):
             print("_find_buy_sell_stock函数参数需为Stock类型")
             return
-        stocklist = s.next_some_days(7)
+        stocklist = s.next_some_days(day)
         if stocklist is None:
+            print("未知错误")
+            return
+        if len(stocklist)==0 or len(stocklist)<day-4:            #如果获取天数为7天，最终获取结果小于3天，则报错
             print("未知错误")
             return
         if gf.ChangeRange(stocklist[0].close_price, stocklist[1].open_price) < 0.08:       #第二天开盘涨幅不超过8%

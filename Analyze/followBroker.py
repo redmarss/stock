@@ -20,7 +20,7 @@ def simulate_buy(startdate='2017-01-01',enddate='2018-12-31', amount=1000):
 
 
 if __name__ =='__main__':
-    #simulate_buy("2017-04-01","2018-11-30",1000)
+    # simulate_buy("2018-11-30","2018-12-31",1000)
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
                                    charset='utf8')
     t = dbObject.fetchall(table="simulate_buy",
