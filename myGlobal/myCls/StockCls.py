@@ -120,7 +120,7 @@ class Stock(object):
                 stocklist.append(s)
             date = gf.diffDay(date, 1)
             # 如果日期最终大于”今天”，则中断循环，否则死循环
-            if datetime.datetime.strptime(date,"%Y-%m-%d").date()>datetime.datetime.today().date():
+            if datetime.datetime.strptime(date,"%Y-%m-%d").date()>datetime.datetime.today().date()-datetime.timedelta(days=days):
                 break
         return stocklist
 

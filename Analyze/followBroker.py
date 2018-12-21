@@ -1,5 +1,7 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
+
+#每月10日跑上一月数据
 import myGlobal.myCls.mysqlCls as msql
 import myGlobal.myCls.StockCls as mstock
 import myGlobal.globalFunction as gf
@@ -14,7 +16,7 @@ def simulate_buy(startdate='2017-01-01',enddate='2018-12-31', amount=1000):
     for i in range(len(d)):
         broker_code = d[i][0]
         ts_date = str(d[i][1])
-        b=mbroker.Broker(broker_code,ts_date)              #日期参数必须为str类型
+        b = mbroker.Broker(broker_code,ts_date)              #日期参数必须为str类型
         b.simulate_buy(amount)
 
 
@@ -29,7 +31,7 @@ if __name__ =='__main__':
     df = pd.DataFrame(list(t),columns=list_title)
     df=df.sort_values(axis=0,by='broker_code',ascending='False')
     df = df.apply(pd.to_numeric, errors='ignore')
-    value=df.groupby(['broker_code'])['gainpercent'].mean()
+    value=df.groupby(['broker_code'])['gainpercent'].count()
     value = value.sort_values(ascending=False)
     print(value)
 
