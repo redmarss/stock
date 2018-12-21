@@ -33,6 +33,6 @@ if __name__ =='__main__':
     df = df.apply(pd.to_numeric, errors='ignore')
     value=df.groupby(['broker_code'])['gainpercent'].count()
     value = value.sort_values(ascending=False)
-    print(value)
+    print(value)1
 
 
