@@ -5,29 +5,32 @@
 import myGlobal.myCls.mysqlCls as msql
 import myGlobal.myCls.StockCls as mstock
 import myGlobal.globalFunction as gf
-import myGlobal.myCls.BrokerCls as mbroker
+
 import pandas as pd
 
-def simulate_buy(startdate='2017-01-01',enddate='2018-12-31', amount=1000):
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
-                                   charset='utf8')
-    d = dbObject.fetchall(table="broker_buy_summary", field="broker_code,ts_date",
-                          where="ts_date between '%s' and '%s' order by ts_date"%(startdate,enddate))
-    for i in range(len(d)):
-        broker_code = d[i][0]
-        ts_date = str(d[i][1])
-        b = mbroker.Broker(broker_code,ts_date)              #日期参数必须为str类型
-        b.simulate_buy(amount)
 
 
-def getTopBroker_avr():
+
+def getTopBroker_avr(count=5):
     dbObject = msql.SingletonModel(host="localhost",port="3306",user="root",passwd="redmarss",db="tushare",charset="utf8")
     t = dbObject.fetchall(table="simulate_buy",
                           field="ts_date,broker_code,stock_code,buy_price,sell_price,amount,gainmoney,gainpercent")
-
+    list_title = ['ts_date', 'broker_code', 'stock_code', 'buy_price', 'sell_price', 'amount', 'gainmoney',
+                  'gainpercent']
+    df = pd.DataFrame(list(t), columns=list_title)
+    # 筛选出交易次数符合条件的机构
+    s = df["broker_code"].value_counts()>=count
+    s = s[s]                                        #先把交易次数大于count的机构存入S
+    dict_broker = s.to_dict()
+    df = df[df["broker_code"].isin(list(dict_broker.keys()))]       #再筛选出在机构列表中的数据
+    #能转换的都转换为数字
+    df = df.apply(pd.to_numeric, errors='ignore')
+    value = df.groupby(['broker_code'])['gainpercent'].mean()
+    value = value.sort_values(ascending=False)
+    print(value)
 
 if __name__ =='__main__':
-    simulate_buy("2017-01-01","2018-11-30",1000)
+    getTopBroker_avr()
     # dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
     #                                charset='utf8')
     # t = dbObject.fetchall(table="simulate_buy",

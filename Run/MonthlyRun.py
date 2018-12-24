@@ -4,12 +4,13 @@
 from urllib.request import urlopen,Request
 from bs4 import BeautifulSoup
 import myGlobal.myCls.mysqlCls as msql
+import myGlobal.myCls.BrokerCls as mbroker
 import datetime
 import myGlobal.globalFunction as gf
 import myGlobal.myCls.myException as mexception
 
 
-#将股票代码及名称写入数据库(每月运行）
+#将股票代码及名称写入数据库(每月运行一次）
 def getAllStock():
     url = "http://quote.eastmoney.com/stocklist.html"
     page = urlopen(url).read().decode('gbk')
@@ -53,20 +54,23 @@ def getStauts(code):
 def getBrokerInfo():
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                    db='tushare', charset='utf8',mycursor='list')
-    list_broker = dbObject.fetchall(table='broker_buy_summary', field='broker_code,broker_name')
+    list_broker = dbObject.fetchall(table='broker_buy_summary', field='broker_code')
     list_broker = list(set(list_broker))
 
     for i in range(len(list_broker)):
         broker_code = list_broker[i][0]
-        broker_name = list_broker[i][1]
+        broker_name = dbObject.fetchone(table="broker_buy_summary",field="broker_name",
+                                        where="broker_code='%s'"%broker_code,order="ts_date desc")[0]
         getcode = dbObject.fetchone(table='broker_info',where="broker_code='%s'"%broker_code)
         if getcode is None:
             dbObject.insert(table='broker_info',broker_code=broker_code,broker_name=broker_name)
         else:
             dbObject.update(table='broker_info',where="broker_code='%s'"%broker_code,broker_name=broker_name)
 
+        dbObject.update(table="broker_buy_summary",broker_name=broker_name,where="broker_code='%s'"%broker_code)
+        print("%s机构数据清洗完毕"%broker_code,i)
 
-#判断是否交易日，并写入数据库
+#每年运行一次即可
 def is_holiday(startdate='2017-01-01'):
     '''
             1、接口地址：http://api.goseek.cn/Tools/holiday?date=数字日期，支持https协议。
@@ -106,5 +110,21 @@ def is_holiday(startdate='2017-01-01'):
         date = date + datetime.timedelta(days=1)
 
 
-# is_holiday()
-getAllStock()
+#每月10日模拟买入上一月数据
+def simulate_buy(startdate='2017-01-01',enddate='2018-12-31', amount=1000):
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
+                                   charset='utf8')
+    d = dbObject.fetchall(table="broker_buy_summary", field="broker_code,ts_date",
+                          where="ts_date between '%s' and '%s' order by ts_date"%(startdate,enddate))
+    for i in range(len(d)):
+        broker_code = d[i][0]
+        ts_date = str(d[i][1])
+        b = mbroker.Broker(broker_code,ts_date)              #日期参数必须为str类型
+        b.simulate_buy(amount)
+
+
+if __name__ == "__main__":
+    #每月10日运行
+    getBrokerInfo()
+    simulate_buy()
+    print()
