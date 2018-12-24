@@ -1,0 +1,8 @@
+CREATE TABLE `tushare`.`best_broker_list` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `broker_code` VARCHAR(45) NOT NULL,
+  `broker_name` VARCHAR(45) NOT NULL,
+  `stock_list` VARCHAR(200) NULL,
+  `reson` VARCHAR(200) NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `broker_code_UNIQUE` (`broker_code` ASC) VISIBLE);
