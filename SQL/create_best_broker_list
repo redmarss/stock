@@ -5,4 +5,4 @@ CREATE TABLE `tushare`.`best_broker_list` (
   `stock_list` VARCHAR(200) NULL,
   `reson` VARCHAR(200) NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `broker_code_UNIQUE` (`broker_code` ASC) VISIBLE);
+  UNIQUE INDEX `broker_code_UNIQUE` (`broker_code` ASC));

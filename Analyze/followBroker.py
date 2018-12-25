@@ -44,10 +44,11 @@ def list_to_bestbrokerlist(li):
             dbObject.insert(table="best_broker_list",broker_code=broker_code,broker_name=broker_name)
         else:
             dbObject.update(table="best_broker_list",broker_name=broker_name,where="broker_code='%s'"%broker_code)
+    print("finished")
+
 
 if __name__ =='__main__':
-    li=getTopBroker_avr()
-    print(li)
+    li=getTopBroker_avr(20)
     list_to_bestbrokerlist(li)
 
 
