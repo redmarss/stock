@@ -93,6 +93,14 @@ class Stock(object):
         else:
             return None
 
+    def gainmoney(self,amount=1000):
+        day = 3
+        stocklist = self.next_some_days(day)
+        if len(stocklist) == day:
+            if gf.ChangeRange(stocklist[0].close_price,stocklist[1].open_price)<0.08:
+                gainmoney = (stocklist[2].high_price+stocklist[2].low_price)/2*amount- stocklist[1].open_price*amount
+
+        return round(gainmoney,2)
 
 
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类

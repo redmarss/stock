@@ -5,7 +5,8 @@
 import myGlobal.myCls.mysqlCls as msql
 import myGlobal.myCls.StockCls as mstock
 import myGlobal.globalFunction as gf
-
+import datetime
+import  Run.DailyRun as dr
 import pandas as pd
 
 
@@ -46,10 +47,38 @@ def list_to_bestbrokerlist(li):
             dbObject.update(table="best_broker_list",broker_name=broker_name,where="broker_code='%s'"%broker_code)
     print("finished")
 
+def _everyday_stock_simulate_buy(tsdate,stock,amount=1000):
+    if not isinstance(tsdate,str):
+        tsdate = str(tsdate)
+    stock = gf._code_to_symbol(stock)
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
+                                   charset='utf8', db='tushare')
+    s = mstock.Stock(stock,tsdate)
+    gainmoeny = s.gainmoney(amount)
+
+    dbObject.insert(table="everyday_stock_simulate_buy",ts_date=tsdate,stock=stock,amount=amount,gainmoney=gainmoeny)
+
+
+
+def everyday_stock_record(startdate="2017-02-01",enddate="2018-12-20"):
+    if isinstance(startdate,str):
+        startdate = datetime.datetime.strptime(startdate,"%Y-%m-%d").date()
+    if isinstance(enddate,str):
+        enddate = datetime.datetime.strptime(enddate,"%Y-%m-%d").date()
+    date = startdate
+    while date<=enddate:
+        if gf.is_holiday(str(date)) == False:
+            #计算当天股票
+            li_stock = dr.getStockEveryDay(str(date))
+            #存入数据库
+            if len(li_stock) >0:
+                for stock in li_stock:
+                    _everyday_stock_simulate_buy(date,stock)
+        date = date + datetime.timedelta(days=1)
 
 if __name__ =='__main__':
-    li=getTopBroker_avr(20)
-    list_to_bestbrokerlist(li)
-
+    # li=getTopBroker_avr(20)
+    # list_to_bestbrokerlist(li)
+    everyday_stock_record()
 
 
