@@ -24,4 +24,4 @@ def getStockEveryDay(date=None):
     return listock
 
 if __name__ == "__main__":
-    pass
+    print(getStockEveryDay("2018-12-24"))

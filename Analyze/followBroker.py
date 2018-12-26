@@ -55,8 +55,11 @@ def _everyday_stock_simulate_buy(tsdate,stock,amount=1000):
                                    charset='utf8', db='tushare')
     s = mstock.Stock(stock,tsdate)
     gainmoeny = s.gainmoney(amount)
-
-    dbObject.insert(table="everyday_stock_simulate_buy",ts_date=tsdate,stock=stock,amount=amount,gainmoney=gainmoeny)
+    if gainmoeny is None:               #第二天涨幅超过8%，无法买入
+        return
+    t = dbObject.fetchone(table="everyday_stock_simulate_buy",where="ts_date='%s' and stock='%s'"%(tsdate,stock))
+    if t is  None or len(t)==0:
+        dbObject.insert(table="everyday_stock_simulate_buy",ts_date=tsdate,stock=stock,amount=amount,gainmoney=gainmoeny)
 
 
 
