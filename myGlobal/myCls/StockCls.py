@@ -100,7 +100,7 @@ class Stock(object):
             return
         elif len(stocklist) == day:
             if gf.ChangeRange(stocklist[0].close_price,stocklist[1].open_price)<0.08:
-                gainmoney = (stocklist[2].high_price+stocklist[2].low_price)/2*amount - stocklist[1].open_price*amount
+                gainmoney = stocklist[2].open_price*amount - stocklist[1].open_price*amount
 
                 return round(gainmoney,2)
 
@@ -130,7 +130,7 @@ class Stock(object):
                 stocklist.append(s)
             date = gf.diffDay(date, 1)
             # 如果日期最终大于”今天”，则中断循环，否则死循环
-            if datetime.datetime.strptime(date,"%Y-%m-%d").date()>datetime.datetime.today().date()-datetime.timedelta(days=days):
+            if datetime.datetime.strptime(date,"%Y-%m-%d").date()>datetime.datetime.today().date():
                 break
         return stocklist
 

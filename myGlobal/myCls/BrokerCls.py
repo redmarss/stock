@@ -120,7 +120,7 @@ class Broker(object):
             return
         if gf.ChangeRange(stocklist[0].close_price, stocklist[1].open_price) < 0.08:       #第二天开盘涨幅不超过8%
             buyprice = stocklist[1].open_price  #买入价等于第二天的开盘价
-            sellprice = round((stocklist[2].high_price+stocklist[2].low_price)/2.0, 2)
+            sellprice = stocklist[2].open_price
             return buyprice, sellprice
         else:
             return None

@@ -125,6 +125,6 @@ def simulate_buy(startdate='2017-01-01',enddate='2018-12-31', amount=1000):
 
 if __name__ == "__main__":
     #每月10日运行
-    getBrokerInfo()
+    #getBrokerInfo()
     simulate_buy()
     print()

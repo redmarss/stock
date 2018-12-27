@@ -80,8 +80,9 @@ def everyday_stock_record(startdate="2017-02-01",enddate="2018-12-20"):
         date = date + datetime.timedelta(days=1)
 
 if __name__ =='__main__':
-    # li=getTopBroker_avr(20)
-    # list_to_bestbrokerlist(li)
-    everyday_stock_record()
+    li=getTopBroker_avr(5,20)
+    print(li)
+    list_to_bestbrokerlist(li)
+    everyday_stock_record("2017-01-05","2018-12-26")
 
 
