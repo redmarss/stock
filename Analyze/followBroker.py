@@ -48,12 +48,15 @@ def list_to_bestbrokerlist(li):
     print("finished")
 
 def _everyday_stock_simulate_buy(tsdate,stock,amount=1000):
+    money=float(10000)
     if not isinstance(tsdate,str):
         tsdate = str(tsdate)
     stock = gf._code_to_symbol(stock)
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                    charset='utf8', db='tushare')
     s = mstock.Stock(stock,tsdate)
+    if s.open_price is not None:
+        amount = (money//(s.open_price*100))*100
     gainmoeny = s.gainmoney(amount)
     if gainmoeny is None:               #第二天涨幅超过8%，无法买入
         return
@@ -81,7 +84,6 @@ def everyday_stock_record(startdate="2017-02-01",enddate="2018-12-20"):
 
 if __name__ =='__main__':
     li=getTopBroker_avr(5,20)
-    print(li)
     list_to_bestbrokerlist(li)
     everyday_stock_record("2017-01-05","2018-12-26")
 

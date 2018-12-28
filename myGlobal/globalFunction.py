@@ -5,15 +5,6 @@ import myGlobal.myCls.myException as mexception
 from urllib.request import Request,urlopen
 import datetime
 
-
-
-#获取所有股票代码
-#返回格式为列表[{'stockcode':'600000','stockname':'浦发银行'},{}...{}]
-def getAllStockCode():
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
-    liststcok = dbObject.fetchall(table='stock_basic_table', field='stockcode,stockname')
-    return liststcok
-
 #生成代码标志
 #存在多种形式，如"600000","6000000.sh","sh600000"
 #需转换成"sh600000"
@@ -21,15 +12,28 @@ def _code_to_symbol(code):
     if code is None:
         print("_code_to_symbol的参数不应为None")
         return
-    if len(code) != 6:
-        if code[:1] in ['5','6','9']:
-            return 'sh%s'%code[:6]
-        elif code[:1] in ['0','1','2','3','4','7','8']:
-            return 'sz%s'%code[:6]
-        else:
-            return code
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
+                                   charset='utf8')
+    if len(code) == 6:
+        _code = code
+    elif code[:1].lower() == 's':
+        _code = code[2:7]
+    elif code[-2].lower() == 's':
+        _code = code[:6]
     else:
-        return 'sh%s' % code if code[:1] in ['5', '6', '9'] else 'sz%s' % code
+        _code = code
+
+    tcode = dbObject.fetchone(table="stock_basic_table",field="stockcode",where="stockcode like '%%%s%%'"%_code)
+    if tcode is not None:
+        return str(tcode[0])
+    else:
+        print("所输入代码非沪深A股")
+        return
+
+
+
+print(_code_to_symbol("600000"))
+print()
 
 #判断是否涨停板,若涨停，返回True，否则返回False;含S的股票名称（ST,S）,涨幅为5%,超出涨幅返回空
 def isLimit(code, openPrice, nowPrice):
