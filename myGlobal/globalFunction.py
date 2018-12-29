@@ -5,25 +5,35 @@ import myGlobal.myCls.myException as mexception
 from urllib.request import Request,urlopen
 import datetime
 
-#生成代码标志
-#存在多种形式，如"600000","6000000.sh","sh600000"
-#需转换成"sh600000"
+
 def _code_to_symbol(code):
-    if code is None:
-        print("_code_to_symbol的参数不应为None")
-        return
+    '''
+    格式化股票代码，与数据库中股票基本信息表做（stock_basic_table）对比
+    :param code: "600000","6000000.sh","sh600000" or None
+    :return:(str)sh600000、sz000001 or None
+    '''
+    if not isinstance(code,str):
+        code = str(code)
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
                                    charset='utf8')
-    if len(code) == 6:
-        _code = code
-    elif code[:1].lower() == 's':
-        _code = code[2:7]
-    elif code[-2].lower() == 's':
-        _code = code[:6]
-    else:
-        _code = code
+    if code is None:
+        _code = "error"
+    elif len(code) == 6:
+        _code = 'sh'+code if code[:1] in ["6"] else 'sz'+code
 
-    tcode = dbObject.fetchone(table="stock_basic_table",field="stockcode",where="stockcode like '%%%s%%'"%_code)
+    elif len(code) > 6:
+        if code[:1].lower() == 's':
+            _code = code[2:8]
+            _code = 'sh'+_code if _code[:1] in ["6"] else 'sz'+_code
+        elif code[-2].lower() == 's':
+            _code = code[:6]
+            _code = 'sh' + _code if _code[:1] in ["6"] else 'sz' + _code
+        else:
+            _code = code
+    else:                   #code长度不足6位
+        _code = "error"
+
+    tcode = dbObject.fetchone(table="stock_basic_table",field="stockcode",where="stockcode='%s'"%_code)
     if tcode is not None:
         return str(tcode[0])
     else:
@@ -32,45 +42,83 @@ def _code_to_symbol(code):
 
 
 
-print(_code_to_symbol("600000"))
-print()
-
 #判断是否涨停板,若涨停，返回True，否则返回False;含S的股票名称（ST,S）,涨幅为5%,超出涨幅返回空
 def isLimit(code, openPrice, nowPrice):
-    if isinstance(code,str)==False:
-        code = str(code)
-    if isinstance(openPrice,float)==False:
-        open = float(openPrice)
-    if isinstance(nowPrice,float)==False:
-        price = float(nowPrice)
-
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
-    namedict = dbObject.fetchone(table='stock_basic_table', field='stockname', where='stockcode="%s"'%code)
-    if namedict is not None:
-        name=str(namedict['stockname'])
-    else:
-        mexception.RaiseError(mexception.codeError)
+    '''
+    判断该股票是否涨停板，名称中含S的股票（ST，S），涨幅为5%，超出涨幅则返回None
+    :param code:股票代码（str）
+    :param openPrice: 开盘价（基准价）(float)
+    :param nowPrice: 收盘价或现价(float)
+    :return:涨停返回True，未涨停返回False，超出涨幅则返回None
+    '''
+    #格式化参数
+    if not isinstance(code, str):
+        try:
+            code = str(code)
+        except:
+            print("isLimit函数的code参数无法转换为str")
+            return
+    if not isinstance(openPrice, float):
+        try:
+            openPrice = float(openPrice)
+        except:
+            print("isLimit函数的openPrice参数无法转换为float")
+            return
+    if not isinstance(nowPrice, float):
+       try:
+            nowPrice = float(nowPrice)
+       except:
+           print("isLimit函数的nowPrice参数无法转换为float")
+           return
+    code = _code_to_symbol(code)
+    if code is None:            #所输入代码非沪深A股
         return
+    #获取股票名称
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
+    namelist = dbObject.fetchone(table='stock_basic_table', field='stockname', where='stockcode="%s"'%code)
+    name = str(namelist[0])
+
 
     if name.upper().find('S')>0:                #名字中包含S，涨幅为5%
-        if price == round(1.05*open, 2):
+        if nowPrice == round(1.05*openPrice, 2):
             return True
-        elif price>round(1.05*open, 2):
+        elif nowPrice > round(1.05*openPrice, 2):
             print("超出每日限制涨幅")
             return
         else:
             return False
     else:
-        if price == round(1.1*open, 2):
+        if nowPrice == round(1.1*openPrice, 2):
             return True
-        elif price > round(1.1*open, 2):
+        elif nowPrice > round(1.1*openPrice, 2):
             print("超出每日限制涨幅")
             return
         else:
             return False
 
-#判断股票涨或跌，涨返回True，跌或平返回False
+
+
+
 def RaiseOrFall(open, close):
+    '''
+    判断股票涨或跌，涨返回True，跌或平返回False
+    :param open:开盘价（基准价）（float）
+    :param close: 收盘价（现价）(float)
+    :return: 涨返回True，跌或平返回False,参数错误返回None
+    '''
+    #判断参数合规性
+    if not isinstance(open, float):
+        try:
+            open = float(open)
+        except:
+            print("RaiseOrFall函数open参数无法转换为float")
+            return
+    if not isinstance(close, float):
+        try:
+            close = float(close)
+        except:
+            print("RaiseOrFall函数close参数无法转换为float")
+            return
     if open < close:
         return True
     else:
