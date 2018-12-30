@@ -197,15 +197,22 @@ def is_tradeday(code,ts_date):
 
 
 
-#返回上一交易日（字符串格式）
 def lastTddate(strdate):
+    '''
+    返回上一交易日
+    :param strdate: （str）
+    :return:不包含当前日期的上一交易日（str）
+    '''
     try:
         date = datetime.datetime.strptime(strdate, "%Y-%m-%d").date()
-        while is_holiday(str(date))==True:
+        date = date - datetime.timedelta(days=1)                #先减一天，再判断是否休假
+        while is_holiday(str(date)):
             date = date-datetime.timedelta(days=1)
         return str(date)
     except:
         print("日期输入有误")
+        return
+
 
 #输入一个日期及天数，返回该日期加上/减去该数量的交易日的结果
 def diffDay(strdate,day=0):
