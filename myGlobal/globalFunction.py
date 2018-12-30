@@ -40,9 +40,6 @@ def _code_to_symbol(code):
         print("所输入代码非沪深A股")
         return
 
-
-
-#判断是否涨停板,若涨停，返回True，否则返回False;含S的股票名称（ST,S）,涨幅为5%,超出涨幅返回空
 def isLimit(code, openPrice, nowPrice):
     '''
     判断该股票是否涨停板，名称中含S的股票（ST，S），涨幅为5%，超出涨幅则返回None
@@ -52,6 +49,9 @@ def isLimit(code, openPrice, nowPrice):
     :return:涨停返回True，未涨停返回False，超出涨幅则返回None
     '''
     #格式化参数
+    if code is None:
+        print("isLimit函数code参数不能为None")
+        return
     if not isinstance(code, str):
         try:
             code = str(code)
@@ -96,9 +96,6 @@ def isLimit(code, openPrice, nowPrice):
         else:
             return False
 
-
-
-
 def RaiseOrFall(open, close):
     '''
     判断股票涨或跌，涨返回True，跌或平返回False
@@ -124,25 +121,45 @@ def RaiseOrFall(open, close):
     else:
         return False
 
-#输入两个价格，返回幅度
 def ChangeRange(priceLastClose,priceNow):
     '''
+        输入两个价格，返回幅度
         priceLastClose:昨日收盘价（今日开盘基准价）
-        priceNow:今日开盘价或现价
+        priceNow:今日收盘价或现价
         返回：涨幅，保留4位小数
     '''
-    if priceLastClose and priceNow is not None:
-        range = (priceNow-priceLastClose)/(priceLastClose)
-        return round(range, 4)
-    else:
-        return
+    #判断参数合规性
+    if not isinstance(priceLastClose,float):
+        try:
+            priceLastClose = float(priceLastClose)
+        except:
+            print("ChangeRange函数priceLastClose参数无法转换为float")
+            return
+    if not isinstance(priceNow,float):
+        try:
+            priceNow = float(priceNow)
+        except:
+            print("ChangeRange函数priceNow参数无法转换为float")
+            return
 
-#判断是否为交易日，工作日返回False or 节假日返回True
+    changerange = (priceNow-priceLastClose)/priceLastClose
+    return round(changerange, 4)
+
 def is_holiday(date):
+    '''
+    #判断是否为交易日(休息日)，工作日返回False or 节假日返回True
+    :param date: 日期
+    :return: 工作日返回FALSE，节假日返回True，日期输入有误返回None
+    '''
     if date is None:
+        print("is_holiday函数日期参数不能为None")
         return None
     if not isinstance(date, str):
-        date = str(date)
+        try:
+            date = str(date)
+        except:
+            print("is_holiday函数日期参数无法转换为str")
+            return
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
     flag = dbObject.fetchone(table='is_holiday',field='isholiday',where='date="%s"'%date)
     if flag is not None:
@@ -151,23 +168,34 @@ def is_holiday(date):
         else:
             return False
     else:
+        print("日期输入错误")
         return None
 
-
-def is_tradeday(code,tsdate):
+def is_tradeday(code,ts_date):
     '''
-    判断股票是否停牌
+    判断股票在数据库中是否有交易数据
     :param code: 股票代码
     :param tsdate: 交易日期
-    :return: True or False
+    :return: True or False 参数错误返回None
     '''
     code = _code_to_symbol(code)
+    if code is None or ts_date is None:
+        print("is_tradeday函数参数不应有None")
+        return
+    if not isinstance(ts_date,str):
+        try:
+            ts_date=str(ts_date)
+        except:
+            print("is_tradeday函数ts_date参数无法转换为str")
+            return
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
-    istradeday = dbObject.fetchone(table='stock_trade_history_info',where="stock_code='%s' and ts_date='%s'"%(code,tsdate))
+    istradeday = dbObject.fetchone(table='stock_trade_history_info',where="stock_code='%s' and ts_date='%s'"%(code,ts_date))
     if istradeday is not None:
         return True
     else:
         return False
+
+
 
 #返回上一交易日（字符串格式）
 def lastTddate(strdate):
