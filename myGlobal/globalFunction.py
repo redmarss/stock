@@ -4,16 +4,34 @@ import myGlobal.myCls.mysqlCls as msql
 import myGlobal.myCls.myException as mexception
 from urllib.request import Request,urlopen
 import datetime
+from inspect import signature
+import inspect
+from functools import wraps
+import sys
 
+def typeassert(*type_args, **type_kwargs):
+    def decorate(func):
+        sig = signature(func)
+        bound_types = sig.bind_partial(*type_args, **type_kwargs).arguments
 
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            bound_values = sig.bind(*args, **kwargs)
+            for name, value in bound_values.arguments.items():
+                if name in bound_types:
+                    if not isinstance(value, bound_types[name]):
+                        raise TypeError('{}函数参数{}必须是{}'.format(func.__name__, name, bound_types[name]))
+            return func(*args, **kwargs)
+        return wrapper
+    return decorate
+
+@typeassert(str)
 def _code_to_symbol(code):
     '''
     格式化股票代码，与数据库中股票基本信息表做（stock_basic_table）对比
     :param code: "600000","6000000.sh","sh600000" or None
     :return:(str)sh600000、sz000001 or None
     '''
-    if not isinstance(code,str):
-        code = str(code)
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
                                    charset='utf8')
     if code is None:
@@ -40,6 +58,7 @@ def _code_to_symbol(code):
         print("所输入代码非沪深A股")
         return
 
+@typeassert(str,float,float)
 def isLimit(code, openPrice, nowPrice):
     '''
     判断该股票是否涨停板，名称中含S的股票（ST，S），涨幅为5%，超出涨幅则返回None
@@ -49,27 +68,6 @@ def isLimit(code, openPrice, nowPrice):
     :return:涨停返回True，未涨停返回False，超出涨幅则返回None
     '''
     #格式化参数
-    if code is None:
-        print("isLimit函数code参数不能为None")
-        return
-    if not isinstance(code, str):
-        try:
-            code = str(code)
-        except:
-            print("isLimit函数的code参数无法转换为str")
-            return
-    if not isinstance(openPrice, float):
-        try:
-            openPrice = float(openPrice)
-        except:
-            print("isLimit函数的openPrice参数无法转换为float")
-            return
-    if not isinstance(nowPrice, float):
-       try:
-            nowPrice = float(nowPrice)
-       except:
-           print("isLimit函数的nowPrice参数无法转换为float")
-           return
     code = _code_to_symbol(code)
     if code is None:            #所输入代码非沪深A股
         return
@@ -96,6 +94,7 @@ def isLimit(code, openPrice, nowPrice):
         else:
             return False
 
+@typeassert(float,float)
 def RaiseOrFall(open, close):
     '''
     判断股票涨或跌，涨返回True，跌或平返回False
@@ -103,24 +102,12 @@ def RaiseOrFall(open, close):
     :param close: 收盘价（现价）(float)
     :return: 涨返回True，跌或平返回False,参数错误返回None
     '''
-    #判断参数合规性
-    if not isinstance(open, float):
-        try:
-            open = float(open)
-        except:
-            print("RaiseOrFall函数open参数无法转换为float")
-            return
-    if not isinstance(close, float):
-        try:
-            close = float(close)
-        except:
-            print("RaiseOrFall函数close参数无法转换为float")
-            return
     if open < close:
         return True
     else:
         return False
 
+@typeassert(float,float)
 def ChangeRange(priceLastClose,priceNow):
     '''
         输入两个价格，返回幅度
@@ -145,21 +132,13 @@ def ChangeRange(priceLastClose,priceNow):
     changerange = (priceNow-priceLastClose)/priceLastClose
     return round(changerange, 4)
 
+@typeassert(str)
 def is_holiday(date):
     '''
     #判断是否为交易日(休息日)，工作日返回False or 节假日返回True
     :param date: 日期
     :return: 工作日返回FALSE，节假日返回True，日期输入有误返回None
     '''
-    if date is None:
-        print("is_holiday函数日期参数不能为None")
-        return None
-    if not isinstance(date, str):
-        try:
-            date = str(date)
-        except:
-            print("is_holiday函数日期参数无法转换为str")
-            return
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
     flag = dbObject.fetchone(table='is_holiday',field='isholiday',where='date="%s"'%date)
     if flag is not None:
@@ -171,7 +150,8 @@ def is_holiday(date):
         print("日期输入错误")
         return None
 
-def is_tradeday(code,ts_date):
+@typeassert(str, str)
+def is_tradeday(code, ts_date):
     '''
     判断股票在数据库中是否有交易数据
     :param code: 股票代码
@@ -179,15 +159,9 @@ def is_tradeday(code,ts_date):
     :return: True or False 参数错误返回None
     '''
     code = _code_to_symbol(code)
-    if code is None or ts_date is None:
-        print("is_tradeday函数参数不应有None")
+    if code is None:
+        print("该股票代码非沪深A股代码")
         return
-    if not isinstance(ts_date,str):
-        try:
-            ts_date=str(ts_date)
-        except:
-            print("is_tradeday函数ts_date参数无法转换为str")
-            return
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
     istradeday = dbObject.fetchone(table='stock_trade_history_info',where="stock_code='%s' and ts_date='%s'"%(code,ts_date))
     if istradeday is not None:
@@ -195,8 +169,7 @@ def is_tradeday(code,ts_date):
     else:
         return False
 
-
-
+@typeassert(str)
 def lastTddate(strdate):
     '''
     返回上一交易日
