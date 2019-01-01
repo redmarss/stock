@@ -34,9 +34,7 @@ def _code_to_symbol(code):
     '''
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
                                    charset='utf8')
-    if code is None:
-        _code = "error"
-    elif len(code) == 6:
+    if len(code) == 6:
         _code = 'sh'+code if code[:1] in ["6"] else 'sz'+code
 
     elif len(code) > 6:
@@ -115,20 +113,6 @@ def ChangeRange(priceLastClose,priceNow):
         priceNow:今日收盘价或现价
         返回：涨幅，保留4位小数
     '''
-    #判断参数合规性
-    if not isinstance(priceLastClose,float):
-        try:
-            priceLastClose = float(priceLastClose)
-        except:
-            print("ChangeRange函数priceLastClose参数无法转换为float")
-            return
-    if not isinstance(priceNow,float):
-        try:
-            priceNow = float(priceNow)
-        except:
-            print("ChangeRange函数priceNow参数无法转换为float")
-            return
-
     changerange = (priceNow-priceLastClose)/priceLastClose
     return round(changerange, 4)
 
@@ -160,7 +144,6 @@ def is_tradeday(code, ts_date):
     '''
     code = _code_to_symbol(code)
     if code is None:
-        print("该股票代码非沪深A股代码")
         return
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
     istradeday = dbObject.fetchone(table='stock_trade_history_info',where="stock_code='%s' and ts_date='%s'"%(code,ts_date))
@@ -187,8 +170,14 @@ def lastTddate(strdate):
         return
 
 
-#输入一个日期及天数，返回该日期加上/减去该数量的交易日的结果
+@typeassert(str,int)
 def diffDay(strdate,day=0):
+    '''
+    输入一个日期及天数，返回该日期加上/减去该数量的交易日的结果
+    :param strdate: 起始日期（必须为交易日）
+    :param day: 加上、减去的天数，可以为负
+    :return: 返回交易日(str)
+    '''
     if is_holiday(strdate) == False:
         date = datetime.datetime.strptime(strdate, "%Y-%m-%d").date()
         if day > 0:
@@ -203,6 +192,7 @@ def diffDay(strdate,day=0):
                     day = day+1
         return str(date)
     else:
+        print("diffDay函数所输入的日期非交易日，请修改")
         return None
 
 #将byte数据Post至jar服务中
@@ -230,13 +220,23 @@ def postData(textByte,urlPost,code=None):
         else:
             print(e)
 
-#获取某股票N个交易日内的所有数据,返回元组
-def getStockPrice(code, startdate=None, days=7):
+@typeassert(str,str,int)
+def getStockPrice(code, startdate, days=7):
+    '''
+    获取某股票N个交易日内的所有数据,返回元组
+    :param code: 股票代码
+    :param startdate: 开始日期
+    :param days: 天数
+    :return: 股票交易信息（元组）
+    '''
     code = _code_to_symbol(code)
-    if startdate==None:
-        mexception.RaiseError(mexception.dateError)
+    if code is None:
         return
-
+    try:    #判断日期有效性
+        date = datetime.datetime.strptime(startdate,"%Y-%m-%d")
+    except:
+        print("getStockPrice函数日期参数输入错误")
+        return
     dbObject = msql.SingletonModel(host='localhost', port='3306',
                                    user='root', passwd='redmarss',
                                    db='tushare', charset='utf8')
@@ -248,7 +248,7 @@ def getStockPrice(code, startdate=None, days=7):
             return t
         except:
             mexception.RaiseError(mexception.sqlError)
-            return None
+            return
     else:                   #days小于0，往前取
         try:
             t = dbObject.fetchall(table='stock_trade_history_info',
@@ -260,25 +260,17 @@ def getStockPrice(code, startdate=None, days=7):
             mexception.RaiseError(mexception.sqlError)
             return None
 
-#获取code是否是沪深A股股票
-def isStockA(code):
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
-                                   charset='utf8')
-    isStockA = dbObject.fetchone(table="stock_basic_table", where="stockcode='%s'"%code)
-    if isStockA is not None:
-        return True
-    else:
-        return False
 
-#寻找数据库中最后一天（最大的一天）
-def find_biggest_day():
-    '''
-    return:日期类型
-    '''
-    dbObject = msql.SingletonModel(host='localhost', port='3306',
-                                   user='root', passwd='redmarss',
-                                   db='tushare', charset='utf8')
-    t_date = dbObject.fetchone(table="broker_buy_summary order by ts_date desc", field="ts_date")
-    return t_date[0]
+
+# def find_biggest_day():
+#     '''
+#     寻找数据库中最后一天（最大的一天）
+#     return:日期类型
+#     '''
+#     dbObject = msql.SingletonModel(host='localhost', port='3306',
+#                                    user='root', passwd='redmarss',
+#                                    db='tushare', charset='utf8')
+#     t_date = dbObject.fetchone(table="broker_buy_summary order by ts_date desc", field="ts_date")
+#     return t_date[0]
 
 
