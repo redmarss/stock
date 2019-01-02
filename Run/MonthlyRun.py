@@ -71,7 +71,7 @@ def getBrokerInfo():
         print("%s机构数据清洗完毕"%broker_code,i)
 
 #每年运行一次即可
-def is_holiday(startdate='2017-01-01'):
+def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
     '''
             1、接口地址：http://api.goseek.cn/Tools/holiday?date=数字日期，支持https协议。
             2、返回数据：工作日对应结果为 0, 休息日对应结果为 1, 节假日对应的结果为 2
@@ -84,10 +84,11 @@ def is_holiday(startdate='2017-01-01'):
 
     '''
     date = datetime.datetime.strptime(startdate, "%Y-%m-%d").date()
-    while date<=datetime.date(2018,12,31):
+    enddate = datetime.datetime.strptime(enddate,"%Y-%m-%d").date()
+    while date<=enddate:
         isholiday = 3
 
-        apiUrl = "http://api.goseek.cn/Tools/holiday?date=" + str(date)
+        apiUrl = "http://api.goseek.cn/Tools/holiday?date=" + str(date).replace("-","")
         request = Request(apiUrl)
         try:
             response = urlopen(request)
@@ -126,5 +127,6 @@ def simulate_buy(startdate='2017-01-01',enddate='2018-12-31', amount=1000):
 if __name__ == "__main__":
     #每月10日运行
     #getBrokerInfo()
-    simulate_buy()
+    #simulate_buy()
+    #is_holiday("2017-01-01","2019-12-31")
     print()

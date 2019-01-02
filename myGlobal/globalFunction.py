@@ -5,10 +5,9 @@ import myGlobal.myCls.myException as mexception
 from urllib.request import Request,urlopen
 import datetime
 from inspect import signature
-import inspect
 from functools import wraps
-import sys
 
+#装饰函数，限定所有函数的数据类型
 def typeassert(*type_args, **type_kwargs):
     def decorate(func):
         sig = signature(func)
@@ -233,7 +232,7 @@ def getStockPrice(code, startdate, days=7):
     if code is None:
         return
     try:    #判断日期有效性
-        date = datetime.datetime.strptime(startdate,"%Y-%m-%d")
+        date = datetime.datetime.strptime(startdate,"%Y-%m-%d").date()
     except:
         print("getStockPrice函数日期参数输入错误")
         return

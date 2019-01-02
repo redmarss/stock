@@ -8,7 +8,7 @@ import myGlobal.globalFunction as gf
 class Broker(object):
     _brokercode = None          #机构代码
     _brokername = None          #机构名称
-    _buylist = None        #若构造函数中有日期参数，则返回机构当日购买的股票列表
+    _buylist = None             #若构造函数中有日期参数，则返回机构当日购买的股票列表
     _tsdate = None              #交易日期
     _dbObject = None            #数据库连接对象
     # _buyprice = None            #（如果机构有买入股票）买入价
@@ -16,15 +16,10 @@ class Broker(object):
     # _stocklist = None           #用来存放购买股票后几天内的Stock集合
 
     # 构造函数，如果ts_date不为None,则返回当日该机构买入的股票列表至_buylist
-    def __init__(self, broker_code=None, ts_date=None):
-        #判断参数合规性
-        if broker_code is None:
-            print("机构代码不能为空")
-            return
-        if not isinstance(broker_code,str) or (ts_date is not None and not isinstance(ts_date,str)):
-            print("Broker类构造函数参数必须为str")
-            return
-        if ts_date is not None and gf.is_holiday(ts_date) != False:
+    @gf.typeassert(broker_code=str, ts_date=(str,type(None)))       #ts_date类型可为str及None
+    def __init__(self, broker_code, ts_date=None):
+        #判断是否交易日期
+        if ts_date is not None and gf.is_holiday(ts_date) is not False:
             print("不是交易日或非法日期")
             return
         #buylist置空
@@ -34,7 +29,7 @@ class Broker(object):
                                        user='root', passwd='redmarss',
                                        charset='utf8',db='tushare')
 
-        # 先获得机构名称及机构代码
+        # 获得机构名称及机构代码
         broker_info = self._dbObject.fetchone(table='broker_info', field='broker_code,broker_name',
                                         where="broker_code='%s'" % (broker_code))
         if broker_info is not None:             #查询出来的机构不为空
@@ -46,7 +41,6 @@ class Broker(object):
 
         #如果传入参数中包含ts_date，则返回buy_list
         if ts_date is not None:
-
             self._tsdate = ts_date
             t_broker_buy = self._dbObject.fetchall(table='broker_buy_stock_info as a,broker_buy_summary as b',
                                              field='a.stock_code',
@@ -136,3 +130,4 @@ class Broker(object):
 
 
 
+t= Broker("1")
