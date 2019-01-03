@@ -50,21 +50,18 @@ class Broker(object):
                     stock = gf._code_to_symbol(stock[0])
                     if gf.isStockA(stock):
                         self._buylist.append(stock)
-                #self._buylist = [gf._code_to_symbol(item[0]) for item in t_broker_buy]
             else:       #只有买入股票，没有卖出股票
                 pass
         else:           #没有传入日期参数
             self._buylist = None
 
     #模拟买入，存入数据库，并计算盈利
+    @gf.typeassert(amount=int)
     def simulate_buy(self, amount=1000):
-        if self._tsdate == None:
+        if self._tsdate is None:
             print("构造函数日期参数不正确，所以无法模拟买入")
             return
-        if len(self._buylist)!=0:                       #买卖股票参数不为空（交易日期必不为空）
-            # if self._tsdate is None:
-            #     print("错误：_buylist不为空，日期却为空")
-            #     return
+        if len(self._buylist) != 0:                       #买卖股票参数不为空（交易日期必不为空）
             for code in self._buylist:
                 s = mstock.Stock(code, self._tsdate)
                 t = self._find_buy_sell_stock_price(s)
@@ -77,45 +74,36 @@ class Broker(object):
 
     #将模拟买入信息存入数据库
     #需存入字段为：ts_date,broker_code,stock_code,buy_price,sell_price,amount,gainmoney,gainpercent
+    @gf.typeassert(code=str, buyprice=float, sellprice=float, amount=int)
     def _simulate_tosql(self, code, buyprice, sellprice, amount):
-        #若参数stockbuy或stocksell不为Stock类型，则报错
-        if not isinstance(buyprice,float) or not isinstance(sellprice,float):
-            mexception.RaiseError(mexception.valueError)
-            return
-
         gainmoney = round(sellprice*1000-buyprice*1000, 2)
         gainpercent = round(gainmoney/(buyprice*amount),4)
-        try:
-            hasRecord = self._dbObject.fetchall(table="simulate_buy",
-                                                where="ts_date='%s' and broker_code='%s' and stock_code='%s'"
-                                                      %(self._tsdate,self.broker_code,code))
-            if len(hasRecord) == 0:             #数据库中没有相关记录
-                self._dbObject.insert(table="simulate_buy",ts_date=self._tsdate,broker_code=self.broker_code,
-                                      stock_code=code,buy_price=buyprice,sell_price=sellprice,
-                                      amount = amount,gainmoney=gainmoney,gainpercent=gainpercent)
-                print("%s机构%s买入%s记录成功"%(self.broker_code,self._tsdate,code))
-            else:                           #数据库中已有这条数据
-                print("数据库中已有%s机构于%s购买%s的记录"%(self._brokercode,self._tsdate,code))
-        except:
-            mexception.RaiseError(mexception.sqlError)
-            return
+        hasRecord = self._dbObject.fetchall(table="simulate_buy",
+                                            where="ts_date='%s' and broker_code='%s' and stock_code='%s'"
+                                                  %(self._tsdate,self.broker_code,code))
+        if len(hasRecord) == 0:             #数据库中没有相关记录
+            self._dbObject.insert(table="simulate_buy",ts_date=self._tsdate,broker_code=self.broker_code,
+                                  stock_code=code,buy_price=buyprice,sell_price=sellprice,
+                                  amount = amount,gainmoney=gainmoney,gainpercent=gainpercent)
+            print("%s机构%s买入%s记录成功"%(self.broker_code,self._tsdate,code))
+        else:                           #数据库中已有这条数据
+            print("数据库中已有%s机构于%s购买%s的记录"%(self._brokercode,self._tsdate,code))
+
 
     #找出买入卖出价
+    @gf.typeassert(s=mstock.Stock, day=int)
     def _find_buy_sell_stock_price(self,s,day=7):
-        if not isinstance(s, mstock.Stock):
-            print("_find_buy_sell_stock函数参数需为Stock类型")
-            return
         stocklist = s.next_some_days(day)
         if stocklist is None:
             print("未知错误")
             return
         if len(stocklist)==0 or len(stocklist)<day-4:            #如果获取天数为7天，最终获取结果小于3天，则报错
-            print("未知错误")
+            print("交易记录不足三天")
             return
         if gf.ChangeRange(stocklist[0].close_price, stocklist[1].open_price) < 0.08:       #第二天开盘涨幅不超过8%
             buyprice = stocklist[1].open_price  #买入价等于第二天的开盘价
             sellprice = stocklist[2].open_price
-            return buyprice, sellprice
+            return float(buyprice), float(sellprice)
         else:
             return None
 
@@ -127,7 +115,3 @@ class Broker(object):
     @property
     def broker_name(self):
         return self._brokername
-
-
-
-t= Broker("1")
