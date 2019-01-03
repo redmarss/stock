@@ -55,6 +55,15 @@ def _code_to_symbol(code):
         print("所输入代码非沪深A股")
         return
 
+
+@typeassert(str)
+def isStockA(stock):
+    code = _code_to_symbol(stock)
+    if code is None:
+        return False
+    else:
+        return True
+
 @typeassert(str,float,float)
 def isLimit(code, openPrice, nowPrice):
     '''
@@ -182,12 +191,12 @@ def diffDay(strdate,day=0):
         if day > 0:
             while day > 0:
                 date = date+datetime.timedelta(days=1)
-                if not is_holiday(date):                #若非休息日，不计入运算
+                if not is_holiday(str(date)):                #若非休息日，不计入运算
                     day = day-1
         else:
             while day < 0:
                 date = date+datetime.timedelta(days=-1)
-                if not is_holiday(date):
+                if not is_holiday(str(date)):
                     day = day+1
         return str(date)
     else:

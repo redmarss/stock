@@ -12,10 +12,11 @@ import pandas as pd
 
 
 
-def getTopBroker_avr(count=5, top=10):
+def getTopBroker_avr(count=5, top=10, date="2017-01-01"):
     dbObject = msql.SingletonModel(host="localhost",port="3306",user="root",passwd="redmarss",db="tushare",charset="utf8")
     t = dbObject.fetchall(table="simulate_buy",
-                          field="ts_date,broker_code,stock_code,buy_price,sell_price,amount,gainmoney,gainpercent")
+                          field="ts_date,broker_code,stock_code,buy_price,sell_price,amount,gainmoney,gainpercent",
+                          where="ts_date>='%s'"%date)
     list_title = ['ts_date', 'broker_code', 'stock_code', 'buy_price', 'sell_price', 'amount', 'gainmoney',
                   'gainpercent']
     df = pd.DataFrame(list(t), columns=list_title)
@@ -47,7 +48,7 @@ def list_to_bestbrokerlist(li):
             dbObject.update(table="best_broker_list",broker_name=broker_name,where="broker_code='%s'"%broker_code)
     print("finished")
 
-def _everyday_stock_simulate_buy(tsdate,stock,amount=1000):
+def _everyday_stock_simulate_buy(tsdate,stock,amount=None):
     money=float(10000)
     if not isinstance(tsdate,str):
         tsdate = str(tsdate)
@@ -56,7 +57,8 @@ def _everyday_stock_simulate_buy(tsdate,stock,amount=1000):
                                    charset='utf8', db='tushare')
     s = mstock.Stock(stock,tsdate)
     if s.open_price is not None:
-        amount = (money//(s.open_price*100))*100
+        if amount is None:
+            amount = (money//(s.open_price*100))*100
     gainmoeny = s.gainmoney(amount)
     if gainmoeny is None:               #第二天涨幅超过8%，无法买入
         return
@@ -79,12 +81,12 @@ def everyday_stock_record(startdate="2017-02-01",enddate="2018-12-20"):
             #存入数据库
             if len(li_stock) >0:
                 for stock in li_stock:
-                    _everyday_stock_simulate_buy(date,stock)
+                    _everyday_stock_simulate_buy(date,stock,1000)
         date = date + datetime.timedelta(days=1)
 
 if __name__ =='__main__':
-    li=getTopBroker_avr(5,20)
+    li=getTopBroker_avr(5,20,"2018-01-01")
     list_to_bestbrokerlist(li)
-    everyday_stock_record("2017-01-05","2018-12-26")
+    everyday_stock_record("2018-01-01","2018-12-31")
 
 

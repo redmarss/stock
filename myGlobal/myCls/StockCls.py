@@ -22,9 +22,7 @@ class Stock(object):
         if not isinstance(code,str) or not isinstance(ts_date,str):
             print("Stock类的参数必须为str类型")
             return
-        if gf.isStockA(code) != True:
-            print("%s不是沪深A股"%code)
-            return
+
         if gf.is_tradeday(code,ts_date) != True:                   #可能返回None,True,False
             print("%s在%s未查询到交易记录"%(code,ts_date))
             return
