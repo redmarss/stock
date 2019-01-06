@@ -11,9 +11,6 @@ class Broker(object):
     _buylist = None             #若构造函数中有日期参数，则返回机构当日购买的股票列表
     _tsdate = None              #交易日期
     _dbObject = None            #数据库连接对象
-    # _buyprice = None            #（如果机构有买入股票）买入价
-    # _sellprice = None           #(如果机构有买入股票)卖出价
-    # _stocklist = None           #用来存放购买股票后几天内的Stock集合
 
     # 构造函数，如果ts_date不为None,则返回当日该机构买入的股票列表至_buylist
     @gf.typeassert(broker_code=str, ts_date=(str,type(None)))       #ts_date类型可为str及None
@@ -49,7 +46,7 @@ class Broker(object):
                 for stock in t_broker_buy:
                     stock = gf._code_to_symbol(stock[0])
                     if gf.isStockA(stock):
-                        self._buylist.append(stock)
+                        self._buylist.append(str(stock))
             else:       #只有买入股票，没有卖出股票
                 pass
         else:           #没有传入日期参数

@@ -14,25 +14,17 @@ class Stock(object):
     _tsdate = None              #交易日期
     _code = None                #股票代码
 
-    def __init__(self, code=None, ts_date=None):
+    @gf.typeassert(code=str, ts_date=str)
+    def __init__(self, code, ts_date):
+        #股票代码标准化
+        code = gf._code_to_symbol(code)
         #判断参数合规性
-        if code is None or ts_date is None:
-            print("Stock类的构造函数中存在空值")
-            return
-        if not isinstance(code,str) or not isinstance(ts_date,str):
-            print("Stock类的参数必须为str类型")
-            return
-
         if gf.is_tradeday(code,ts_date) != True:                   #可能返回None,True,False
             print("%s在%s未查询到交易记录"%(code,ts_date))
             return
         #创建数据库对象（单例模式）
         self._dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                              db='tushare', charset='utf8')
-        #股票代码标准化
-        code = gf._code_to_symbol(code)
-
-
         self._tuplestock = self._dbObject.fetchone(table='stock_trade_history_info',
                                                    where='stock_code="%s" and ts_date="%s"' %
                                                          (code, ts_date)
@@ -44,17 +36,11 @@ class Stock(object):
 
     @property
     def code(self):
-        if self._tuplestock is not None:
-            return str(self._tuplestock[1][-6:])
-        else:
-            return None
+        return self._code
 
     @property
     def ts_date(self):
-        if self._tuplestock is not None:
-            return str(self._tuplestock[2])
-        else:
-            return None
+        return self._ts_date
 
     @property
     def open_price(self):
@@ -91,61 +77,49 @@ class Stock(object):
         else:
             return None
 
-    def gainmoney(self,amount=1000):
+    @gf.typeassert(amount=int)
+    def gainmoney(self, amount=1000):
         day = 3
         stocklist = self.next_some_days(day)
         if stocklist is None:
-            return
+            return 0.0
         elif len(stocklist) == day:
-            if gf.ChangeRange(stocklist[0].close_price,stocklist[1].open_price)<0.08:
-                gainmoney = stocklist[2].open_price*amount - stocklist[1].open_price*amount
-
-                return round(gainmoney,2)
+            if gf.ChangeRange(stocklist[0].close_price, stocklist[1].open_price) < 0.08:
+                gainmoney = (stocklist[2].open_price - stocklist[1].open_price)*amount
+                return round(gainmoney, 2)
 
 
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
-    def next_some_days(self,days=7):
+    @gf.typeassert(days=int)
+    def next_some_days(self, days=7):
         '''
             参数示例：7，‘7’，‘7s'
             返回类型：list,list,None
             len(list)应等于days，list中每个元素应为Stock类型
         '''
-        if self._tsdate is None:
-            return
-        if not isinstance(days, int):
-            try:
-                days = int(days)
-            except:
-                print("next_some_days函数days参数错误")
-                return
         stocklist=[]
         i = 0
-        date = self._tsdate
+        date = self._tsdate         #str类型
         #当stocklist函数长度小于days且数据库中有数据
         while len(stocklist) < days:
             if gf.is_tradeday(self._code,date) == True:
-                s = Stock(self._code,date)
+                s = Stock(self._code, date)
                 stocklist.append(s)
             date = gf.diffDay(date, 1)
             # 如果日期最终大于”今天”，则中断循环，否则死循环
-            if datetime.datetime.strptime(date,"%Y-%m-%d").date()>datetime.datetime.today().date():
+            if datetime.datetime.strptime(date, "%Y-%m-%d").date() > datetime.datetime.today().date():
                 break
         return stocklist
 
     #计算均线价格
-    def MA(self,days=5):
+    @gf.typeassert(days=int)
+    def MA(self, days=5):
         '''
             参数示例：5，‘5’，‘5s'
             返回类型：float,float,None
         '''
-        if not isinstance(days, int):
-            try:
-                days = int(days)
-            except:
-                print("MA函数days参数错误")
-                return
         list_MA=[]
-        t_MA = gf.getStockPrice(self._code,self._tsdate,0-days)
+        t_MA = gf.getStockPrice(self._code, self._tsdate, 0-days)
         for i in range(len(t_MA)):
             list_MA.append(t_MA[i][4])          #收盘价
         s = Series(list_MA)
