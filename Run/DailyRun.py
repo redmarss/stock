@@ -4,7 +4,7 @@ import datetime
 import myGlobal.globalFunction as gf
 import myGlobal.myCls.mysqlCls as msql
 #每日8.50分运行
-def getStockEveryDay(date=None):
+def getStockEveryDay(date=None,count=20):
     if date is None:
         date = str(datetime.datetime.today().date()+datetime.timedelta(days=-1))
     dbObject = msql.SingletonModel(host='localhost', port='3306',
@@ -12,16 +12,17 @@ def getStockEveryDay(date=None):
                                          charset='utf8', db='tushare')
     listock=list()
     if gf.is_holiday(str(date)) == False:           #交易日
-        tbroker = dbObject.fetchall(table="best_broker_list",field="broker_code")
+        tbroker = dbObject.fetchall(table="best_broker_list",field="broker_code",where="id<='%s'"%count)
         libroker = [i[0] for i in tbroker]
         for i in range(len(libroker)):
             tstock = dbObject.fetchall(table="broker_buy_stock_info as a,broker_buy_summary as b",
                               field="stock_code",
-                              where="b.id=a.broker_buy_summary_id and broker_code='%s' and ts_date='%s'"%(libroker[i],date))
+                              where="b.id=a.broker_buy_summary_id and broker_code='%s' and ts_date='%s'"
+                                    %(libroker[i],date))
             for j in range(len(tstock)):
                 if tstock[j] not in listock:
                     listock.append(tstock[j][0])
     return listock
 
 if __name__ == "__main__":
-    print(getStockEveryDay("2018-12-29"))
+    print(getStockEveryDay("2019-01-03",25))

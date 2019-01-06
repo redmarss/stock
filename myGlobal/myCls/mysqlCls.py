@@ -150,6 +150,19 @@ class SingletonModel:
             self.__db.rollback()
         return data
 
+    #删->删除整张表数据
+    def truncate(self,**kwargs):
+        table = kwargs['table']
+        sql = 'truncate table %s'%table
+        try:
+            self.__cursor.execute(sql)
+            self.__db.commit()
+            rowcount = self.__cursor.rowcount   #返回影响的行数
+        except:
+            #发生错误时回滚
+            self.__db.rollback()
+        return rowcount
+
     # 将一个DataFrame存入mysql的table表中
     def DataframeToSql(self,df, table):
 
