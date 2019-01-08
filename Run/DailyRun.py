@@ -4,7 +4,7 @@ import datetime
 import myGlobal.globalFunction as gf
 import myGlobal.myCls.mysqlCls as msql
 #每日8.50分运行
-def getStockEveryDay(date=None,count=20):
+def getStockEveryDay(date=None,count=32):
     if date is None:
         date = str(datetime.datetime.today().date()+datetime.timedelta(days=-1))
     dbObject = msql.SingletonModel(host='localhost', port='3306',
@@ -25,4 +25,4 @@ def getStockEveryDay(date=None,count=20):
     return listock
 
 if __name__ == "__main__":
-    print(getStockEveryDay("2019-01-03",25))
+    print(getStockEveryDay("2019-01-07"))

@@ -1,7 +1,6 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
 import myGlobal.myCls.mysqlCls as msql
-import myGlobal.myCls.myException as mexception
 from urllib.request import Request,urlopen
 import datetime
 from inspect import signature
@@ -24,13 +23,15 @@ def typeassert(*type_args, **type_kwargs):
         return wrapper
     return decorate
 
-@typeassert(str)
+@typeassert((str,type(None)))
 def _code_to_symbol(code):
     '''
     格式化股票代码，与数据库中股票基本信息表做（stock_basic_table）对比
     :param code: "600000","6000000.sh","sh600000" or None
     :return:(str)sh600000、sz000001 or None
     '''
+    if code is None:
+        return
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
                                    charset='utf8')
     if len(code) == 6:
@@ -56,7 +57,7 @@ def _code_to_symbol(code):
         return
 
 
-@typeassert(str)
+@typeassert((str,type(None)))
 def isStockA(stock):
     code = _code_to_symbol(stock)
     if code is None:
@@ -255,7 +256,7 @@ def getStockPrice(code, startdate, days=7):
                                   limit=str(days))
             return t
         except:
-            mexception.RaiseError(mexception.sqlError)
+            raise ValueError
             return
     else:                   #days小于0，往前取
         try:
@@ -265,7 +266,7 @@ def getStockPrice(code, startdate, days=7):
                                   limit=str(abs(days)))
             return t
         except:
-            mexception.RaiseError(mexception.sqlError)
+            raise ValueError
             return None
 
 

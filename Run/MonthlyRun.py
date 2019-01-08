@@ -7,7 +7,7 @@ import myGlobal.myCls.mysqlCls as msql
 import myGlobal.myCls.BrokerCls as mbroker
 import datetime
 import myGlobal.globalFunction as gf
-import myGlobal.myCls.myException as mexception
+
 
 
 #将股票代码及名称写入数据库(每月运行一次）
@@ -24,7 +24,7 @@ def getAllStock():
             stockName = link.text[:pos]
             stockCode = link.text[pos+1:-1]
             if stockCode.startswith('30') or stockCode.startswith('60') or stockCode.startswith('00'):
-                stockCode = gf._code_to_symbol(stockCode)
+                stockCode = 'sh'+stockCode if stockCode.startswith('6') else 'sz'+stockCode
                 #写入数据库
                 read_sql = dbObject.fetchone(field='stockname', table='stock_basic_table', where='stockcode="%s"'%stockCode)
                 if read_sql is None:
@@ -33,7 +33,7 @@ def getAllStock():
                     dbObject.update(table='stock_basic_table', where='stockcode="%s"'%stockCode,stockname=stockName)
                     # if getStauts(stockCode) == False:
                     #     dbObject.update(table='stock_basic_table', where='stockcode="%s"'%stockCode,status='已退市')
-
+    dbObject.delete(table='stock_basic_table', where='stockname like "%%退%%"')
 
 #判断股票是否退市（每判断一次都要访问一个网页，效率有点低）
 def getStauts(code):
@@ -71,6 +71,7 @@ def getBrokerInfo():
         print("%s机构数据清洗完毕"%broker_code,i)
 
 #每年运行一次即可
+@gf.typeassert(str,str)
 def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
     '''
             1、接口地址：http://api.goseek.cn/Tools/holiday?date=数字日期，支持https协议。
@@ -93,7 +94,7 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
         try:
             response = urlopen(request)
         except:
-            mexception.RaiseError(mexception.dateError)
+            raise ValueError
         else:
             response_data = response.read()
         if str(response_data)[-3] == '0':
@@ -107,12 +108,19 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
             if not dbObject.fetchone(table="is_holiday",field=date,where="date='%s'"%str(date)):
                 dbObject.insert(table="is_holiday",date=str(date),isholiday=str(isholiday))
         except:
-            mexception.RaiseError(mexception.sqlError)
+            raise ValueError
         date = date + datetime.timedelta(days=1)
 
 
 #每月10日模拟买入上一月数据
-def simulate_buy(startdate='2017-01-01',enddate='2018-12-31', amount=1000):
+@gf.typeassert((str,type(None)), (str,type(None)), int)
+def simulate_buy(startdate=None,enddate=None, amount=1000):
+    if startdate is None:
+        startdate = datetime.datetime.today().date()+datetime.timedelta(days=-60)
+    print(startdate)
+    if enddate is None:
+        enddate = datetime.datetime.today().date()
+    print(enddate)
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
                                    charset='utf8')
     d = dbObject.fetchall(table="broker_buy_summary", field="broker_code,ts_date",
@@ -126,7 +134,8 @@ def simulate_buy(startdate='2017-01-01',enddate='2018-12-31', amount=1000):
 
 if __name__ == "__main__":
     #每月10日运行
+    #getAllStock()
     #getBrokerInfo()
-    #simulate_buy()
+    simulate_buy()
     #is_holiday("2017-01-01","2019-12-31")
     print()

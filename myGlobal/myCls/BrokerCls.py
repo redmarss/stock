@@ -2,7 +2,6 @@
 # -*- coding:utf-8 -*-
 import myGlobal.myCls.mysqlCls as msql
 import myGlobal.myCls.StockCls as mstock
-import myGlobal.myCls.myException as mexception
 import myGlobal.globalFunction as gf
 
 class Broker(object):
@@ -61,11 +60,12 @@ class Broker(object):
         if len(self._buylist) != 0:                       #买卖股票参数不为空（交易日期必不为空）
             for code in self._buylist:
                 s = mstock.Stock(code, self._tsdate)
-                t = self._find_buy_sell_stock_price(s)
-                if t is not None:
-                    buyprice = t[0]
-                    sellprice = t[1]
-                    self._simulate_tosql(code,buyprice,sellprice,amount)
+                if s.code is not None:
+                    t = self._find_buy_sell_stock_price(s)
+                    if t is not None:
+                        buyprice = t[0]
+                        sellprice = t[1]
+                        self._simulate_tosql(code,buyprice,sellprice,amount)
         else:                                               #当天没有买入股票，则返回
             return
 
@@ -90,7 +90,7 @@ class Broker(object):
     #找出买入卖出价
     @gf.typeassert(s=mstock.Stock, day=int)
     def _find_buy_sell_stock_price(self,s,day=7):
-        stocklist = s.next_some_days(day)
+        stocklist = s._next_some_days(day)
         if stocklist is None:
             print("未知错误")
             return

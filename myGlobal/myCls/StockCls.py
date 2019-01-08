@@ -4,7 +4,6 @@ import myGlobal.myCls.mysqlCls as msql
 import myGlobal.globalFunction as gf
 import datetime
 from pandas import Series
-import myGlobal.myCls.myException as mexception
 
 #Stock类
 #输入股票代码，日期作为参数
@@ -19,9 +18,9 @@ class Stock(object):
         #股票代码标准化
         code = gf._code_to_symbol(code)
         #判断参数合规性
-        if gf.is_tradeday(code,ts_date) != True:                   #可能返回None,True,False
-            print("%s在%s未查询到交易记录"%(code,ts_date))
-            return
+        if not gf.is_tradeday(code,ts_date):                   #可能返回None,True,False
+            print("%s在%s未查询到交易记录" % (code, ts_date))
+            return None
         #创建数据库对象（单例模式）
         self._dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                              db='tushare', charset='utf8')
@@ -80,9 +79,9 @@ class Stock(object):
     @gf.typeassert(amount=int)
     def gainmoney(self, amount=1000):
         day = 3
-        stocklist = self.next_some_days(day)
+        stocklist = self._next_some_days(day)
         if stocklist is None:
-            return 0.0
+            return
         elif len(stocklist) == day:
             if gf.ChangeRange(stocklist[0].close_price, stocklist[1].open_price) < 0.08:
                 gainmoney = (stocklist[2].open_price - stocklist[1].open_price)*amount
@@ -91,7 +90,7 @@ class Stock(object):
 
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
     @gf.typeassert(days=int)
-    def next_some_days(self, days=7):
+    def _next_some_days(self, days=7):
         '''
             参数示例：7，‘7’，‘7s'
             返回类型：list,list,None
@@ -102,7 +101,7 @@ class Stock(object):
         date = self._tsdate         #str类型
         #当stocklist函数长度小于days且数据库中有数据
         while len(stocklist) < days:
-            if gf.is_tradeday(self._code,date) == True:
+            if gf.is_tradeday(str(self._code),str(date)) :
                 s = Stock(self._code, date)
                 stocklist.append(s)
             date = gf.diffDay(date, 1)
@@ -125,7 +124,4 @@ class Stock(object):
         s = Series(list_MA)
         return round(s.mean(),2)
 
-# s=Stock('600000','2018-01-08')
-# print(s.next_some_days())
-# input()
-# print(s1[0].ts_date)
+
