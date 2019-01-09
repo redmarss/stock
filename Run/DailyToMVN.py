@@ -75,7 +75,7 @@ if __name__ == '__main__':
     start=gf.lastTddate(str(datetime.datetime.today().date()-datetime.timedelta(days=14)))
     end=str(datetime.datetime.today().date())
     #将时间范围内的机构买卖信息导入数据库，重复的不导入
-    brokerInfo(start,end,200000)
+    brokerInfo("2017-01-01",end,200000)
 
     #将时间范围内所有股票的交易数据导入数据库
     getAllStockData(start,end)

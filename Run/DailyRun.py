@@ -20,9 +20,9 @@ def getStockEveryDay(date=None,count=32):
                               where="b.id=a.broker_buy_summary_id and broker_code='%s' and ts_date='%s'"
                                     %(libroker[i],date))
             for j in range(len(tstock)):
-                if tstock[j] not in listock:
+                if tstock[j][0] not in listock:
                     listock.append(tstock[j][0])
     return listock
 
 if __name__ == "__main__":
-    print(getStockEveryDay("2019-01-07"))
+    print(getStockEveryDay("2019-01-08"))

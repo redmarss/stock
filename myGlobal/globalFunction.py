@@ -18,7 +18,7 @@ def typeassert(*type_args, **type_kwargs):
             for name, value in bound_values.arguments.items():
                 if name in bound_types:
                     if not isinstance(value, bound_types[name]):
-                        raise TypeError('{}函数参数{}必须是{}'.format(func.__name__, name, bound_types[name]))
+                        raise TypeError('{}函数参数{}必须是{},不能为{}'.format(func.__name__, name, bound_types[name],value))
             return func(*args, **kwargs)
         return wrapper
     return decorate
