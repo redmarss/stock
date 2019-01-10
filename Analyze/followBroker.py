@@ -53,6 +53,8 @@ def _everyday_stock_simulate_buy(tsdate,stock,amount=None):
     if not isinstance(tsdate,str):
         tsdate = str(tsdate)
     stock = gf._code_to_symbol(stock)
+    if stock is None:
+        return
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                    charset='utf8', db='tushare')
     s = mstock.Stock(stock,tsdate)
@@ -85,8 +87,8 @@ def everyday_stock_record(startdate="2017-02-01",enddate="2018-12-20"):
         date = date + datetime.timedelta(days=1)
 
 if __name__  == '__main__':
-    li=getTopBroker_avr(5,20,"2017-01-01")
-    list_to_bestbrokerlist(li)
-    # everyday_stock_record("2017-01-01","2018-12-31")
+    # li=getTopBroker_avr(5,20,"2017-01-01")
+    # list_to_bestbrokerlist(li)
+    everyday_stock_record("2017-01-01","2019-01-31")
 
 

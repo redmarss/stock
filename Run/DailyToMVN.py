@@ -71,11 +71,11 @@ def getAllStockData(startDate=None, endDate=None):
 
 
 if __name__ == '__main__':
-    # 将时间范围定义到（今天至14天前）
-    start=gf.lastTddate(str(datetime.datetime.today().date()-datetime.timedelta(days=14)))
+    # 将时间范围定义到（两个月前起）
+    start=gf.lastTddate(str(datetime.datetime.today().date()-datetime.timedelta(days=60)))
     end=str(datetime.datetime.today().date())
     #将时间范围内的机构买卖信息导入数据库，重复的不导入
-    brokerInfo("2017-01-01",end,200000)
+    brokerInfo(start,end,200000)
 
     #将时间范围内所有股票的交易数据导入数据库
     getAllStockData(start,end)

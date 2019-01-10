@@ -53,7 +53,7 @@ def _code_to_symbol(code):
     if tcode is not None:
         return str(tcode[0])
     else:
-        print("所输入代码非沪深A股")
+        print("所输入代码[%s]非沪深A股"%code)
         return
 
 

@@ -78,6 +78,8 @@ class Stock(object):
 
     @gf.typeassert(amount=int)
     def gainmoney(self, amount=1000):
+        if self._tsdate is None:
+            return
         day = 3
         stocklist = self._next_some_days(day)
         if stocklist is None:
