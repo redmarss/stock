@@ -22,6 +22,7 @@ def getStockEveryDay(date=None,count=32):
             for j in range(len(tstock)):
                 if tstock[j][0] not in listock:
                     listock.append(tstock[j][0])
+        print(date)
     return listock
 
 if __name__ == "__main__":
