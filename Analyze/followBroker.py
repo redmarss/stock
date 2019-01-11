@@ -17,6 +17,9 @@ def getTopBroker_avr(count=5, top=10, date="2017-01-01"):
     t = dbObject.fetchall(table="simulate_buy",
                           field="ts_date,broker_code,stock_code,buy_price,sell_price,amount,gainmoney,gainpercent",
                           where="ts_date>='%s'"%date)
+    if len(t) == 0:
+        print("没有模拟数据，找不到相关机构")
+        return
     list_title = ['ts_date', 'broker_code', 'stock_code', 'buy_price', 'sell_price', 'amount', 'gainmoney',
                   'gainpercent']
     df = pd.DataFrame(list(t), columns=list_title)
@@ -87,8 +90,8 @@ def everyday_stock_record(startdate="2017-02-01",enddate="2018-12-20"):
         date = date + datetime.timedelta(days=1)
 
 if __name__  == '__main__':
-    # li=getTopBroker_avr(5,20,"2017-01-01")
-    # list_to_bestbrokerlist(li)
-    everyday_stock_record("2017-01-01","2019-01-31")
+    li=getTopBroker_avr(3,20,"2019-01-01")
+    list_to_bestbrokerlist(li)
+    # everyday_stock_record("2017-01-01","2019-01-31")
 
 

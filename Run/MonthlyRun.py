@@ -107,6 +107,7 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
         try:
             if not dbObject.fetchone(table="is_holiday",field=date,where="date='%s'"%str(date)):
                 dbObject.insert(table="is_holiday",date=str(date),isholiday=str(isholiday))
+                print("是否工作日%s写入数据库成功"%str(date))
         except:
             raise ValueError
         date = date + datetime.timedelta(days=1)
@@ -136,6 +137,6 @@ if __name__ == "__main__":
     #每月10日运行
     #getAllStock()
     #getBrokerInfo()
-    simulate_buy()
-    #is_holiday("2017-01-01","2019-12-31")
+    #simulate_buy()
+    is_holiday("2019-01-01","2019-12-31")
     print()
