@@ -3,7 +3,7 @@
 
 import myGlobal.myCls.mysqlCls as msql
 import datetime
-import Analyze.followBroker as fb
+import Analyze.AnaylyzeBroker as fb
 import myGlobal.globalFunction as gf
 import  Run.DailyRun as dr
 import myGlobal.myCls.StockCls as mstock

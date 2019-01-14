@@ -1,15 +1,20 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
 
+# AnalyzeBroker(tablename,startdate,enddate)
+#
+# (simulate_buy)(已在Broker类中实现)取得所有机构名称，模拟买入（第二天买，第三天卖），存入everydaysimulatebuy
+
 #每月10日跑上一月数据
 import myGlobal.myCls.mysqlCls as msql
 import myGlobal.myCls.StockCls as mstock
 import myGlobal.globalFunction as gf
 import datetime
-import  Run.DailyRun as dr
+import Run.DailyRun as dr
 import pandas as pd
 
-
+class AnaylyzeBroker(object):
+    def __init__(self):
 
 
 def getTopBroker_avr(count=5, top=10, date="2017-01-01"):
@@ -36,7 +41,7 @@ def getTopBroker_avr(count=5, top=10, date="2017-01-01"):
     li = list(value.to_dict().keys())
     return li
 
-def list_to_bestbrokerlist(li):
+def list_to_bestbrokerlist(li, reason=None):
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                          charset='utf8', db='tushare')
     for i in range(len(li)):
@@ -46,9 +51,10 @@ def list_to_bestbrokerlist(li):
         result = dbObject.fetchall(table="best_broker_list",where="broker_code='%s'"%broker_code)
 
         if result is None or len(result) == 0:
-            dbObject.insert(table="best_broker_list",broker_code=broker_code,broker_name=broker_name)
+            dbObject.insert(table="best_broker_list", broker_code=broker_code, broker_name=broker_name, reason=reason)
         else:
-            dbObject.update(table="best_broker_list",broker_name=broker_name,where="broker_code='%s'"%broker_code)
+            dbObject.update(table="best_broker_list", broker_name=broker_name, reason=reason,
+                            where="broker_code='%s'"%broker_code)
     print("finished")
 
 def _everyday_stock_simulate_buy(tsdate,stock,amount=None):
