@@ -4,6 +4,8 @@
 # AnalyzeBroker(tablename,startdate,enddate)
 #
 # (simulate_buy)(已在Broker类中实现)取得所有机构名称，模拟买入（第二天买，第三天卖），存入everydaysimulatebuy
+#按照不同时间段（date）选出一定数量(top)的机构,存入数据库
+#按照不同数据库中的机构进行模拟买入，并统计盈利
 
 #每月10日跑上一月数据
 import myGlobal.myCls.mysqlCls as msql
@@ -14,32 +16,48 @@ import Run.DailyRun as dr
 import pandas as pd
 
 class AnaylyzeBroker(object):
-    def __init__(self):
+    @gf.typeassert(startdate=str, enddate=str)
+    def __init__(self, startdate, enddate):
+        self._startdate = startdate
+        self._enddate = enddate
+        self._dbObject = msql.SingletonModel(host="localhost",port="3306",user="root",passwd="redmarss",db="tushare",charset="utf8")
 
-
-def getTopBroker_avr(count=5, top=10, date="2017-01-01"):
-    dbObject = msql.SingletonModel(host="localhost",port="3306",user="root",passwd="redmarss",db="tushare",charset="utf8")
-    t = dbObject.fetchall(table="simulate_buy",
+    @gf.typeassert(count=int, top=int, startdate=(str,type(None)),enddate=(str,type(None)))
+    def getTopBroker_avr(self,count=5,top=10,startdate=None,enddate=None):
+        t = self._dbObject.fetchall(table="simulate_buy",
                           field="ts_date,broker_code,stock_code,buy_price,sell_price,amount,gainmoney,gainpercent",
-                          where="ts_date>='%s'"%date)
-    if len(t) == 0:
-        print("没有模拟数据，找不到相关机构")
-        return
-    list_title = ['ts_date', 'broker_code', 'stock_code', 'buy_price', 'sell_price', 'amount', 'gainmoney',
-                  'gainpercent']
-    df = pd.DataFrame(list(t), columns=list_title)
-    # 筛选出交易次数符合条件的机构
-    s = df["broker_code"].value_counts()>=count
-    s = s[s]                                        #先把交易次数大于count的机构存入S
-    dict_broker = s.to_dict()
-    df = df[df["broker_code"].isin(list(dict_broker.keys()))]       #再筛选出在机构列表中的数据
-    #能转换的都转换为数字
-    df = df.apply(pd.to_numeric, errors='ignore')
-    value = df.groupby(['broker_code'])['gainpercent'].mean()
-    value = value.sort_values(ascending=False).head(top)
+                          where="ts_date between '%s' and '%s'"%(startdate,enddate))
+        if len(t) == 0:
+            print("没有模拟数据，找不到相关机构")
+            return
+        list_title = ['ts_date', 'broker_code', 'stock_code', 'buy_price', 'sell_price', 'amount', 'gainmoney',
+                      'gainpercent']
+        df = pd.DataFrame(list(t), columns=list_title)
+        # 筛选出交易次数符合条件的机构
+        s = df["broker_code"].value_counts() >= count
+        s = s[s]  # 先把交易次数大于count的机构存入S
+        dict_broker = s.to_dict()
+        df = df[df["broker_code"].isin(list(dict_broker.keys()))]  # 再筛选出在机构列表中的数据
+        # 能转换的都转换为数字
+        df = df.apply(pd.to_numeric, errors='ignore')
+        value = df.groupby(['broker_code'])['gainpercent'].mean()
+        value = value.sort_values(ascending=False).head(top)
+        li = list(value.to_dict().keys())
+        return li
 
-    li = list(value.to_dict().keys())
-    return li
+
+
+
+class Broker_Tosql(AnaylyzeBroker):
+    @gf.typeassert(reason=str)
+    def __init__(self, startdate, enddate, reason):
+        AnaylyzeBroker.__init__(self, startdate, enddate)             #也可写成super(Broker_Tosql,self).__init__()
+        self._reason = reason
+
+
+
+
+
 
 def list_to_bestbrokerlist(li, reason=None):
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
@@ -96,8 +114,11 @@ def everyday_stock_record(startdate="2017-02-01",enddate="2018-12-20"):
         date = date + datetime.timedelta(days=1)
 
 if __name__  == '__main__':
-    li=getTopBroker_avr(3,20,"2019-01-01")
-    list_to_bestbrokerlist(li)
+    a = AnaylyzeBroker("str", "date", "date2")
+    print(type(a))
+    print()
+    # li=getTopBroker_avr(3,20,"2019-01-01")
+    # list_to_bestbrokerlist(li)
     # everyday_stock_record("2017-01-01","2019-01-31")
 
 

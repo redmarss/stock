@@ -1,4 +1,4 @@
-CREATE TABLE `tushare`.`everyday_stock_simulate_buy` (
+CREATE TABLE `tushare`.`everyday_buy` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `ts_date` VARCHAR(45) NOT NULL,
   `stock` VARCHAR(45) NULL,

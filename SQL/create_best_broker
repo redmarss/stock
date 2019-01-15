@@ -1,4 +1,4 @@
-CREATE TABLE `tushare`.`best_broker_list` (
+CREATE TABLE `tushare`.`best_broker` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `broker_code` VARCHAR(45) NOT NULL,
   `broker_name` VARCHAR(45) NOT NULL,
