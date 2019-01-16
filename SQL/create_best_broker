@@ -2,7 +2,7 @@ CREATE TABLE `tushare`.`best_broker` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `broker_code` VARCHAR(45) NOT NULL,
   `broker_name` VARCHAR(45) NOT NULL,
-  `date` VARCHAR(45) NULL,
+  `date` VARCHAR(45) NOT NULL,
   `reason` VARCHAR(200) NULL,
   `stock_list` TEXT(5) NULL,
   PRIMARY KEY (`id`),

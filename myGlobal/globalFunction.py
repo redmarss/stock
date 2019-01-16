@@ -65,6 +65,21 @@ def isStockA(stock):
     else:
         return True
 
+@typeassert(str)
+def isBroker(code):
+    '''
+    判断code是否机构代码
+    :param code: str类型，机构代码
+    :return: 如果从broker_info找到相应代码，则返回True，否则返回False
+    '''
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
+                                   charset='utf8')
+    t = dbObject.fetchone(table="broker_info",where="broker_code='%s'"%code)
+    if t is not None:
+        return True
+    else:
+        return False
+
 @typeassert(str,float,float)
 def isLimit(code, openPrice, nowPrice):
     '''

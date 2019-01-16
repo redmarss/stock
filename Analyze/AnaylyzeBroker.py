@@ -24,8 +24,8 @@ class AnaylyzeBroker(object):
         self._enddate = enddate
         self._dbObject = msql.SingletonModel(host="localhost",port="3306",user="root",passwd="redmarss",db="tushare",charset="utf8")
 
-    @gf.typeassert(count=int, top=int, startdate=(str,type(None)),enddate=(str,type(None)))
-    def getTopBroker_avr(self,count=5,top=10,startdate=None,enddate=None):
+    @gf.typeassert(startdate=str, enddate=str, count=int, top=int)
+    def getTopBroker_avr(self,startdate, enddate, count=5, top=10):
         t = self._dbObject.fetchall(table="simulate_buy",
                           field="ts_date,broker_code,stock_code,buy_price,sell_price,amount,gainmoney,gainpercent",
                           where="ts_date between '%s' and '%s'"%(startdate,enddate))
@@ -52,30 +52,31 @@ class AnaylyzeBroker(object):
 
 class Broker_Tosql(AnaylyzeBroker):
     @gf.typeassert(reason=str)
-    def __init__(self, startdate, enddate, reason):
+    def __init__(self, startdate, enddate, date, reason):
         AnaylyzeBroker.__init__(self, startdate, enddate)             #也可写成super(Broker_Tosql,self).__init__()
+        self._date = date
         self._reason = reason
 
+    @gf.typeassert(li=list, date=str, reason=(str, type(None)))
+    def list_toSql(self,li,date,reason=None):
+        for broker_code in li:
+            if gf.isBroker(broker_code):              #在broker_info中找到对应的机构代码
+                broker_name = self._dbObject.fetchone(table="broker_info",field="broker_name",
+                                                      where="broker_code='%s'"%broker_code)
+
+                #去best_broker中去找是否已有重复数据
+                result = self._dbObject.fetchall(table="best_broker",
+                                                 where="broker_code='%s' and date='%s'"%(broker_code,date))
+                if len(result)==0:
+                    self._dbObject.insert(table="best_broker", broker_code=broker_code, broker_name=broker_name,
+                                          date=date, reason=reason)
+                else:
+                    print("库中已有%s机构%s数据"%(broker_code,date))
+        print("finished")
 
 
 
 
-
-def list_to_bestbrokerlist(li, reason=None):
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
-                                         charset='utf8', db='tushare')
-    for i in range(len(li)):
-        broker_code = li[i]
-        broker_name = dbObject.fetchone(table="broker_info",field="broker_name",where="broker_code='%s'"%broker_code)[0]
-
-        result = dbObject.fetchall(table="best_broker_list",where="broker_code='%s'"%broker_code)
-
-        if result is None or len(result) == 0:
-            dbObject.insert(table="best_broker_list", broker_code=broker_code, broker_name=broker_name, reason=reason)
-        else:
-            dbObject.update(table="best_broker_list", broker_name=broker_name, reason=reason,
-                            where="broker_code='%s'"%broker_code)
-    print("finished")
 
 def _everyday_stock_simulate_buy(tsdate,stock,amount=None):
     money=float(10000)
