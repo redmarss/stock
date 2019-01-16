@@ -7,6 +7,8 @@
 #按照不同时间段（date）选出一定数量(top)的机构,存入数据库
 #按照不同数据库中的机构进行模拟买入，并统计盈利
 
+
+#NOET:1.删除best_broker，重新生成best_broker。2.跑数据，导出所有数据至U盘
 #每月10日跑上一月数据
 import myGlobal.myCls.mysqlCls as msql
 import myGlobal.myCls.StockCls as mstock
