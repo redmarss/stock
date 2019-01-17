@@ -49,9 +49,6 @@ class AnaylyzeBroker(object):
         li = list(value.to_dict().keys())
         return li
 
-
-
-
 class BrokerSimulate(AnaylyzeBroker):
     #构造函数
     @gf.typeassert(reason=str)
@@ -110,11 +107,23 @@ class BrokerSimulate(AnaylyzeBroker):
             self._dbObject.insert(table="everyday_buy",ts_date=tsdate,stock=stock,amount=amount,gainmoney=gainmoeny,
                                   reason=reason)
 
-
+def CacuBroker(strstart,strend):
+    try:
+        startdate = datetime.datetime.strptime(strstart,"%Y-%m-%d").date()
+        enddate = datetime.datetime.strptime(strend,"%Y-%m-%d").date()
+    except:
+        print("日期输入错误")
+        return
+    date = startdate
+    while date < enddate:
+        start = datetime.date(date.year,date.month-1,1)
+        end = datetime.date(date.year,date.month,1)-datetime.timedelta(days=1)
+        print(start,end)
+        date = date+datetime.timedelta(days=1)
 
 def AnaylyzeHistory(start,end):
     date=datetime.datetime.strptime(start,"%Y-%m-%d").date()
-    while date < datetime.datetime.strptime(end,"%Y-%m-%d").date():
+    while date <= datetime.datetime.strptime(end,"%Y-%m-%d").date():
 
         date = date+datetime.timedelta(days=1)
 
@@ -157,7 +166,7 @@ def AnaylyzeHistory(start,end):
 #     print("finished")
 
 if __name__  == '__main__':
-    everyday_stock_record(startdate="2018-01-01", enddate="2019-01-17")
+    CacuBroker("2017-02-01","2017-05-01")
     # li=getTopBroker_avr(3,20,"2019-01-01")
     # list_to_bestbrokerlist(li)
     # everyday_stock_record("2017-01-01","2019-01-31")
