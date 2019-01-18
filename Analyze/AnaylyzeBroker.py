@@ -47,6 +47,7 @@ class AnaylyzeBroker(object):
         value = df.groupby(['broker_code'])['gainpercent'].mean()
         value = value.sort_values(ascending=False).head(top)
         li = list(value.to_dict().keys())
+        li = [str(i) for i in li]
         return li
 
 class BrokerSimulate(AnaylyzeBroker):
@@ -86,7 +87,7 @@ class BrokerSimulate(AnaylyzeBroker):
                 #存入数据库
                 if len(li_stock) > 0:
                     for stock in li_stock:
-                        self._everyday_stock_simulate_buy(tsdate,stock,1000)
+                        self._everyday_stock_simulate_buy(str(tsdate),stock,1000)
             tsdate = tsdate + datetime.timedelta(days=1)
 
     @gf.typeassert(tsdate=str,stock=str,amount=(int,type(None)))
@@ -99,7 +100,7 @@ class BrokerSimulate(AnaylyzeBroker):
         if s.open_price is not None:
             if amount is None:
                 amount = (money//(s.open_price*100))*100
-        gainmoeny = s.gainmoney(amount)
+        gainmoeny = s.gainmoney(int(amount))
         if gainmoeny is None:               #第二天涨幅超过8%，无法买入
             return
         t = self._dbObject.fetchone(table="everyday_buy",where="ts_date='%s' and stock='%s'"%(tsdate,stock))
@@ -116,9 +117,13 @@ def CacuBroker(strstart,strend):
         return
     date = startdate
     while date < enddate:
-        start = datetime.date(date.year,date.month-1,1)
-        end = datetime.date(date.year,date.month,1)-datetime.timedelta(days=1)
-        print(start,end)
+        start = datetime.date(date.year,date.month-1,1)             #获得上月1日
+        end = datetime.date(date.year,date.month,1)-datetime.timedelta(days=1)      #获得上月最后一天
+
+        bs = BrokerSimulate(str(start),str(end),str(end),str(end))
+        li = bs.getTopBroker_avr(3,20)
+        bs.list_toSql(li,str(end))
+        bs.everyday_stock_record()
         date = date+datetime.timedelta(days=1)
 
 def AnaylyzeHistory(start,end):
