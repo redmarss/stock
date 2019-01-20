@@ -1,32 +1,31 @@
 #!/usr/bin/env python
 # -*-coding:utf8-*-
-import myGlobal.myCls.AnalyzeBrokerCls as AnalyzeBroker
+
 import myGlobal.globalFunction as gf
 import myGlobal.myCls.StockCls as mstock
 import datetime
 
-class BrokerSimulate(AnalyzeBroker):
+#修改best_broker表，增加一个主键
+class BrokerSimulate(object):
     #构造函数
-    @gf.typeassert(reason=str)
-    def __init__(self, startdate, enddate, date, reason):
-        AnalyzeBroker.__init__(self, startdate, enddate)             #也可写成super(Broker_Tosql,self).__init__()
-        self._date = date
-        self._reason = reason
+    @gf.typeassert(startdate=str, enddate=str)
+    def __init__(self, startdate, enddate):
+        self.startdate = startdate
+        self.enddate = enddate
 
-
-def everyday_stock_record(self):
-    start = datetime.datetime.strptime(self._startdate,"%Y-%m-%d").date()
-    end = datetime.datetime.strptime(self._enddate,"%Y-%m-%d").date()
-    tsdate = start
-    while tsdate <= end:
-        if gf.is_holiday(str(tsdate)) == False:
-            #计算当天股票
-            li_stock = dr.getStockEveryDay(str(tsdate))
-            #存入数据库
-            if len(li_stock) > 0:
-                for stock in li_stock:
-                    self._everyday_stock_simulate_buy(str(tsdate),stock,1000)
-        tsdate = tsdate + datetime.timedelta(days=1)
+    def everyday_stock_record(self):
+        start = datetime.datetime.strptime(self.startdate,"%Y-%m-%d").date()
+        end = datetime.datetime.strptime(self.enddate,"%Y-%m-%d").date()
+        tsdate = start
+        while tsdate <= end:
+            if gf.is_holiday(str(tsdate)) == False:
+                #计算当天股票
+                li_stock = dr.getStockEveryDay(str(tsdate))
+                #存入数据库
+                if len(li_stock) > 0:
+                    for stock in li_stock:
+                        self._everyday_stock_simulate_buy(str(tsdate),stock,1000)
+            tsdate = tsdate + datetime.timedelta(days=1)
 
 @gf.typeassert(tsdate=str,stock=str,amount=(int,type(None)))
 def _everyday_stock_simulate_buy(self,tsdate,stock,reason,amount=None):
