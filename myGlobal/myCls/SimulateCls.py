@@ -4,8 +4,8 @@
 import myGlobal.globalFunction as gf
 import myGlobal.myCls.StockCls as mstock
 import datetime
+import Run.DailyRun as DailyRun
 
-#修改best_broker表，增加一个主键
 class BrokerSimulate(object):
     #构造函数
     @gf.typeassert(startdate=str, enddate=str)
@@ -20,7 +20,7 @@ class BrokerSimulate(object):
         while tsdate <= end:
             if gf.is_holiday(str(tsdate)) == False:
                 #计算当天股票
-                li_stock = dr.getStockEveryDay(str(tsdate))
+                li_stock = DailyRun.getStockEveryDay(str(tsdate))
                 #存入数据库
                 if len(li_stock) > 0:
                     for stock in li_stock:
