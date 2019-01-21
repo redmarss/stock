@@ -4,6 +4,8 @@ import myGlobal.globalFunction as gf
 import myGlobal.myCls.mysqlCls as msql
 import pandas as pd
 
+#http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayqfq2017&param=sz000915,day,2018-11-21,2019-01-21,640,qfq
+
 class AnalyzeBroker(object):
     #构造函数
     @gf.typeassert(startdate=str, enddate=str, recorddate=str, reason=str)

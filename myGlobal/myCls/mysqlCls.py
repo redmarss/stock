@@ -45,8 +45,8 @@ class SingletonModel:
     #返回执行execute()方法后影响的行数
     def execute(self,sql):
         self.__cursor.execute(sql)
-        rowcount = self.__cursor.rowcount
-        return rowcount
+        data = self.__cursor.fetchall()
+        return data
 
     #增->返回新增ID
     def insert(self,**kwargs):

@@ -2,7 +2,7 @@
 # -*- coding:utf8 -*-
 import sys
 #ABSPATH = os.path.abspath(os.path.realpath(os.path.dirname(__file__)))         #将本文件路径加入包搜索范围
-sys.path.append("H:\\github\\tushareB\\")
+#sys.path.append("H:\\github\\tushareB\\")
 import datetime
 import myGlobal.globalFunction as gf
 import myGlobal.myCls.mysqlCls as msql
@@ -18,6 +18,7 @@ def getDayData(code=None,start="2017-01-01",end="2018-12-31"):
     symbol = gf._code_to_symbol(code)       #将代码转换成标准格式
     if gf.isStockA(symbol):
         url = 'http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayqfq2017&param=%s,day,%s,%s,640,qfq'%(symbol,start,end)
+        print(url)
         try:
             request=Request(url)
             lines=urlopen(request,timeout=10).read()
@@ -71,11 +72,15 @@ def getAllStockData(startDate=None, endDate=None):
 
 
 if __name__ == '__main__':
+    if datetime.datetime.today().hour > 18:     #运行时间大于18点
+        end = str(datetime.datetime.today().date() + datetime.timedelta(days=1))
+    else:
+        end = str(datetime.datetime.today().date())
     # 将时间范围定义到（两个月前起）
-    start=gf.lastTddate(str(datetime.datetime.today().date()-datetime.timedelta(days=60)))
-    end=str(datetime.datetime.today().date())
+    start = gf.lastTddate(str(datetime.datetime.today().date()-datetime.timedelta(days=30)))
+
     #将时间范围内的机构买卖信息导入数据库，重复的不导入
-    brokerInfo(start,end,200000)
+    #brokerInfo(start,end,200000)
 
     #将时间范围内所有股票的交易数据导入数据库
     getAllStockData(start,end)
