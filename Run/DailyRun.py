@@ -14,7 +14,6 @@ def getStockEveryDay(date=None, count=32):
             date = str(datetime.datetime.today().date()-datetime.timedelta(days=1))
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root',
                                    passwd='redmarss', charset='utf8', db='tushare')
-    listock=list()
     if gf.is_holiday(str(date)) is False:           #交易日
         sql= '''select a.stock_code,a.stock_name,b.broker_name,b.ts_date from broker_buy_stock_info as a,broker_buy_summary as b 
         where a.broker_buy_summary_id =b.id and ts_date="%s" and 
@@ -28,4 +27,4 @@ def getStockEveryDay(date=None, count=32):
 
 
 if __name__ == "__main__":
-    print(getStockEveryDay("2019-01-21"))
+    print(getStockEveryDay())

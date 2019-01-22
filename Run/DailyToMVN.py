@@ -18,7 +18,6 @@ def getDayData(code=None,start="2017-01-01",end="2018-12-31"):
     symbol = gf._code_to_symbol(code)       #将代码转换成标准格式
     if gf.isStockA(symbol):
         url = 'http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayqfq2017&param=%s,day,%s,%s,640,qfq'%(symbol,start,end)
-        print(url)
         try:
             request=Request(url)
             lines=urlopen(request,timeout=10).read()
@@ -48,7 +47,6 @@ def brokerInfo(startDate=None, endDate=None, pagesize=2000):
     try:
         request=Request(LHBYYBSBCS%(startDate,endDate,pagesize))
         text=urlopen(request,timeout=10).read()                     #type is byte
-        print(text)
         gf.postData(text,urlPost)
     except Exception as e:
         print(e)
@@ -80,7 +78,7 @@ if __name__ == '__main__':
     start = gf.lastTddate(str(datetime.datetime.today().date()-datetime.timedelta(days=30)))
 
     #将时间范围内的机构买卖信息导入数据库，重复的不导入
-    #brokerInfo(start,end,200000)
+    brokerInfo(start,end,200000)
 
     #将时间范围内所有股票的交易数据导入数据库
     getAllStockData(start,end)

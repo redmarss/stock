@@ -5,6 +5,14 @@ import datetime
 import time
 import myGlobal.globalFunction as gf
 
+@gf.typeassert(strdate=str)
+def isDate(strdate):
+    try:
+        date = datetime.datetime.strptime(strdate,"%Y-%m-%d")
+        return True
+    except:
+        return False
+
 def today():
     day = datetime.datetime.today().date()
     return str(day)
