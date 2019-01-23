@@ -47,17 +47,16 @@ class Simulate(object):
                         self._everyday_stock_simulate_buy(str(tsdate), stock, reason, 1000)
             tsdate = tsdate + datetime.timedelta(days=1)
 
-    @gf.typeassert(tsdate=str,stock=str,amount=(int,type(None)))
-    def _everyday_stock_simulate_buy(self,tsdate,stock,reason,amount=None):
-        money=float(10000)
+    @gf.typeassert(tsdate=str,stock=str,amount=(int,type(None)), money=float)
+    def _everyday_stock_simulate_buy(self, tsdate, stock, reason, amount=None, money=10000.0):     #若数量为空，则根据money除以股价计算amount
         stock = gf._code_to_symbol(stock)
         if stock is None:
             return
-        s = mstock.Stock(stock,tsdate)
-        if s.open_price is not None:
+        st = mstock.Stock(stock, tsdate)
+        if st.open_price is not None:
             if amount is None:
-                amount = (money//(s.open_price*100))*100
-        gainmoeny = s.gainmoney(int(amount))
+                amount = int((money//(st.open_price*100))*100)
+        gainmoeny = st.gainmoney(amount)
         if gainmoeny is None:               #第二天涨幅超过8%，无法买入
             return
         t = self._dbObject.fetchone(table="everyday_buy",where="ts_date='%s' and stock='%s'"%(tsdate,stock))
