@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*-coding:utf8-*-
-
+#修改simulate_buy数据库，增加buy_date及sell_date
 import myGlobal.globalFunction as gf
 import myGlobal.myCls.StockCls as mstock
 import myGlobal.myCls.mysqlCls as msql
@@ -19,6 +19,32 @@ class Simulate(object):
             print("输入的日期参数不合法")
             return
         self.dbObject = msql.SingletonModel(host="localhost",port="3306",user="root",passwd="redmarss",db="tushare",charset="utf8")
+
+    @gf.typeassert(table=str)
+    def createtable(self,table):
+        sql = '''
+        CREATE TABLE `tushare`.`%s` (
+        `id` INT NOT NULL AUTO_INCREMENT,
+        `ts_date` VARCHAR(45) NOT NULL,
+        `broker_code` VARCHAR(45) NOT NULL,
+        `stock_code` VARCHAR(45) NOT NULL,
+        `buy_date` VARCHAR(45) NULL,
+        `sell_date` VARCHAR(45) NULL,
+        `buy_price` VARCHAR(45) NULL,
+        `sell_price` VARCHAR(45) NULL,
+        `amount` VARCHAR(45) NULL,
+        `gainmoney` VARCHAR(45) NULL,
+        `gainpercent` VARCHAR(45) NULL,
+        PRIMARY KEY (`id`),
+        UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+        UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC));
+        '''%table
+        if self.dbObject.isTableExists(table=table) is False:
+            self.dbObject.execute(sql)
+            print("创建表%s成功" % table)
+        else:
+            print("%s表已存在" % table)
+            return
 
     #根据输入的机构表，记录这些机构模拟买卖信息
     gf.typeassert(table=str,where=str,reason=str)
@@ -66,4 +92,4 @@ class Simulate(object):
 
 
 s = Simulate("2017-01-01","2017-12-31")
-s.everyday_stock_record("best_broker_list","true")
+s.createtable("simulate_test")

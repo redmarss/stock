@@ -3,6 +3,8 @@ CREATE TABLE `tushare`.`simulate_buy` (
   `ts_date` VARCHAR(45) NOT NULL,
   `broker_code` VARCHAR(45) NOT NULL,
   `stock_code` VARCHAR(45) NOT NULL,
+  `buy_date` VARCHAR(45) NULL,
+  `sell_date` VARCHAR(45) NULL,
   `buy_price` VARCHAR(45) NULL,
   `sell_price` VARCHAR(45) NULL,
   `amount` VARCHAR(45) NULL,

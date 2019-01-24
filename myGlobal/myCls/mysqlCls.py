@@ -163,6 +163,17 @@ class SingletonModel:
             self.__db.rollback()
         return rowcount
 
+    def dropTable(self,**kwargs):
+        table = kwargs['table']
+        sql = 'drop table %s' % table
+        try:
+            self.__cursor.execute(sql)
+            self.__db.commit()
+            print("删除表%s成功"%table)
+        except:
+            #发生错误时回滚
+            self.__db.rollback()
+
     # 将一个DataFrame存入mysql的table表中
     def DataframeToSql(self,df, table):
 
@@ -176,12 +187,22 @@ class SingletonModel:
             print("重复")
             engine.dispose()
 
+
+    def isTableExists(self, **kwargs):
+        table = kwargs["table"]
+        sql = "show tables;"
+        t = self.execute(sql)
+        li_table = [str(i[0]) for i in t]
+        if table in li_table:
+            return True
+        else:
+            return False
+
     #析构函数
     def __del__(self):
         #关闭数据库连接
         self.__db.close()
         #print('关闭数据库连接')
-
 
 #主函数
 # if __name__ == '__main__':
