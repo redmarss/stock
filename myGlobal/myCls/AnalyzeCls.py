@@ -7,17 +7,16 @@ import pandas as pd
 
 class AnalyzeBroker(object):
     #构造函数
-    @gf.typeassert(startdate=str, enddate=str, recorddate=str, reason=str)
-    def __init__(self, startdate, enddate, recorddate, reason):
+    @gf.typeassert(startdate=str, enddate=str, tablename=str)
+    def __init__(self, startdate, enddate, tablename):
         self.startdate = startdate
         self.enddate = enddate
-        self.recorddate = recorddate
-        self.reason = reason
+        self.tablename = tablename
         self.dbObject = msql.SingletonModel(host="localhost",port="3306",user="root",passwd="redmarss",db="tushare",charset="utf8")
 
     #通过平均值方式选取机构，count为时间段内交易次数，top为选前几名
     @gf.typeassert(count=int, top=int)
-    def getTopBroker_avr(self,count=5, top=30, simulatetable="simulate_buy"):
+    def getTopBroker_avr(self,count=5, top=30):
         '''
         根据平均值的算法得出最好的机构
         :param count: 在时间范围内的交易次数（int类型）
@@ -30,10 +29,13 @@ class AnalyzeBroker(object):
         for i in field_list:
             field += "%s," % i
         field = field.rstrip(",")
-        t = self.dbObject.fetchall(table=simulatetable, field=field,
-                                    where="ts_date between '%s' and '%s'" % (self.startdate, self.enddate))
+        try:
+            t = self.dbObject.fetchall(table=self.tablename, field=field,
+                                       where="ts_date between '%s' and '%s'" % (self.startdate, self.enddate))
+        except:
+            print("%s表或其字段有误，请重试" % self.tablename)
         if len(t) == 0:
-            print("%s表中没有模拟数据，找不到相关机构" % simulatetable)
+            print("%s表中没有模拟数据，找不到相关机构" % self.tablename)
             return
         df = pd.DataFrame(list(t), columns=field_list)
         # 筛选出交易次数符合条件的机构

@@ -55,7 +55,7 @@ class BrokerSimulate(Broker):
 
 
     @gf.typeassert(table=str)
-    def createtable(self, table):
+    def __createtable(self, table):
         sql = '''
         CREATE TABLE `tushare`.`%s` (
         `id` INT NOT NULL AUTO_INCREMENT,
@@ -88,7 +88,7 @@ class BrokerSimulate(Broker):
             return
         #如果table表不存在，则创建
         if self.dbObject.isTableExists(tablesimulate) is False:
-            self.createtable(tablesimulate)
+            self.__createtable(tablesimulate)
         #开始循环
         date = self.startdate
         while date <= self.enddate:
@@ -98,7 +98,6 @@ class BrokerSimulate(Broker):
                 for stock in li_stock:
                     self.__recordToSql(str(date), stock, 1000, tablesimulate)
             date = date + datetime.timedelta(days=1)
-
 
     #按顺序写入ts_date,broker_code,stock_code,buy_date,sell_date,buy_price,sell_price,amount,gainmoney,gainpercent
     @gf.typeassert(ts_date=str, stock_code=str, amount=int, tablesimulate=str)
@@ -116,9 +115,6 @@ class BrokerSimulate(Broker):
                                      ftype=dict_info['ftype'])
             except Exception as e:
                 print("数据库中已有该条数据，同一天同一家机构只能记录一条股票数据")
-
-
-
 
 
 
@@ -165,6 +161,10 @@ class BrokerSimulate(Broker):
         if t is None:
             self._dbObject.insert(table="everyday_buy",ts_date=tsdate,stock=stock,amount=amount,gainmoney=gainmoeny,
                                   reason=reason)
+
+
+
+
 
 
 
