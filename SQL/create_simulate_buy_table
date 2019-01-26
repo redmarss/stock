@@ -10,6 +10,7 @@ CREATE TABLE `tushare`.`simulate_buy` (
   `amount` VARCHAR(45) NULL,
   `gainmoney` VARCHAR(45) NULL,
   `gainpercent` VARCHAR(45) NULL,
+  `ftype` VARCHAR(5) NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC));

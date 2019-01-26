@@ -2,17 +2,19 @@
 # -*-coding:utf8-*-
 #修改simulate_buy数据库，增加buy_date及sell_date
 import myGlobal.globalFunction as gf
-import myGlobal.myCls.StockCls as mstock
-import myGlobal.myCls.mysqlCls as msql
+import myGlobal.myCls.Stock as mstock
+import myGlobal.myCls.msql as msql
 import myGlobal.myTime as mTime
+from myGlobal.myCls.Broker import Broker
 import datetime
 import Run.DailyRun as DailyRun
 
-class Simulate(object):
+class BrokerSimulate(Broker):
     #构造函数
-    @gf.typeassert(startdate=str, enddate=str)
-    def __init__(self, startdate, enddate):
+    @gf.typeassert(broker_code=str, startdate=str, enddate=str)
+    def __init__(self, broker_code, startdate, enddate):
         if mTime.isDate(startdate) is True and mTime.isDate(enddate) is True:
+            Broker.__init__(self, broker_code)
             self.startdate = startdate
             self.enddate = enddate
         else:
@@ -21,7 +23,7 @@ class Simulate(object):
         self.dbObject = msql.SingletonModel(host="localhost",port="3306",user="root",passwd="redmarss",db="tushare",charset="utf8")
 
     @gf.typeassert(table=str)
-    def createtable(self,table):
+    def createtable(self, table):
         sql = '''
         CREATE TABLE `tushare`.`%s` (
         `id` INT NOT NULL AUTO_INCREMENT,
@@ -75,7 +77,7 @@ class Simulate(object):
 
     @gf.typeassert(tsdate=str,stock=str,amount=(int,type(None)), money=float)
     def _everyday_stock_simulate_buy(self, tsdate, stock, reason, amount=None, money=10000.0):     #若数量为空，则根据money除以股价计算amount
-        stock = gf._code_to_symbol(stock)
+        stock = gf.code_to_symbol(stock)
         if stock is None:
             return
         st = mstock.Stock(stock, tsdate)
@@ -91,5 +93,4 @@ class Simulate(object):
                                   reason=reason)
 
 
-s = Simulate("2017-01-01","2017-12-31")
-s.createtable("simulate_test")
+s = BrokerSimulate("1","2017-01-01","2017-12-31")

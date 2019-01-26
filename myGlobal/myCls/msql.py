@@ -188,8 +188,7 @@ class SingletonModel:
             engine.dispose()
 
 
-    def isTableExists(self, **kwargs):
-        table = kwargs["table"]
+    def isTableExists(self, table):
         sql = "show tables;"
         t = self.execute(sql)
         li_table = [str(i[0]) for i in t]

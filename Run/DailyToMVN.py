@@ -5,7 +5,7 @@ import sys
 #sys.path.append("H:\\github\\tushareB\\")
 import datetime
 import myGlobal.globalFunction as gf
-import myGlobal.myCls.mysqlCls as msql
+import myGlobal.myCls.msql as msql
 from urllib.request import urlopen, Request
 import re
 # import tushare as ts
@@ -15,7 +15,7 @@ import re
 
 #获取股票日线数据
 def getDayData(code=None,start="2017-01-01",end="2018-12-31"):
-    symbol = gf._code_to_symbol(code)       #将代码转换成标准格式
+    symbol = gf.code_to_symbol(code)       #将代码转换成标准格式
     if gf.isStockA(symbol):
         url = 'http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayqfq2017&param=%s,day,%s,%s,640,qfq'%(symbol,start,end)
         try:

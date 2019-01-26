@@ -1,18 +1,18 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
 
-import myGlobal.myCls.mysqlCls as msql
+import myGlobal.myCls.msql as msql
 import datetime
 import Analyze.AnaylyzeBroker as fb
 import myGlobal.globalFunction as gf
 import  Run.DailyRun as dr
-import myGlobal.myCls.StockCls as mstock
+import myGlobal.myCls.Stock as mstock
 
 def _everyday_stock_simulate_buy(tsdate,stock,amount=None):
     money=float(10000)
     if not isinstance(tsdate,str):
         tsdate = str(tsdate)
-    stock = gf._code_to_symbol(stock)
+    stock = gf.code_to_symbol(stock)
     if stock is None:
         return
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',

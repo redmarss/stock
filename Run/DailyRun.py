@@ -3,7 +3,7 @@
 import myGlobal.myTime as mt
 import datetime
 import myGlobal.globalFunction as gf
-import myGlobal.myCls.mysqlCls as msql
+import myGlobal.myCls.msql as msql
 #每晚18点后手动运行或第二天8.50分自动运行
 @gf.typeassert(date=(str,type(None)),count=int)
 def getStockEveryDay(date=None, count=32):

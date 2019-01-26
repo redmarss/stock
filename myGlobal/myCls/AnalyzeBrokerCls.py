@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 import myGlobal.globalFunction as gf
-import myGlobal.myCls.mysqlCls as msql
+import myGlobal.myCls.msql as msql
 import pandas as pd
 
 

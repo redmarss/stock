@@ -13,6 +13,14 @@ def isDate(strdate):
     except:
         return False
 
+@gf.typeassert(strdate=str)
+def strTodate(strdate):
+    try:
+        date = datetime.datetime.strptime(strdate,"%Y-%m-%d").date()
+        return date
+    except:
+        return None
+
 def today():
     day = datetime.datetime.today().date()
     return str(day)

@@ -1,6 +1,6 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
-import myGlobal.myCls.mysqlCls as msql
+import myGlobal.myCls.msql as msql
 from urllib.request import Request,urlopen
 import datetime
 from inspect import signature
@@ -24,7 +24,7 @@ def typeassert(*type_args, **type_kwargs):
     return decorate
 
 @typeassert((str,type(None)))
-def _code_to_symbol(code):
+def code_to_symbol(code):
     '''
     格式化股票代码，与数据库中股票基本信息表做（stock_basic_table）对比
     :param code: "600000","6000000.sh","sh600000" or None
@@ -59,7 +59,7 @@ def _code_to_symbol(code):
 
 @typeassert((str,type(None)))
 def isStockA(stock):
-    code = _code_to_symbol(stock)
+    code = code_to_symbol(stock)
     if code is None:
         return False
     else:
@@ -90,7 +90,7 @@ def isLimit(code, openPrice, nowPrice):
     :return:涨停返回True，未涨停返回False，超出涨幅则返回None
     '''
     #格式化参数
-    code = _code_to_symbol(code)
+    code = code_to_symbol(code)
     if code is None:            #所输入代码非沪深A股
         return
     #获取股票名称
@@ -166,7 +166,7 @@ def is_tradeday(code, ts_date):
     :param tsdate: 交易日期
     :return: True or False 参数错误返回None
     '''
-    code = _code_to_symbol(code)
+    code = code_to_symbol(code)
     if code is None:
         return
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
@@ -207,7 +207,7 @@ def diffDay(strdate,day=0):
         if day > 0:
             while day > 0:
                 date = date+datetime.timedelta(days=1)
-                if not is_holiday(str(date)):                #若非休息日，不计入运算
+                if not is_holiday(str(date)):                #若非交易日，则不扣除天数
                     day = day-1
         else:
             while day < 0:
@@ -253,7 +253,7 @@ def getStockPrice(code, startdate, days=7):
     :param days: 天数
     :return: 股票交易信息（元组）
     '''
-    code = _code_to_symbol(code)
+    code = code_to_symbol(code)
     if code is None:
         return
     try:    #判断日期有效性

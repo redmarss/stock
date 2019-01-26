@@ -1,9 +1,10 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
-import myGlobal.myCls.mysqlCls as msql
-import myGlobal.myCls.StockCls as mstock
+import myGlobal.myCls.msql as msql
+import myGlobal.myCls.Stock as mstock
 import myGlobal.globalFunction as gf
 
+#机构类，根据交易日期及机构代码获得当日购买股票
 class Broker(object):
     _brokercode = None          #机构代码
     _brokername = None          #机构名称
@@ -43,7 +44,7 @@ class Broker(object):
                                              where='a.broker_buy_summary_id=b.id and b.broker_code="%s" and b.ts_date="%s"' % (broker_code, ts_date))
             if len(t_broker_buy) != 0:                       #tbroker长度为0，说明找不到对应的数据
                 for stock in t_broker_buy:
-                    stock = gf._code_to_symbol(stock[0])
+                    stock = gf.code_to_symbol(stock[0])
                     if gf.isStockA(stock):
                         self._buylist.append(str(stock))
             else:       #只有买入股票，没有卖出股票
@@ -90,7 +91,7 @@ class Broker(object):
     #找出买入卖出价
     @gf.typeassert(s=mstock.Stock, day=int)
     def _find_buy_sell_stock_price(self,s,day=7):
-        stocklist = s._next_some_days(day)
+        stocklist = s.next_some_days(day)
         if stocklist is None:
             print("未知错误")
             return
