@@ -4,7 +4,7 @@
 from urllib.request import urlopen,Request
 from bs4 import BeautifulSoup
 import myGlobal.myCls.msql as msql
-import myGlobal.myCls.BrokerCls as mbroker
+from myGlobal.myCls.BrokerCls import BrokerSimulate
 import datetime
 import myGlobal.globalFunction as gf
 
@@ -112,31 +112,31 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
             raise ValueError
         date = date + datetime.timedelta(days=1)
 
-
+#需重写
 #每月10日模拟买入上一月数据
-@gf.typeassert((str,type(None)), (str,type(None)), int)
-def simulate_buy(startdate=None,enddate=None, amount=1000):
-    if startdate is None:
-        startdate = datetime.datetime.today().date()+datetime.timedelta(days=-60)
-    print(startdate)
-    if enddate is None:
-        enddate = datetime.datetime.today().date()
-    print(enddate)
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
-                                   charset='utf8')
-    d = dbObject.fetchall(table="broker_buy_summary", field="broker_code,ts_date",
-                          where="ts_date between '%s' and '%s' order by ts_date"%(startdate,enddate))
-    for i in range(len(d)):
-        broker_code = d[i][0]
-        ts_date = str(d[i][1])
-        b = mbroker.Broker(broker_code,ts_date)              #日期参数必须为str类型
-        b.simulate_buy(amount)
+# @gf.typeassert((str,type(None)), (str,type(None)), int)
+# def simulate_buy(startdate=None,enddate=None, amount=1000):
+#     if startdate is None:
+#         startdate = datetime.datetime.today().date()+datetime.timedelta(days=-60)
+#     print(startdate)
+#     if enddate is None:
+#         enddate = datetime.datetime.today().date()
+#     print(enddate)
+#     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
+#                                    charset='utf8')
+#     d = dbObject.fetchall(table="broker_buy_summary", field="broker_code,ts_date",
+#                           where="ts_date between '%s' and '%s' order by ts_date"%(startdate,enddate))
+#     for i in range(len(d)):
+#         broker_code = d[i][0]
+#         ts_date = str(d[i][1])
+#         b = BrokerSimulate(broker_code,ts_date)              #日期参数必须为str类型
+#         b.simulate_buy(amount)
 
 
 if __name__ == "__main__":
     #每月10日运行
-    #getAllStock()
-    #getBrokerInfo()
+    getAllStock()
+    getBrokerInfo()
     #simulate_buy()
-    is_holiday("2019-01-01","2019-12-31")
+    #is_holiday("2019-01-01","2019-12-31")
     print()

@@ -29,6 +29,20 @@ class Stock(object):
         self.code = code
 
     @property
+    def code(self):
+        if self.tuplestock is not None:
+            return str(self.tuplestock[1])
+        else:
+            return None
+
+    @property
+    def ts_date(self):
+        if self.tuplestock is not None:
+            return str(self.tuplestock[2])
+        else:
+            return None
+
+    @property
     def open_price(self):
         if self.tuplestock is not None:
             return float(self.tuplestock[3])
