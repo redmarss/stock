@@ -16,6 +16,7 @@ import myGlobal.globalFunction as gf
 import datetime
 import Run.DailyRun as dr
 import pandas as pd
+from myGlobal.myCls.BrokerCls import BrokerSimulate
 
 
 
@@ -39,10 +40,10 @@ def CacuBroker(strstart,strend):
         date = date+datetime.timedelta(days=1)
 
 def AnaylyzeHistory(start,end):
-date=datetime.datetime.strptime(start,"%Y-%m-%d").date()
-while date <= datetime.datetime.strptime(end,"%Y-%m-%d").date():
+    date=datetime.datetime.strptime(start,"%Y-%m-%d").date()
+    while date <= datetime.datetime.strptime(end,"%Y-%m-%d").date():
 
-    date = date+datetime.timedelta(days=1)
+        date = date+datetime.timedelta(days=1)
 
 
 # def everyday_stock_record(startdate="2017-02-01",enddate="2018-12-20"):

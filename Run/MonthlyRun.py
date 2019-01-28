@@ -7,6 +7,7 @@ import myGlobal.myCls.msql as msql
 from myGlobal.myCls.BrokerCls import BrokerSimulate
 import datetime
 import myGlobal.globalFunction as gf
+import myGlobal.myTime as myTime
 
 
 
@@ -131,6 +132,22 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
 #         ts_date = str(d[i][1])
 #         b = BrokerSimulate(broker_code,ts_date)              #日期参数必须为str类型
 #         b.simulate_buy(amount)
+
+@gf.typeassert(table=str,startdate=(str,type(None)),enddate=(str,type(None)))
+def simulate_buy(table, startdate=None, enddate=None):
+    if enddate is None:
+        enddate = myTime.today()
+    if startdate is None:
+        startdate = myTime.diffDay(enddate, -60)
+    #参数非日期，则返回
+    if myTime.isDate(startdate) is False or myTime.isDate(enddate) is False:
+        print("startdate or enddate 不是日期")
+        return
+    #获取数据库中所有机构编码
+    broker_list = gf.getAllBroker("table_info")
+    for b in broker_list:
+        bs = BrokerSimulate(b, startdate, enddate)
+        bs.simulatebuy(table,1000)
 
 
 if __name__ == "__main__":

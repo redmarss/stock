@@ -81,8 +81,8 @@ class BrokerSimulate(Broker):
             print("%s表已存在" % table)
             return
 
-    @gf.typeassert(tablesimulate=str)
-    def simulatebuy(self, tablesimulate):
+    @gf.typeassert(tablesimulate=str, amount=int)
+    def simulatebuy(self, tablesimulate, amount=1000):
         #若开始日期或结束日期或机构编码为空，说明构造函数输入错误，返回
         if self.startdate is None or self.enddate is None or self.broker_code is None:
             return
@@ -96,7 +96,7 @@ class BrokerSimulate(Broker):
             li_stock = self.getBuyStock(str(date))
             if len(li_stock) > 0:                   #有购买股票，则记录
                 for stock in li_stock:
-                    self.__recordToSql(str(date), stock, 1000, tablesimulate)
+                    self.__recordToSql(str(date), stock, amount, tablesimulate)
             date = date + datetime.timedelta(days=1)
 
     #按顺序写入ts_date,broker_code,stock_code,buy_date,sell_date,buy_price,sell_price,amount,gainmoney,gainpercent
