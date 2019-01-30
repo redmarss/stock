@@ -2,8 +2,10 @@
 # -*- coding:utf-8 -*-
 import myGlobal.myCls.msql as msql
 import myGlobal.globalFunction as gf
+import myGlobal.myTime as myTime
 import datetime
 from pandas import Series
+
 
 #Stock类
 #输入股票代码，日期作为参数
@@ -20,60 +22,54 @@ class Stock(object):
             print("%s在%s未查询到交易记录" % (code, ts_date))
             return
         #创建数据库对象（单例模式）
-        self.dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
+        self._dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                             db='tushare', charset='utf8')
         # 获取股票当日交易信息
-        self.tuplestock = self.dbObject.fetchone(table='stock_trade_history_info',
+        self.__tuplestock = self._dbObject.fetchone(table='stock_trade_history_info',
                                                   where='stock_code="%s" and ts_date="%s"' % (code, ts_date))
-        self.ts_date = ts_date
-        self.code = code
+        self._ts_date = ts_date
+        self._code = code
 
     @property
     def code(self):
-        if self.tuplestock is not None:
-            return str(self.tuplestock[1])
-        else:
-            return None
+        return self._code
 
     @property
     def ts_date(self):
-        if self.tuplestock is not None:
-            return str(self.tuplestock[2])
-        else:
-            return None
+        return self._ts_date
 
     @property
     def open_price(self):
-        if self.tuplestock is not None:
-            return float(self.tuplestock[3])
+        if self.__tuplestock is not None:
+            return float(self.__tuplestock[3])
         else:
             return None
 
     @property
     def close_price(self):
-        if self.tuplestock is not None:
-            return float(self.tuplestock[4])
+        if self.__tuplestock is not None:
+            return float(self.__tuplestock[4])
         else:
             return None
 
     @property
     def high_price(self):
-        if self._tuplestock is not None:
-            return float(self._tuplestock[5])
+        if self.__tuplestock is not None:
+            return float(self.__tuplestock[5])
         else:
             return None
 
     @property
     def low_price(self):
-        if self.tuplestock is not None:
-            return float(self.tuplestock[6])
+        if self._tuplestock is not None:
+            return float(self._tuplestock[6])
         else:
             return None
 
     @property
     def volume(self):
-        if self.tuplestock is not None:
-            return float(self.tuplestock[7])
+        if self._tuplestock is not None:
+            return float(self._tuplestock[7])
         else:
             return None
 
@@ -86,17 +82,17 @@ class Stock(object):
             返回类型：list,list,None
             len(list)应等于days，list中每个元素应为Stock类型
         '''
-        if self.code is None:
+        if self._code is None:
             return
         stocklist=[]
         i = 0
-        date = self.ts_date         #str类型
+        date = self._ts_date         #str类型
         #当stocklist函数长度小于days且数据库中有数据
         while len(stocklist) < days:
-            if gf.is_tradeday(str(self.code), str(date)):
-                s = Stock(self.code, date)
+            if gf.is_tradeday(str(self._code), str(date)):
+                s = Stock(self._code, date)
                 stocklist.append(s)
-            date = gf.diffDay(date, 1)
+            date = myTime.diffDay(date, 1)
             # 如果日期最终大于”今天”，则中断循环，否则死循环
             if datetime.datetime.strptime(date, "%Y-%m-%d").date() > datetime.datetime.today().date():
                 break
@@ -104,12 +100,12 @@ class Stock(object):
 
     #计算买入卖出策略，stype为各种策略编号
     #返回ts_date,broker_code,stock_code,buy_date,sell_date,buy_price,sell_price,amount,gainmoney,gainpercent
-    @gf.typeassert(broker_code=str, amount=int, stype=int)
-    def strategy(self, broker_code, amount, stype):
-        if self.ts_date is None:
+    @gf.typeassert(broker_code=str, amount=int, ftype=int)
+    def strategy(self, broker_code, amount, ftype):
+        if self._ts_date is None:
             return
         #第一种策略:第二天开盘买，第三天开盘卖
-        if stype == 1:
+        if ftype == 1:
             return self.__strategy1(broker_code,amount)
 
 
@@ -122,11 +118,11 @@ class Stock(object):
         #第二天开盘涨幅超过8%，不买了
         if gf.ChangeRange(price_list[0].close_price, price_list[1].open_price) > 0.08:
             return
-        dict1['ts_date'] = self.ts_date
+        dict1['ts_date'] = self._ts_date
         dict1['broker_code'] = broker_code
-        dict1['stock_code'] = self.code
-        dict1['buy_date'] = gf.diffDay(self.ts_date, 1)
-        dict1['sell_date'] = gf.diffDay(self.ts_date, 2)
+        dict1['stock_code'] = self._code
+        dict1['buy_date'] = myTime.diffDay(self._ts_date, 1)
+        dict1['sell_date'] = myTime.diffDay(self._ts_date, 2)
         dict1['buy_price'] = price_list[1].open_price
         dict1['sell_price'] = price_list[2].open_price
         dict1['amount'] = amount
@@ -145,7 +141,7 @@ class Stock(object):
             返回类型：float,float,None
         '''
         list_MA=[]
-        t_MA = gf.getStockPrice(self.code, self.ts_date, 0-days)
+        t_MA = gf.getStockPrice(self._code, self._ts_date, 0-days)
         for i in range(len(t_MA)):
             list_MA.append(t_MA[i][4])          #收盘价
         s = Series(list_MA)

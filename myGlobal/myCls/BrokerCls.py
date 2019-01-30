@@ -72,7 +72,8 @@ class BrokerSimulate(Broker):
         `ftype` VARCHAR(5) NULL,
         PRIMARY KEY (`id`),
         UNIQUE INDEX `id_UNIQUE` (`id` ASC),
-        UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC));
+        UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC)
+        )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
         '''%table
         if self.dbObject.isTableExists(table=table) is False:
             self.dbObject.execute(sql)
@@ -81,8 +82,8 @@ class BrokerSimulate(Broker):
             print("%s表已存在" % table)
             return
 
-    @gf.typeassert(tablesimulate=str, amount=int)
-    def simulatebuy(self, tablesimulate, amount=1000):
+    @gf.typeassert(tablesimulate=str, amount=int,ftype=int)
+    def simulatebuy(self, tablesimulate, amount=1000,ftype=1):
         #若开始日期或结束日期或机构编码为空，说明构造函数输入错误，返回
         if self.startdate is None or self.enddate is None or self.broker_code is None:
             return
@@ -96,14 +97,14 @@ class BrokerSimulate(Broker):
             li_stock = self.getBuyStock(str(date))
             if len(li_stock) > 0:                   #有购买股票，则记录
                 for stock in li_stock:
-                    self.__recordToSql(str(date), stock, amount, tablesimulate)
+                    self.__recordToSql(str(date), stock, amount, tablesimulate,ftype)
             date = date + datetime.timedelta(days=1)
 
     #按顺序写入ts_date,broker_code,stock_code,buy_date,sell_date,buy_price,sell_price,amount,gainmoney,gainpercent
-    @gf.typeassert(ts_date=str, stock_code=str, amount=int, tablesimulate=str)
-    def __recordToSql(self, ts_date, stock_code, amount, tablesimulate):
+    @gf.typeassert(ts_date=str, stock_code=str, amount=int, tablesimulate=str,ftype=int)
+    def __recordToSql(self, ts_date, stock_code, amount, tablesimulate,ftype):
         stockA = Stock(stock_code, ts_date)
-        dict_info = stockA.strategy(self.broker_code, amount, 1)
+        dict_info = stockA.strategy(self.broker_code, amount, ftype)
         if dict_info is not None:               #若dict_info为空，则说明不符合买入条件
             try:
                 self.dbObject.insert(table=tablesimulate,
@@ -113,8 +114,10 @@ class BrokerSimulate(Broker):
                                      sell_price=dict_info['sell_price'],amount=dict_info['amount'],
                                      gainmoney=dict_info['gainmoney'],gainpercent=dict_info['gainpercent'],
                                      ftype=dict_info['ftype'])
+                print("%s于%s购买%s记录成功" % (self.broker_code, ts_date, stock_code))
+
             except Exception as e:
-                print("数据库中已有该条数据，同一天同一家机构只能记录一条股票数据")
+                print("数据库中已存在%s于%s购买%s的记录" % (self.broker_code, ts_date, stock_code))
 
 
 
@@ -167,6 +170,3 @@ class BrokerSimulate(Broker):
 
 
 
-
-bs = BrokerSimulate("80033466","2017-01-01","2017-12-31")
-bs.simulatebuy("test111")

@@ -136,7 +136,7 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
 @gf.typeassert(table=str,startdate=(str,type(None)),enddate=(str,type(None)))
 def simulate_buy(table, startdate=None, enddate=None):
     if enddate is None:
-        enddate = myTime.today()
+        enddate = myTime.diffDay(myTime.today(), -4)
     if startdate is None:
         startdate = myTime.diffDay(enddate, -60)
     #参数非日期，则返回
@@ -144,7 +144,7 @@ def simulate_buy(table, startdate=None, enddate=None):
         print("startdate or enddate 不是日期")
         return
     #获取数据库中所有机构编码
-    broker_list = gf.getAllBroker("table_info")
+    broker_list = gf.getAllBroker("broker_info")
     for b in broker_list:
         bs = BrokerSimulate(b, startdate, enddate)
         bs.simulatebuy(table,1000)
@@ -152,8 +152,8 @@ def simulate_buy(table, startdate=None, enddate=None):
 
 if __name__ == "__main__":
     #每月10日运行
-    getAllStock()
-    getBrokerInfo()
-    #simulate_buy()
+    #getAllStock()
+    #getBrokerInfo()
+    simulate_buy("simulate_buy")
     #is_holiday("2019-01-01","2019-12-31")
     print()
