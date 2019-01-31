@@ -4,6 +4,7 @@ import sys
 #ABSPATH = os.path.abspath(os.path.realpath(os.path.dirname(__file__)))         #将本文件路径加入包搜索范围
 #sys.path.append("H:\\github\\tushareB\\")
 import datetime
+import time
 import myGlobal.globalFunction as gf
 import myGlobal.myCls.msql as msql
 from urllib.request import urlopen, Request
@@ -15,30 +16,32 @@ import re
 
 #获取股票日线数据
 def getDayData(code=None,start="2017-01-01",end="2018-12-31"):
-    symbol = gf.code_to_symbol(code)       #将代码转换成标准格式
-    if gf.isStockA(symbol):
-        url = 'http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayqfq2017&param=%s,day,%s,%s,640,qfq'%(symbol,start,end)
-        try:
-            request=Request(url)
-            lines=urlopen(request,timeout=10).read()
-            if len(lines)<100:  #no data
-                return None
-        except Exception as e:
-            print(e)
-        else:
-            lines=lines.decode('utf-8')
-            lines = lines.split('=')[1]
-            reg = re.compile(r',{"nd.*?}')
-            lines = re.subn(reg, '', lines)
-            reg=re.compile(r',"qt":{.*?}')
-            lines = re.subn(reg, '', lines[0])
-            reg=r',"mx_price".*?"version":"4"'
-            lines = re.subn(reg, '', lines[0])
-            reg=r',"mx_price".*?"version":"12"'
-            lines = re.subn(reg, '', lines[0])
-            #将str格式转换成byte
-            textByte=bytes(lines[0],encoding='utf-8')
-        return textByte
+    for _ in range(3):
+        time.sleep(0.001)
+        symbol = gf.code_to_symbol(code)       #将代码转换成标准格式
+        if gf.isStockA(symbol):
+            url = 'http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayqfq2017&param=%s,day,%s,%s,640,qfq'%(symbol,start,end)
+            try:
+                request=Request(url)
+                lines=urlopen(request,timeout=10).read()
+                if len(lines)<100:  #no data
+                    return None
+            except Exception as e:
+                print(e)
+            else:
+                lines=lines.decode('utf-8')
+                lines = lines.split('=')[1]
+                reg = re.compile(r',{"nd.*?}')
+                lines = re.subn(reg, '', lines)
+                reg=re.compile(r',"qt":{.*?}')
+                lines = re.subn(reg, '', lines[0])
+                reg=r',"mx_price".*?"version":"4"'
+                lines = re.subn(reg, '', lines[0])
+                reg=r',"mx_price".*?"version":"12"'
+                lines = re.subn(reg, '', lines[0])
+                #将str格式转换成byte
+                textByte=bytes(lines[0],encoding='utf-8')
+            return textByte
 
 #根据日期取出机构交易数据并调用postData函数至数据库
 def brokerInfo(startDate=None, endDate=None, pagesize=2000):
@@ -81,4 +84,7 @@ if __name__ == '__main__':
     brokerInfo(start,end,200000)
 
     #将时间范围内所有股票的交易数据导入数据库
+    starttime1=time.time()
     getAllStockData(start,end)
+    endtime1=time.time()
+    print(endtime1-starttime1)
