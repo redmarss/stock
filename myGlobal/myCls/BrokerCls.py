@@ -3,7 +3,7 @@
 import myGlobal.globalFunction as gf
 import myGlobal.myCls.msql as msql
 import myGlobal.myTime as mTime
-from myGlobal.myCls.Stock import Stock
+from myGlobal.myCls.StockCls import Stock
 import datetime
 import Run.DailyRun as DailyRun
 

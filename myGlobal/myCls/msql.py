@@ -197,6 +197,16 @@ class SingletonModel:
         else:
             return False
 
+
+    def createtable(self, tablename, sql):
+
+        if self.isTableExists(table=tablename) is False:
+            self.execute(sql)
+            print("创建表%s成功" % tablename)
+        else:
+            print("%s表已存在" % tablename)
+            return
+
     #析构函数
     def __del__(self):
         #关闭数据库连接

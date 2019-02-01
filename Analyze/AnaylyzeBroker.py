@@ -11,7 +11,7 @@
 #NOET:1.删除best_broker，重新生成best_broker。2.跑数据，导出所有数据至U盘
 #每月10日跑上一月数据
 import myGlobal.myCls.msql as msql
-import myGlobal.myCls.Stock as mstock
+import myGlobal.myCls.StockCls as mstock
 import myGlobal.globalFunction as gf
 import datetime
 import Run.DailyRun as dr
