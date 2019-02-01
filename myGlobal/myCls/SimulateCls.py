@@ -19,24 +19,26 @@ class Simulate(object):
                                                 db="tushare", charset="utf8")
         else:
             print("输入的日期参数不合法")
-            self.tablename = None
-            self.startdate = None
-            self.enddate = None
+            # self.tablename = None
+            # self.startdate = None
+            # self.enddate = None
 
     @gf.typeassert(table=str)
     def _createtable(self, tablename, sql):
-        self.dbObject.createtable(tablename,sql)
+        if sql is None:
+            return
+        self.dbObject.createtable(tablename, sql)
+
 
 
 class BrokerSimulate(Broker,Simulate):
     #构造函数
     def __init__(self, broker_code, tablename, startdate, enddate):
-            Simulate.__init__(self,tablename, startdate, enddate)
+            Simulate.__init__(self, tablename, startdate, enddate)
             Broker.__init__(self, broker_code)
 
-
     @gf.typeassert(table=str)
-    def __createtable(self, tablename):
+    def _createtable(self, tablename):
         sql = '''
         CREATE TABLE `tushare`.`%s` (
         `id` INT NOT NULL AUTO_INCREMENT,
@@ -67,7 +69,7 @@ class BrokerSimulate(Broker,Simulate):
             return
         #如果table表不存在，则创建
         if self.dbObject.isTableExists(self.tablename) is False:
-            self.__createtable(self.tablename)
+            self._createtable(self.tablename)
         #开始循环
         date = self.startdate
         while date <= self.enddate:
@@ -96,6 +98,12 @@ class BrokerSimulate(Broker,Simulate):
 
             except Exception as e:
                 print("数据库中已存在%s于%s购买%s的记录" % (self.broker_code, ts_date, stock_code))
+
+
+class StockSimulate(Stock,Simulate):
+    def __init__(self, stock_code, tablename, startdate, enddate):
+        Simulate.__init__(self, tablename, startdate, enddate)
+        self.code = stock_code
 
 
 
