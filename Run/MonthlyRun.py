@@ -3,8 +3,8 @@
 
 from urllib.request import urlopen,Request
 from bs4 import BeautifulSoup
+from myGlobal.myCls.SimulateCls import BrokerSimulate
 import myGlobal.myCls.msql as msql
-from myGlobal.myCls.BrokerCls import BrokerSimulate
 import datetime
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as myTime
@@ -83,6 +83,7 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
             https://api.goseek.cn/Tools/holiday?date=20170528
             返回数据：
             {"code":10001,"data":2}
+            注：周末无论如何股票不交易，返回1
 
     '''
     date = datetime.datetime.strptime(startdate, "%Y-%m-%d").date()
@@ -99,7 +100,10 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
         else:
             response_data = response.read()
         if str(response_data)[-3] == '0':
-            isholiday = 0   # 工作日返回0
+            if date.weekday()==5 or date.weekday()==6:
+                isholiday =1    #周末，无论是否工作日，都返回1
+            else:
+                isholiday = 0   # 工作日返回0
         else:
             isholiday = 1   # 节假日返回1
 
@@ -154,6 +158,6 @@ if __name__ == "__main__":
     #每月10日运行
     #getAllStock()
     #getBrokerInfo()
-    simulate_buy("simulate_buy")
-    #is_holiday("2019-01-01","2019-12-31")
+    #simulate_buy("simulate_buy")
+    is_holiday("2017-01-01","2019-12-31")
     print()

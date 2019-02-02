@@ -19,6 +19,7 @@ def getStockEveryDay(date=None, count=32):
         where a.broker_buy_summary_id =b.id and ts_date="%s" and 
         b.broker_code in (select broker_code from best_broker_list)''' % date
         t = dbObject.execute(sql)
+        print(date)
         print(len(t))
         return t
     else:

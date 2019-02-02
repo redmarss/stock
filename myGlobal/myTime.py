@@ -47,6 +47,7 @@ def get_day(strdate = None):
     day = datetime.datetime.strptime(strdate, "%Y-%m-%d").day
     return day
 
+
 def get_hour():
     return int(datetime.datetime.today().hour)
 

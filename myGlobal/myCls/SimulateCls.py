@@ -23,7 +23,7 @@ class Simulate(object):
             # self.startdate = None
             # self.enddate = None
 
-    @gf.typeassert(table=str)
+    @gf.typeassert(tablename=str)
     def _createtable(self, tablename, sql):
         if sql is None:
             return
@@ -37,7 +37,7 @@ class BrokerSimulate(Broker,Simulate):
             Simulate.__init__(self, tablename, startdate, enddate)
             Broker.__init__(self, broker_code)
 
-    @gf.typeassert(table=str)
+    @gf.typeassert(tablename=str)
     def _createtable(self, tablename):
         sql = '''
         CREATE TABLE `tushare`.`%s` (
