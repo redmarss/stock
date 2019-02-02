@@ -7,8 +7,10 @@ import myGlobal.globalFunction as gf
 import myGlobal.myTime as mTime
 import myGlobal.myCls.msql as msql
 import datetime
+from abc import ABC,abstractmethod,ABCMeta
 
-class Simulate(object):
+
+class Simulate(metaclass=ABCMeta):                  #抽象类
     @gf.typeassert(tablename=str,startdate=str,enddate=str)
     def __init__(self, tablename, startdate, enddate):
         if mTime.isDate(startdate) is True and mTime.isDate(enddate) is True:
@@ -19,25 +21,42 @@ class Simulate(object):
                                                 db="tushare", charset="utf8")
         else:
             print("输入的日期参数不合法")
-            # self.tablename = None
-            # self.startdate = None
-            # self.enddate = None
 
-    @gf.typeassert(tablename=str)
+    @abstractmethod
+    @gf.typeassert(tablename=str, sql=str)
     def _createtable(self, tablename, sql):
         if sql is None:
             return
         self.dbObject.createtable(tablename, sql)
 
+    @abstractmethod
+    @gf.typeassert(amount=int, ftype=int)
+    def simulatebuy(self, amount=1000, ftype=1):
+        #若开始日期或结束日期或机构编码为空，说明构造函数输入错误，返回
+        if self.startdate is None or self.enddate is None or self.broker_code is None:
+            return
+        #如果table表不存在，则创建
+        if self.dbObject.isTableExists(self.tablename) is False:
+            self._createtable(self.tablename)
+        #开始循环
+        date = self.startdate
+        while date <= self.enddate:
+            #获取当日所购买股票
+            self.__recordToSql()
+            date = date + datetime.timedelta(days=1)
+
+    def __recordToSql(self):
+        pass
 
 
+#根据输入的机构代码，开始、结束日期，写入tablename表
 class BrokerSimulate(Broker,Simulate):
     #构造函数
     def __init__(self, broker_code, tablename, startdate, enddate):
             Simulate.__init__(self, tablename, startdate, enddate)
             Broker.__init__(self, broker_code)
 
-    @gf.typeassert(tablename=str)
+
     def _createtable(self, tablename):
         sql = '''
         CREATE TABLE `tushare`.`%s` (
@@ -99,8 +118,8 @@ class BrokerSimulate(Broker,Simulate):
             except Exception as e:
                 print("数据库中已存在%s于%s购买%s的记录" % (self.broker_code, ts_date, stock_code))
 
-
-class StockSimulate(Stock,Simulate):
+#根据输入的股票代码，开始、结束日期，写入table表
+class StockSimulate(Stock, Simulate):
     def __init__(self, stock_code, tablename, startdate, enddate):
         Simulate.__init__(self, tablename, startdate, enddate)
         self.code = stock_code
@@ -150,3 +169,7 @@ class StockSimulate(Stock,Simulate):
     #     if t is None:
     #         self._dbObject.insert(table="everyday_buy",ts_date=tsdate,stock=stock,amount=amount,gainmoney=gainmoeny,
     #                               reason=reason)
+
+
+s = BrokerSimulate("80128984","str1","2019-01-01","2019-01-31")
+s.simulatebuy()

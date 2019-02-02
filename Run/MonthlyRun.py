@@ -110,9 +110,12 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
         dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                        db='tushare', charset='utf8')
         try:
-            if not dbObject.fetchone(table="is_holiday",field=date,where="date='%s'"%str(date)):
-                dbObject.insert(table="is_holiday",date=str(date),isholiday=str(isholiday))
-                print("是否工作日%s写入数据库成功"%str(date))
+            if not dbObject.fetchone(table="is_holiday", field=date, where="date='%s'"%str(date)):
+                dbObject.insert(table="is_holiday", date=str(date), isholiday=str(isholiday))
+                print("是否工作日%s写入数据库成功" % str(date))
+            else:
+                dbObject.update(table="is_holiday",where="date='%s'" % str(date), isholiday=str(isholiday))
+                print("是否工作日%s更新成功" % str(date))
         except:
             raise ValueError
         date = date + datetime.timedelta(days=1)

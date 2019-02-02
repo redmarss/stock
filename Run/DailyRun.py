@@ -23,7 +23,7 @@ def getStockEveryDay(date=None, count=32):
         print(len(t))
         return t
     else:
-        print("所输入日期非交易日")
+        print("所输入日期(%s)非交易日" % date)
         return
 
 
