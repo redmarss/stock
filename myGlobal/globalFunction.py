@@ -220,45 +220,7 @@ def postData(textByte,urlPost,code=None):
         else:
             print(e)
 
-@typeassert(str,str,int)
-def getStockPrice(code, startdate, days=7):
-    '''
-    获取某股票N个交易日内的所有数据,返回元组
-    :param code: 股票代码
-    :param startdate: 开始日期
-    :param days: 天数
-    :return: 股票交易信息（元组）
-    '''
-    code = code_to_symbol(code)
-    if code is None:
-        return
-    try:    #判断日期有效性
-        date = datetime.datetime.strptime(startdate,"%Y-%m-%d").date()
-    except:
-        print("getStockPrice函数日期参数输入错误")
-        return
-    dbObject = msql.SingletonModel(host='localhost', port='3306',
-                                   user='root', passwd='redmarss',
-                                   db='tushare', charset='utf8')
-    if days > 0:            #days大于0，则往后取数字
-        try:
-            t = dbObject.fetchall(table='stock_trade_history_info',
-                                  where="stock_code='%s' and ts_date>='%s'" % (code, startdate),
-                                  limit=str(days))
-            return t
-        except:
-            raise ValueError
-            return
-    else:                   #days小于0，往前取
-        try:
-            t = dbObject.fetchall(table='stock_trade_history_info',
-                                  where="stock_code='%s' and ts_date<='%s'" % (code, startdate),
-                                  order='ts_date desc',
-                                  limit=str(abs(days)))
-            return t
-        except:
-            raise ValueError
-            return None
+
 
 
 @typeassert(table=str)

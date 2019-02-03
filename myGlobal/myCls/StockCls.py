@@ -4,7 +4,8 @@ import myGlobal.myCls.msql as msql
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as myTime
 import datetime
-from pandas import Series
+import pandas as pd
+from decimal import Decimal
 
 
 
@@ -21,6 +22,8 @@ class Stock(object):
         #判断参数合规性
         if not gf.is_tradeday(code, ts_date):                   #可能返回None,True,False
             print("%s在%s未查询到交易记录" % (code, ts_date))
+            self._ts_date = None
+            self._code = None
             return
         #创建数据库对象（单例模式）
         self._dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
@@ -132,7 +135,24 @@ class Stock(object):
         dict1['ftype'] = '1'
         return dict1
 
+    @gf.typeassert(days=int)
+    def getStockPrice(self, days=7):
+        '''
+        获取某股票N个交易日内的所有数据,返回元组
+        :param code: 股票代码
+        :param startdate: 开始日期
+        :param days: 天数
+        :return: 股票交易信息（元组）
+        '''
+        code = self._code
+        if code is None:
+            return
 
+        t = self._dbObject.fetchall(table='stock_trade_history_info',
+                                    where="stock_code='%s' and ts_date%s='%s' order by ts_date desc" % (code, ('>' if days > 0 else '<'), self._ts_date),
+                                    limit=str(abs(days)))
+        list_title = ["id", "stock_code", "ts_date", "open_price", "close_price", "high_price", "low_price", "volumne", "k", "d", "j"]
+        return pd.DataFrame(list(t),columns=list_title)
 
     #计算均线价格
     @gf.typeassert(days=int)
@@ -145,10 +165,39 @@ class Stock(object):
         t_MA = gf.getStockPrice(self._code, self._ts_date, 0-days)
         for i in range(len(t_MA)):
             list_MA.append(t_MA[i][4])          #收盘价
-        s = Series(list_MA)
+        s = pd.Series(list_MA)
         return round(s.mean(), 2)
 
-
+    @gf.typeassert(N=int)
     def KDJ(self, N=9):
+        if N < 0:
+            print("N值不能为负数")
+            return
+        t_stock = None
+        if self._code is not None and self._ts_date is not None:
+            df_stock = self.getStockPrice(0-N)
+            #寻找N日内收盘价
+            if df_stock.shape[0] < N:
+                k = d = 50
+                j = 3 * k - 2 * d
+            else:
+                #n日RSV=（Cn－Ln）/（Hn－Ln）×100
+                Cn = Decimal.from_float(self.close_price)                   #当日收盘价
+                Ln = df_stock["low_price"].min()                            #N日最低价
+                Hn = df_stock["high_price"].max()                           #N日最高价
+                Rsv = (Cn-Ln)/(Hn-Ln)*100
+                print(Rsv)
+                #获取前一日K值与D值
+                k_last = df_stock.loc[1, "j"]           #前一日K值
+                d_last = df_stock.loc[1, "d"]           #前一日D值
+                #当日K值=2/3×前一日K值+1/3×当日RSV
+                k = round(Decimal.from_float(2/3)*k_last+Decimal.from_float(1/3)*Rsv,2)
+                d = round(Decimal.from_float(2/3)*d_last+Decimal.from_float(1/3)*k,2)
+                j = 3*k-2*d
+                print(k, d, j)
+
+
+s = Stock("600000","2019-01-07")
+s.KDJ()
 
 
