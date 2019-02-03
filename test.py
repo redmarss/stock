@@ -1,5 +1,27 @@
-import pandas_datareader.data as web
-import datetime
+import numpy as np
+import stockstats
 
-df_stockload=web.DataReader("600797.SS","yahoo",datetime.datetime(2018,1,1),datetime.datetime.today())
-print(df_stockload)
+
+def KDJ(date,N=9,M1=3,M2=3):
+    datelen=len(date)
+    array=np.array(date)
+    kdjarr=[]
+    for i in range(datelen):
+        if i-N<0:
+            b=0
+        else:
+            b=i-N+1
+        rsvarr=array[b:i+1,0:5]
+        rsv=(float(rsvarr[-1,-1])-float(min(rsvarr[:,3])))/(float(max(rsvarr[:,2]))-float(min(rsvarr[:,3])))*100
+        if i==0:
+            k=rsv
+            d=rsv
+        else:
+            k=1/float(M1)*rsv+(float(M1)-1)/M1*float(kdjarr[-1][2])
+            d=1/float(M2)*k+(float(M2)-1)/M2*float(kdjarr[-1][3])
+        j=3*k-2*d
+        kdjarr.append(list((rsvarr[-1,0],rsv,k,d,j)))
+    return kdjarr
+
+
+stockstats.StockDataFrame.retype()

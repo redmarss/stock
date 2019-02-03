@@ -22,6 +22,8 @@ class Simulate(metaclass=ABCMeta):                  #抽象类
         else:
             print("输入的日期参数不合法")
 
+
+
     @abstractmethod
     @gf.typeassert(tablename=str, sql=str)
     def _createtable(self, tablename, sql):
@@ -32,21 +34,21 @@ class Simulate(metaclass=ABCMeta):                  #抽象类
     @abstractmethod
     @gf.typeassert(amount=int, ftype=int)
     def simulatebuy(self, amount=1000, ftype=1):
-        #若开始日期或结束日期或机构编码为空，说明构造函数输入错误，返回
-        if self.startdate is None or self.enddate is None or self.broker_code is None:
-            return
-        #如果table表不存在，则创建
-        if self.dbObject.isTableExists(self.tablename) is False:
-            self._createtable(self.tablename)
-        #开始循环
-        date = self.startdate
-        while date <= self.enddate:
-            #获取当日所购买股票
-            self.__recordToSql()
-            date = date + datetime.timedelta(days=1)
-
-    def __recordToSql(self):
+        # #若开始日期或结束日期或机构编码为空，说明构造函数输入错误，返回
+        # if self.startdate is None or self.enddate is None or self.broker_code is None:
+        #     return
+        # #如果table表不存在，则创建
+        # if self.dbObject.isTableExists(self.tablename) is False:
+        #     self._createtable(self.tablename)
+        # #开始循环
+        # self.ts_date = self.startdate
+        # while self.ts_date <= self.enddate:
+        #     #获取当日所购买股票
+        #     self.__recordToSql(str(self.ts_date), amount, ftype)
+        #     self.ts_date = self.ts_date + datetime.timedelta(days=1)
         pass
+
+
 
 
 #根据输入的机构代码，开始、结束日期，写入tablename表
@@ -92,31 +94,33 @@ class BrokerSimulate(Broker,Simulate):
         #开始循环
         date = self.startdate
         while date <= self.enddate:
-            #获取当日所购买股票
-            li_stock = self.getBuyStock(str(date))
-            if len(li_stock) > 0:                   #有购买股票，则记录
-                for stock in li_stock:
-                    self.__recordToSql(str(date), stock, amount, self.tablename,ftype)
+            self.__recordToSql(str(date), amount, ftype)
             date = date + datetime.timedelta(days=1)
 
-    #按顺序写入ts_date,broker_code,stock_code,buy_date,sell_date,buy_price,sell_price,amount,gainmoney,gainpercent
-    @gf.typeassert(ts_date=str, stock_code=str, amount=int, ftype=int)
-    def __recordToSql(self, ts_date, stock_code, amount, ftype):
-        stockA = Stock(stock_code, ts_date)
-        dict_info = stockA.strategy(self.broker_code, amount, ftype)
-        if dict_info is not None:               #若dict_info为空，则说明不符合买入条件
-            try:
-                self.dbObject.insert(table=self.tablename,
-                                     ts_date=dict_info['ts_date'],broker_code=dict_info['broker_code'],
-                                     stock_code=dict_info['stock_code'],buy_date=dict_info['buy_date'],
-                                     sell_date=dict_info['sell_date'],buy_price=dict_info['buy_price'],
-                                     sell_price=dict_info['sell_price'],amount=dict_info['amount'],
-                                     gainmoney=dict_info['gainmoney'],gainpercent=dict_info['gainpercent'],
-                                     ftype=dict_info['ftype'])
-                print("%s于%s购买%s记录成功" % (self.broker_code, ts_date, stock_code))
 
-            except Exception as e:
-                print("数据库中已存在%s于%s购买%s的记录" % (self.broker_code, ts_date, stock_code))
+    #按顺序写入ts_date,broker_code,stock_code,buy_date,sell_date,buy_price,sell_price,amount,gainmoney,gainpercent
+    @gf.typeassert(ts_date=str, amount=int, ftype=int)
+    def __recordToSql(self, ts_date, amount, ftype):
+        li_stock = self.getBuyStock(ts_date)
+        if len(li_stock)>0:
+            for stock_code in li_stock:
+                stockA = Stock(stock_code, ts_date)
+                dict_info = stockA.strategy(self.broker_code, amount, ftype)
+                if dict_info is not None:               #若dict_info为空，则说明不符合买入条件
+                    try:
+                        self.dbObject.insert(table=self.tablename,
+                                             ts_date=dict_info['ts_date'],broker_code=dict_info['broker_code'],
+                                             stock_code=dict_info['stock_code'],buy_date=dict_info['buy_date'],
+                                             sell_date=dict_info['sell_date'],buy_price=dict_info['buy_price'],
+                                             sell_price=dict_info['sell_price'],amount=dict_info['amount'],
+                                             gainmoney=dict_info['gainmoney'],gainpercent=dict_info['gainpercent'],
+                                            ftype=dict_info['ftype'])
+                        print("%s于%s购买%s记录成功" % (self.broker_code, ts_date, stock_code))
+
+                    except Exception as e:
+                        print("数据库中已存在%s于%s购买%s的记录" % (self.broker_code, ts_date, stock_code))
+
+
 
 #根据输入的股票代码，开始、结束日期，写入table表
 class StockSimulate(Stock, Simulate):
@@ -171,5 +175,5 @@ class StockSimulate(Stock, Simulate):
     #                               reason=reason)
 
 
-s = BrokerSimulate("80128984","str1","2019-01-01","2019-01-31")
+s = BrokerSimulate("80033529","str1","2019-01-01","2019-01-31")
 s.simulatebuy()

@@ -7,6 +7,7 @@ import datetime
 from pandas import Series
 
 
+
 #Stock类
 #输入股票代码，日期作为参数
 class Stock(object):
@@ -146,5 +147,8 @@ class Stock(object):
             list_MA.append(t_MA[i][4])          #收盘价
         s = Series(list_MA)
         return round(s.mean(), 2)
+
+
+    def KDJ(self, N=9):
 
 
