@@ -1,0 +1,12 @@
+CREATE TABLE `tushare`.`qualification` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `stock_code` VARCHAR(45) NOT NULL,
+  `ts_date` VARCHAR(45) NOT NULL,
+  `k` DECIMAL(15,2) NULL,
+  `d` DECIMAL(15,2) NULL,
+  `j` DECIMAL(15,2) NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `code_ts_date_UNQIUE` (`stock_code` ASC, `ts_date` ASC) VISIBLE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_bin;

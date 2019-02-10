@@ -147,12 +147,20 @@ class Stock(object):
         code = self._code
         if code is None:
             return
-
-        t = self._dbObject.fetchall(table='stock_trade_history_info',
-                                    where="stock_code='%s' and ts_date%s='%s' order by ts_date desc" % (code, ('>' if days > 0 else '<'), self._ts_date),
+        field_list = ["a.id", "a.stock_code", "a.ts_date", "a.open_price", "a.close_price", "a.high_price",
+                      "a.low_price", "a.volume", "b.k", "b.d", "b.j"]
+        field = ""
+        for i in field_list:
+            field += "%s," % i
+        field = field.rstrip(",")
+        t = self._dbObject.fetchall(table='stock_trade_history_info as a,qualification as b',
+                                    field=field,
+                                    where="a.stock_code=b.stock_code and a.ts_date=b.ts_date and "
+                                          "a.stock_code='%s' and a.ts_date%s='%s' order by a.ts_date desc"
+                                          % (code, ('>' if days > 0 else '<'), self._ts_date),
                                     limit=str(abs(days)))
-        list_title = ["id", "stock_code", "ts_date", "open_price", "close_price", "high_price", "low_price", "volumne", "k", "d", "j"]
-        return pd.DataFrame(list(t),columns=list_title)
+
+        return pd.DataFrame(list(t),columns=field_list)
 
     #计算均线价格
     @gf.typeassert(days=int)

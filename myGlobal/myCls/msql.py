@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 # from warnings import filterwarnings
 # filterwarnings('ignore',category=pymysql.Warning)
 
-class SingletonModel:
+class SingletonModel(object):
     #数据库连接对象
     __db = None
     #游标对象
@@ -212,6 +212,41 @@ class SingletonModel:
         #关闭数据库连接
         self.__db.close()
         #print('关闭数据库连接')
+
+class TableOperate(SingletonModel):
+    def __init__(self,*args, **kwargs):
+        super().__new__(self, *args, **kwargs)
+
+    def createtable(self, tablename, sql):
+        if self.isTableExists(table=tablename) is False:
+            self.execute(sql)
+            print("创建表%s成功" % tablename)
+        else:
+            print("%s表已存在" % tablename)
+            return
+
+
+sq = TableOperate(host='localhost', port='3306', user='root', passwd='redmarss', charset='utf8', db='tushare')
+sql = '''
+        CREATE TABLE `tushare`.`%s` (
+        `id` INT NOT NULL AUTO_INCREMENT,
+        `ts_date` VARCHAR(45) NOT NULL,
+        `broker_code` VARCHAR(45) NOT NULL,
+        `stock_code` VARCHAR(45) NOT NULL,
+        `buy_date` VARCHAR(45) NULL,
+        `sell_date` VARCHAR(45) NULL,
+        `buy_price` VARCHAR(45) NULL,
+        `sell_price` VARCHAR(45) NULL,
+        `amount` VARCHAR(45) NULL,
+        `gainmoney` VARCHAR(45) NULL,
+        `gainpercent` VARCHAR(45) NULL,
+        `ftype` VARCHAR(5) NULL,
+        PRIMARY KEY (`id`),
+        UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+        UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC)
+        )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+        '''%"test"
+sq.createtable("test",sql)
 
 #主函数
 # if __name__ == '__main__':
