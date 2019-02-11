@@ -77,7 +77,7 @@ class BrokerSimulate(Broker,Simulate):
         PRIMARY KEY (`id`),
         UNIQUE INDEX `id_UNIQUE` (`id` ASC),
         UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC)
-        )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+        )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=DEFAULT ;
         ''' % tablename
         super()._createtable(tablename,sql)
 
@@ -174,6 +174,6 @@ class StockSimulate(Stock, Simulate):
     #         self._dbObject.insert(table="everyday_buy",ts_date=tsdate,stock=stock,amount=amount,gainmoney=gainmoeny,
     #                               reason=reason)
 
-
-s = BrokerSimulate("80033529","str1","2019-01-01","2019-01-31")
-s.simulatebuy()
+#
+# s = BrokerSimulate("80033529","str1","2019-01-01","2019-01-31")
+# s.simulatebuy()

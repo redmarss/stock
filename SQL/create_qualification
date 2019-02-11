@@ -8,5 +8,5 @@ CREATE TABLE `tushare`.`qualification` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `code_ts_date_UNQIUE` (`stock_code` ASC, `ts_date` ASC) VISIBLE)
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8
-COLLATE = utf8_bin;
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = DEFAULT COLLATE;

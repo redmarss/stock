@@ -162,5 +162,5 @@ if __name__ == "__main__":
     #getAllStock()
     #getBrokerInfo()
     #simulate_buy("simulate_buy")
-    is_holiday("2017-01-01","2019-12-31")
+    #is_holiday("2017-01-01","2019-12-31")
     print()

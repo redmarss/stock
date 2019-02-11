@@ -136,7 +136,7 @@ class Stock(object):
         return dict1
 
     @gf.typeassert(days=int)
-    def getStockPrice(self, days=7):
+    def getStockInfo(self, days=7):
         '''
         获取某股票N个交易日内的所有数据,返回元组
         :param code: 股票代码
@@ -170,7 +170,7 @@ class Stock(object):
             返回类型：float,float,None
         '''
         list_MA=[]
-        t_MA = gf.getStockPrice(self._code, self._ts_date, 0-days)
+        t_MA = self.getStockInfo(self._code, self._ts_date, 0-days)
         for i in range(len(t_MA)):
             list_MA.append(t_MA[i][4])          #收盘价
         s = pd.Series(list_MA)
@@ -183,11 +183,12 @@ class Stock(object):
             return
         t_stock = None
         if self._code is not None and self._ts_date is not None:
-            df_stock = self.getStockPrice(0-N)
+            df_stock = self.getStockInfo(0-N)
             #寻找N日内收盘价
             if df_stock.shape[0] < N:
                 k = d = 50
                 j = 3 * k - 2 * d
+                return k, d, j
             else:
                 #n日RSV=（Cn－Ln）/（Hn－Ln）×100
                 Cn = Decimal.from_float(self.close_price)                   #当日收盘价
@@ -202,10 +203,19 @@ class Stock(object):
                 k = round(Decimal.from_float(2/3)*k_last+Decimal.from_float(1/3)*Rsv,2)
                 d = round(Decimal.from_float(2/3)*d_last+Decimal.from_float(1/3)*k,2)
                 j = 3*k-2*d
-                print(k, d, j)
+                return k, d, j
+
+
+    def _writeQualifi(self,**kwargs):
+        #取出参数中的技术指标
+        k = kwargs['k']
+        d = kwargs['d']
+        j = kwargs['j']
+
+
 
 
 s = Stock("600000","2019-01-07")
-s.KDJ()
+print(s.KDJ())
 
 

@@ -226,27 +226,27 @@ class TableOperate(SingletonModel):
             return
 
 
-sq = TableOperate(host='localhost', port='3306', user='root', passwd='redmarss', charset='utf8', db='tushare')
-sql = '''
-        CREATE TABLE `tushare`.`%s` (
-        `id` INT NOT NULL AUTO_INCREMENT,
-        `ts_date` VARCHAR(45) NOT NULL,
-        `broker_code` VARCHAR(45) NOT NULL,
-        `stock_code` VARCHAR(45) NOT NULL,
-        `buy_date` VARCHAR(45) NULL,
-        `sell_date` VARCHAR(45) NULL,
-        `buy_price` VARCHAR(45) NULL,
-        `sell_price` VARCHAR(45) NULL,
-        `amount` VARCHAR(45) NULL,
-        `gainmoney` VARCHAR(45) NULL,
-        `gainpercent` VARCHAR(45) NULL,
-        `ftype` VARCHAR(5) NULL,
-        PRIMARY KEY (`id`),
-        UNIQUE INDEX `id_UNIQUE` (`id` ASC),
-        UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC)
-        )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-        '''%"test"
-sq.createtable("test",sql)
+# sq = TableOperate(host='localhost', port='3306', user='root', passwd='redmarss', charset='utf8', db='tushare')
+# sql = '''
+#         CREATE TABLE `tushare`.`%s` (
+#         `id` INT NOT NULL AUTO_INCREMENT,
+#         `ts_date` VARCHAR(45) NOT NULL,
+#         `broker_code` VARCHAR(45) NOT NULL,
+#         `stock_code` VARCHAR(45) NOT NULL,
+#         `buy_date` VARCHAR(45) NULL,
+#         `sell_date` VARCHAR(45) NULL,
+#         `buy_price` VARCHAR(45) NULL,
+#         `sell_price` VARCHAR(45) NULL,
+#         `amount` VARCHAR(45) NULL,
+#         `gainmoney` VARCHAR(45) NULL,
+#         `gainpercent` VARCHAR(45) NULL,
+#         `ftype` VARCHAR(5) NULL,
+#         PRIMARY KEY (`id`),
+#         UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+#         UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC)
+#         )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+#         '''%"test"
+# sq.createtable("test",sql)
 
 #主函数
 # if __name__ == '__main__':
