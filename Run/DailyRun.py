@@ -8,7 +8,7 @@ import myGlobal.myCls.msql as msql
 @gf.typeassert(date=(str,type(None)),count=int)
 def getStockEveryDay(date=None, count=32):
     if date is None:        #如果不输入日期，则获取默认日期
-        if mt.get_hour() > 18:          #每日18点后运行，则日期定义为“当天”，否则，取昨天
+        if mt.get_hour() >= 18:          #每日18点后运行，则日期定义为“当天”，否则，取昨天
             date = str(datetime.datetime.today().date())
         else:
             date = str(datetime.datetime.today().date()-datetime.timedelta(days=1))
