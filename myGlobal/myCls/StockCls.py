@@ -188,7 +188,7 @@ class Stock(object):
             if df_stock.shape[0] < N:
                 k = d = 50
                 j = 3 * k - 2 * d
-                return k, d, j
+                self._writeQualifi(k=k,d=d,j=j)
             else:
                 #n日RSV=（Cn－Ln）/（Hn－Ln）×100
                 Cn = Decimal.from_float(self.close_price)                   #当日收盘价
@@ -203,7 +203,8 @@ class Stock(object):
                 k = round(Decimal.from_float(2/3)*k_last+Decimal.from_float(1/3)*Rsv,2)
                 d = round(Decimal.from_float(2/3)*d_last+Decimal.from_float(1/3)*k,2)
                 j = 3*k-2*d
-                return k, d, j
+
+                self._writeQualifi(k=k,d=d,j=j)
 
 
     def _writeQualifi(self,**kwargs):
@@ -212,10 +213,30 @@ class Stock(object):
         d = kwargs['d']
         j = kwargs['j']
 
+        stock_code = self._code
+        ts_date = self._ts_date
+
+        t = self._dbObject.fetchall(table="qualification",
+                                    where="stock_code='%s' and ts_date='%s'"%(stock_code,ts_date))
+        if len(t) == 0:
+            self._dbObject.insert(table="qualification",stock_code=stock_code,ts_date=ts_date,
+                                  k=k, d=d, j=j)
+        else:
+            self._dbObject.update(table="qualification",where="stock_code='%s' and ts_date='%s'"%(stock_code,ts_date),
+                                  k=k,d=d,j=j)
 
 
 
-s = Stock("600000","2019-01-07")
-print(s.KDJ())
+
+if __name__ == "__main__":
+    dbObect = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
+                                db='tushare', charset='utf8')
+    t = dbObect.fetchall(table="stock_trade_history_info",field="stock_code,ts_date",
+                         where="ts_date<'%s' order by stock_code,ts_date "%("2017-01-31"))
+    for i in range(len(t)):
+        code = t[i][0]
+        date = str(t[i][1])
+        s = Stock(code, date)
+        s.KDJ()
 
 

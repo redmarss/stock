@@ -72,6 +72,7 @@ class AnalyzeBroker(object):
                 print("机构代码不合法，请清洗机构数据")
         print("finished")
 
-# if __name__ == "__main__":
-#     analyzeBroker = AnalyzeBroker("2017-02-01", "2017-03-01")
+if __name__ == "__main__":
+    analyzeBroker = AnalyzeBroker("2017-01-01", "2018-12-31","simulate_buy")
+    analyzeBroker.getTopBroker_avr()
 #     print(analyzeBroker.getTopBroker_avr())
