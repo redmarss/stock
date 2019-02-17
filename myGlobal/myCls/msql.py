@@ -141,7 +141,7 @@ class SingletonModel(object):
 
 
         sql = 'select %s from %s %s %s %s'%(field,table,where,order,limit)
-        print(sql)
+        #print(sql)
 
         try:
             self.__cursor.execute(sql)

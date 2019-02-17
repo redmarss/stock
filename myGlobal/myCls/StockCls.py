@@ -16,7 +16,9 @@ class Stock(object):
     def __init__(self, code, ts_date):
         if gf.isStockA(code) is not True:
             print("%s不是沪深A股" % code)
-            return 
+            self._ts_date = None
+            self._code = None
+            return
         #股票代码标准化
         code = gf.code_to_symbol(code)
         #判断参数合规性
@@ -192,13 +194,12 @@ class Stock(object):
             else:
                 #n日RSV=（Cn－Ln）/（Hn－Ln）×100
                 Cn = Decimal.from_float(self.close_price)                   #当日收盘价
-                Ln = df_stock["low_price"].min()                            #N日最低价
-                Hn = df_stock["high_price"].max()                           #N日最高价
+                Ln = df_stock["a.low_price"].min()                            #N日最低价
+                Hn = df_stock["a.high_price"].max()                           #N日最高价
                 Rsv = (Cn-Ln)/(Hn-Ln)*100
-                print(Rsv)
                 #获取前一日K值与D值
-                k_last = df_stock.loc[1, "j"]           #前一日K值
-                d_last = df_stock.loc[1, "d"]           #前一日D值
+                k_last = df_stock.loc[1, "b.j"]           #前一日K值
+                d_last = df_stock.loc[1, "b.d"]           #前一日D值
                 #当日K值=2/3×前一日K值+1/3×当日RSV
                 k = round(Decimal.from_float(2/3)*k_last+Decimal.from_float(1/3)*Rsv,2)
                 d = round(Decimal.from_float(2/3)*d_last+Decimal.from_float(1/3)*k,2)
@@ -208,6 +209,7 @@ class Stock(object):
 
 
     def _writeQualifi(self,**kwargs):
+
         #取出参数中的技术指标
         k = kwargs['k']
         d = kwargs['d']
@@ -221,17 +223,18 @@ class Stock(object):
         if len(t) == 0:
             self._dbObject.insert(table="qualification",stock_code=stock_code,ts_date=ts_date,
                                   k=k, d=d, j=j)
+            print("%s(%s)记录成功"%(stock_code,ts_date))
         else:
             self._dbObject.update(table="qualification",where="stock_code='%s' and ts_date='%s'"%(stock_code,ts_date),
                                   k=k,d=d,j=j)
-
+            print("%s(%s)更新成功" % (stock_code, ts_date))
 
 
 
 if __name__ == "__main__":
-    dbObect = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                 db='tushare', charset='utf8')
-    t = dbObect.fetchall(table="stock_trade_history_info",field="stock_code,ts_date",
+    t = dbObject.fetchall(table="stock_trade_history_info",field="stock_code,ts_date",
                          where="ts_date<'%s' order by stock_code,ts_date "%("2017-01-31"))
     for i in range(len(t)):
         code = t[i][0]
