@@ -193,12 +193,12 @@ class Stock(object):
                 self._writeQualifi(k=k,d=d,j=j)
             else:
                 #n日RSV=（Cn－Ln）/（Hn－Ln）×100
-                Cn = Decimal.from_float(self.close_price)                   #当日收盘价
-                Ln = df_stock["a.low_price"].min()                            #N日最低价
-                Hn = df_stock["a.high_price"].max()                           #N日最高价
-                Rsv = (Cn-Ln)/(Hn-Ln)*100
+                Cn = round(Decimal.from_float(self.close_price),2)                   #当日收盘价
+                Ln = round(df_stock["a.low_price"].min(),2)                            #N日最低价
+                Hn = round(df_stock["a.high_price"].max(),2)                           #N日最高价
+                Rsv = round((Cn-Ln)/(Hn-Ln)*100,2)
                 #获取前一日K值与D值
-                k_last = df_stock.loc[1, "b.j"]           #前一日K值
+                k_last = df_stock.loc[1, "b.k"]           #前一日K值
                 d_last = df_stock.loc[1, "b.d"]           #前一日D值
                 #当日K值=2/3×前一日K值+1/3×当日RSV
                 k = round(Decimal.from_float(2/3)*k_last+Decimal.from_float(1/3)*Rsv,2)
@@ -235,7 +235,7 @@ if __name__ == "__main__":
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                 db='tushare', charset='utf8')
     t = dbObject.fetchall(table="stock_trade_history_info",field="stock_code,ts_date",
-                         where="ts_date<'%s' order by stock_code,ts_date "%("2017-01-31"))
+                         where="ts_date<'%s' order by stock_code,ts_date "%("2017-12-31"))
     for i in range(len(t)):
         code = t[i][0]
         date = str(t[i][1])
