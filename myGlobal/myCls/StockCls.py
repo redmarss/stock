@@ -168,15 +168,29 @@ class Stock(object):
     @gf.typeassert(days=int)
     def MA(self, days=5):
         '''
-            参数示例：5，‘5’，‘5s'
+            参数示例：5
             返回类型：float,float,None
         '''
+        if days not in [5,10,15,20,30,60,120,250,360]:
+            print("MA参数不符合定义")
+            return
         list_MA=[]
-        t_MA = self.getStockInfo(self._code, self._ts_date, 0-days)
-        for i in range(len(t_MA)):
-            list_MA.append(t_MA[i][4])          #收盘价
-        s = pd.Series(list_MA)
-        return round(s.mean(), 2)
+        t_MA = self.getStockInfo(0-days)
+        if len(t_MA)>=days:
+            for i in range(len(t_MA)):
+                list_MA.append(t_MA[i][4])          #收盘价
+            s = pd.Series(list_MA)
+            return round(s.mean(), 2)
+        else:                                       #数据不足，返回0.0
+            return 0.0
+
+
+    def getMA(self,*args):
+        for i in args:
+            ma = self.MA(i)
+            field = "MA"+str(i)
+            self._writeQualifi(field=ma)
+
 
     @gf.typeassert(N=int)
     def KDJ(self, N=9):
@@ -193,7 +207,7 @@ class Stock(object):
                 self._writeQualifi(k=k,d=d,j=j)
             else:
                 #n日RSV=（Cn－Ln）/（Hn－Ln）×100
-                Cn = Decimal.from_float(self.close_price)                   #当日收盘价
+                Cn = Decimal.from_float(self.close_price)                     #当日收盘价
                 Ln = df_stock["a.low_price"].min()                            #N日最低价
                 Hn = df_stock["a.high_price"].max()                           #N日最高价
                 Rsv = (Cn-Ln)/(Hn-Ln)*100
@@ -205,29 +219,54 @@ class Stock(object):
                 d = round(Decimal.from_float(2/3)*d_last+Decimal.from_float(1/3)*k,2)
                 j = 3*k-2*d
 
-                self._writeQualifi(k=k,d=d,j=j)
+                self._writeQualifi(k=k, d=d, j=j)
 
 
     def _writeQualifi(self,**kwargs):
+        for key,value in kwargs.items():
+            #先判断qualification表中是否有k列，如果没有则添加
+            try:
+                #如果原来就有这列，则pass
+                t = self._dbObject.fetchall(table="qualification",field=key)
+            except:
+                #没有这一列，则添加
+                sql = '''
+                ALTER TABLE `tushare`.`qualification` 
+                ADD COLUMN `%s` VARCHAR(45) NULL;
+                '''%key
+                self._dbObject.execute(sql)
+            #开始写入
+            stock_code = self._code
+            ts_date = self._ts_date
+            t = self._dbObject.fetchall(table="qualification",
+                                        where="stock_code='%s' and ts_date='%s'" % (stock_code,ts_date))
 
-        #取出参数中的技术指标
-        k = kwargs['k']
-        d = kwargs['d']
-        j = kwargs['j']
+            if len(t) == 0:
+                self._dbObject.insert(table="qulification",stock_code=stock_code,ts_date=ts_date,key=value)
+                print("%s(%s)记录成功" % (stock_code, ts_date))
+            else:
+                self._dbObject.update(table="qualification",where="stock_code='%s' and ts_date='%s'"%(stock_code,ts_date),
+                                      eval(key)=value)
+                print("%s(%s)更新成功" % (stock_code, ts_date))
+        # #取出参数中的技术指标
+        # k = kwargs['k']
+        # d = kwargs['d']
+        # j = kwargs['j']
+        #
+        # stock_code = self._code
+        # ts_date = self._ts_date
+        #
+        # t = self._dbObject.fetchall(table="qualification",
+        #                             where="stock_code='%s' and ts_date='%s'"%(stock_code,ts_date))
+        # if len(t) == 0:
+        #     self._dbObject.insert(table="qualification",stock_code=stock_code,ts_date=ts_date,
+        #                           k=k, d=d, j=j)
+        #     print("%s(%s)记录成功"%(stock_code,ts_date))
+        # else:
+        #     self._dbObject.update(table="qualification",where="stock_code='%s' and ts_date='%s'"%(stock_code,ts_date),
+        #                           k=k,d=d,j=j)
+        #     print("%s(%s)更新成功" % (stock_code, ts_date))
 
-        stock_code = self._code
-        ts_date = self._ts_date
-
-        t = self._dbObject.fetchall(table="qualification",
-                                    where="stock_code='%s' and ts_date='%s'"%(stock_code,ts_date))
-        if len(t) == 0:
-            self._dbObject.insert(table="qualification",stock_code=stock_code,ts_date=ts_date,
-                                  k=k, d=d, j=j)
-            print("%s(%s)记录成功"%(stock_code,ts_date))
-        else:
-            self._dbObject.update(table="qualification",where="stock_code='%s' and ts_date='%s'"%(stock_code,ts_date),
-                                  k=k,d=d,j=j)
-            print("%s(%s)更新成功" % (stock_code, ts_date))
 
 
 
