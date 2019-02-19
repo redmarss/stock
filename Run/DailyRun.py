@@ -28,4 +28,4 @@ def getStockEveryDay(date=None, count=32):
 
 
 if __name__ == "__main__":
-    print(getStockEveryDay("2019-02-15"))
+    print(getStockEveryDay())

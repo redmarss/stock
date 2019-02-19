@@ -45,6 +45,7 @@ class SingletonModel(object):
     #返回执行execute()方法后影响的行数
     def execute(self,sql):
         self.__cursor.execute(sql)
+        self.__db.commit()
         data = self.__cursor.fetchall()
         return data
 

@@ -189,7 +189,7 @@ class Stock(object):
         for i in args:
             ma = self.MA(i)
             field = "MA"+str(i)
-            self._writeQualifi(field=ma)
+            self._writeQualifi(field,ma)
 
 
     @gf.typeassert(N=int)
@@ -222,7 +222,9 @@ class Stock(object):
                 self._writeQualifi(k=k, d=d, j=j)
 
 
-    def _writeQualifi(self,**kwargs):
+    def _writeQualifi(self,*args,**kwargs):
+        if len(args) !=0:
+            kwargs[args[0]]=args[1]
         for key,value in kwargs.items():
             #先判断qualification表中是否有k列，如果没有则添加
             try:
@@ -242,14 +244,14 @@ class Stock(object):
                                         where="stock_code='%s' and ts_date='%s'" % (stock_code,ts_date))
 
             if len(t) == 0:
-                self._dbObject.insert(table="qulification",stock_code=stock_code,ts_date=ts_date,key=value)
+                sql_insert = "insert into qualification set stock_code='%s',ts_date='%s',%s='%s'"% (stock_code,ts_date,key,value)
+                self._dbObject.execute(sql_insert)
                 print("%s(%s)记录成功" % (stock_code, ts_date))
             else:
-                self._dbObject.update(table="qualification",where="stock_code='%s' and ts_date='%s'"%(stock_code,ts_date),
-                                      eval(key)=value)
+                sql_update = "update qualification set %s='%s' where stock_code='%s' and ts_date='%s'" % (key,value,stock_code,ts_date)
+                self._dbObject.execute(sql_update)
                 print("%s(%s)更新成功" % (stock_code, ts_date))
 
-                test
         # #取出参数中的技术指标
         # k = kwargs['k']
         # d = kwargs['d']
@@ -276,11 +278,15 @@ if __name__ == "__main__":
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
                                 db='tushare', charset='utf8')
     t = dbObject.fetchall(table="stock_trade_history_info",field="stock_code,ts_date",
-                         where="ts_date<'%s' order by stock_code,ts_date "%("2017-01-31"))
+                         where="ts_date between '%s' and '%s' order by stock_code,ts_date "
+                               %("2017-01-01","2017-01-31"))
     for i in range(len(t)):
         code = t[i][0]
         date = str(t[i][1])
         s = Stock(code, date)
         s.KDJ()
+        s.getMA(5,10,15,20,30,60,120,250)
+
+
 
 
