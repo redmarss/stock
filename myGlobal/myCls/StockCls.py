@@ -248,6 +248,8 @@ class Stock(object):
                 self._dbObject.update(table="qualification",where="stock_code='%s' and ts_date='%s'"%(stock_code,ts_date),
                                       eval(key)=value)
                 print("%s(%s)更新成功" % (stock_code, ts_date))
+
+                test
         # #取出参数中的技术指标
         # k = kwargs['k']
         # d = kwargs['d']
