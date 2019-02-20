@@ -175,13 +175,10 @@ class Stock(object):
             print("MA参数不符合定义")
             return
         list_MA=[]
-        t_MA = self.getStockInfo(0-days)
-        if len(t_MA)>=days:
-            for i in range(len(t_MA)):
-                list_MA.append(t_MA[i][4])          #收盘价
-            s = pd.Series(list_MA)
-            return round(s.mean(), 2)
-        else:                                       #数据不足，返回0.0
+        df_MA = self.getStockInfo(0-days)
+        if df_MA.shape[0]>=days:
+            return round(df_MA['a.close_price'].mean(), 2)
+        else:                                       #数据长度不足，返回0.0
             return 0.0
 
 
@@ -212,7 +209,7 @@ class Stock(object):
                 Hn = df_stock["a.high_price"].max()                           #N日最高价
                 Rsv = (Cn-Ln)/(Hn-Ln)*100
                 #获取前一日K值与D值
-                k_last = df_stock.loc[1, "b.j"]           #前一日K值
+                k_last = df_stock.loc[1, "b.k"]           #前一日K值
                 d_last = df_stock.loc[1, "b.d"]           #前一日D值
                 #当日K值=2/3×前一日K值+1/3×当日RSV
                 k = round(Decimal.from_float(2/3)*k_last+Decimal.from_float(1/3)*Rsv,2)
@@ -234,7 +231,7 @@ class Stock(object):
                 #没有这一列，则添加
                 sql = '''
                 ALTER TABLE `tushare`.`qualification` 
-                ADD COLUMN `%s` VARCHAR(45) NULL;
+                ADD COLUMN `%s` DECIMAL(15,2) NULL;
                 '''%key
                 self._dbObject.execute(sql)
             #开始写入
@@ -279,7 +276,7 @@ if __name__ == "__main__":
                                 db='tushare', charset='utf8')
     t = dbObject.fetchall(table="stock_trade_history_info",field="stock_code,ts_date",
                          where="ts_date between '%s' and '%s' order by stock_code,ts_date "
-                               %("2017-01-01","2017-01-31"))
+                               %("2017-01-01","2017-12-31"))
     for i in range(len(t)):
         code = t[i][0]
         date = str(t[i][1])
