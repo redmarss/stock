@@ -6,6 +6,7 @@ import myGlobal.myTime as myTime
 import datetime
 import pandas as pd
 from decimal import Decimal
+from multiprocessing.dummy import Pool as ThreadPool
 
 
 
@@ -270,13 +271,7 @@ class Stock(object):
 
 
 
-
-if __name__ == "__main__":
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
-                                db='tushare', charset='utf8')
-    t = dbObject.fetchall(table="stock_trade_history_info",field="stock_code,ts_date",
-                         where="ts_date between '%s' and '%s' order by stock_code,ts_date "
-                               %("2017-01-01","2017-12-31"))
+def Main(t):
     for i in range(len(t)):
         code = t[i][0]
         date = str(t[i][1])
@@ -284,6 +279,16 @@ if __name__ == "__main__":
         s.KDJ()
         s.getMA(5,10,15,20,30,60,120,250)
 
+if __name__ == "__main__":
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
+                                db='tushare', charset='utf8')
+    t = dbObject.fetchall(table="stock_trade_history_info",field="stock_code,ts_date",
+                         where="ts_date between '%s' and '%s' order by stock_code,ts_date "
+                               %("2017-01-01","2017-12-31"))
+    pool = ThreadPool(10)
+    pool.map(mapfunc, all_quotes)  # 多线程执行下载工作
+    pool.close()
+    pool.join()
 
 
 
