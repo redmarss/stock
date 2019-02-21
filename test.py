@@ -1,12 +1,18 @@
 import numpy as np
 import myGlobal.myCls.msql as msql
 import pandas as pd
+from multiprocessing.dummy import Pool as ThreadPool
 
-dbObject =msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
-                              db='tushare', charset='utf8')
+def Main(s):
+    test1=s[0]
+    test2=s[1]
+    print(test1,test2)
 
 
-t = dbObject.fetchall(table="stock_trade_history_info",field="stock_code,ts_date")
-df = pd.DataFrame(list(t),columns=["stock_code","ts_date"])
+if __name__=='__main__':
+    pool = ThreadPool(10)
+    list1 =[('1','2'),('3','4')]
+    pool.map(Main,list1)
+    pool.close
+    pool.join
 
-dbObject.DataframeToSql(df,"qualification")
