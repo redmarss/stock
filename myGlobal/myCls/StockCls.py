@@ -285,11 +285,17 @@ if __name__ == "__main__":
     t = dbObject.fetchall(table="stock_trade_history_info",field="stock_code,ts_date",
                          where="ts_date between '%s' and '%s' order by stock_code,ts_date "
                                %("2017-01-01","2017-01-31"))
+    list_t = list(t)
     pool = ThreadPool(10)
+    while len(list_t)>0:
+        t_temp = list_t[:10]
+        for i in range(10):
+            list_t.pop(i)
+        pool.map(Main,t_temp)
+        pool.close()
+        pool.join()
 
-    pool.map(Main,t[:10])  # 多线程执行下载工作
-    pool.close()
-    pool.join()
+
 
 
 
