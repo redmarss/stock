@@ -35,7 +35,7 @@ def code_to_symbol(code):
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
                                    charset='utf8')
     if len(code) == 6:
-        _code = 'sh'+code if code[:1] in ["6"] else 'sz'+code
+        _code = 'sh'+code if code[:1] in ["6"] else 'sz'+code   #6打头为上海，其余为深圳
 
     elif len(code) > 6:
         if code[:1].lower() == 's':
@@ -166,7 +166,6 @@ def is_tradeday(code, ts_date):
     :param tsdate: 交易日期
     :return: True or False 参数错误返回None
     '''
-    code = code_to_symbol(code)
     if code is None:
         return
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')

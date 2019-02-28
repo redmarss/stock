@@ -15,18 +15,15 @@ from multiprocessing.dummy import Pool as ThreadPool
 class Stock(object):
     @gf.typeassert(code=str, ts_date=str)
     def __init__(self, code, ts_date):
-        if gf.isStockA(code) is not True:
-            print("%s不是沪深A股" % code)
-            self._ts_date = None
-            self._code = None
-            return
+        self._ts_date = None
+        self._code = None
         #股票代码标准化
         code = gf.code_to_symbol(code)
+        if code is None:        #code参数非沪深A股，退出
+            return
         #判断参数合规性
-        if not gf.is_tradeday(code, ts_date):                   #可能返回None,True,False
+        if not gf.is_tradeday(code, ts_date):                   #停牌或其他（没有交易记录）
             print("%s在%s未查询到交易记录" % (code, ts_date))
-            self._ts_date = None
-            self._code = None
             return
         #创建数据库对象（单例模式）
         self._dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
@@ -35,7 +32,7 @@ class Stock(object):
         self.__tuplestock = self._dbObject.fetchone(table='stock_trade_history_info',
                                                   where='stock_code="%s" and ts_date="%s"' % (code, ts_date))
         self._ts_date = ts_date
-        self._code = code
+        self._code = code                       #标准化后的code
 
     @property
     def code(self):
