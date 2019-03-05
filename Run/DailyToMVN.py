@@ -46,29 +46,32 @@ import re
 #             return textByte
 
 def _getDayData(stock_code, stardate, filetype, count, fq):
-    url = "https://gupiao.baidu.com/api/stocks/stockdaybar?from=pc&os_ver=1&cuid=xxx&vv=100&format=%s&stock_code=%s&step=3&start=%s&count=%s&fq_type=%s" \
-          % (filetype,stock_code,stardate,count,fq)
-    try:
-        request = Request(url)
-        lines = urlopen(request, timeout=10).read()
-    except Exception as e:
-        print(e)
-    else:
-        t = json.loads(lines)
-        t['stock_code'] = stock_code
-        rbyte = json.dumps(t).encode()
-    return rbyte
+    for _ in range(3):
+        url = "https://gupiao.baidu.com/api/stocks/stockdaybar?from=pc&os_ver=1&cuid=xxx&vv=100&format=%s&stock_code=%s&step=3&start=%s&count=%s&fq_type=%s" \
+              % (filetype,stock_code,stardate,count,fq)
+        try:
+            request = Request(url)
+            lines = urlopen(request, timeout=10).read()
+        except Exception as e:
+            print(e)
+        else:
+            t = json.loads(lines)
+            t['stock_code'] = stock_code
+            rbyte = json.dumps(t).encode()
+        return rbyte
 
 def getAllStockData(startdate,filetype='json',count=160):
 #将所有股票代码存入一个list
+    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
+                                   charset='utf8')
     li =gf.getAllStock()
-    li=['sh600000']
-    for fqtype in ['no', 'front', 'back']:
-        print("开始写入%s数据"%fqtype)
-        urlPost = "http://localhost:8080/stock/detail/%s" % fqtype
-        for stock in li:
+    for stock in li:
+        for fqtype in ['no', 'front', 'back']:
+            print("开始写入%s数据"%fqtype)
+            urlPost = "http://localhost:8080/stock/detail/%s" % fqtype
             textByte = _getDayData(stock,startdate,filetype,count,fqtype)
             gf.postData(textByte,urlPost,stock)
+        dbObject.update(table="stock_basic_table",where='stockcode="%s"'%stock,flag='1')
 
 #根据日期取出机构交易数据并调用postData函数至数据库
 def brokerInfo(startDate=None, endDate=None, pagesize=2000):
@@ -103,7 +106,7 @@ def brokerInfo(startDate=None, endDate=None, pagesize=2000):
 
 
 if __name__ == '__main__':
-    getAllStockData("20190101")
+    getAllStockData("20190101",count=500)
     # if datetime.datetime.today().hour > 18:     #运行时间大于18点
     #     end = str(datetime.datetime.today().date() + datetime.timedelta(days=1))
     # else:
@@ -113,8 +116,8 @@ if __name__ == '__main__':
     #
     # #将时间范围内的机构买卖信息导入数据库，重复的不导入
     # brokerInfo(start,end,200000)
-    #
-    # #将时间范围内所有股票的交易数据导入数据库
+
+    #将时间范围内所有股票的交易数据导入数据库
     # starttime1=time.time()
     # getAllStockData(start,end)
     # endtime1=time.time()
