@@ -214,10 +214,7 @@ def postData(textByte,urlPost,code=None):
             else:
                 print("%s完成"%code)
     except Exception as e:
-        if e.code==500:
-            print("%s或已退市"%code)
-        else:
-            print(e)
+        print(e)
 
 
 
@@ -239,7 +236,7 @@ def getAllStock():
     dbObject = msql.SingletonModel(host='localhost', port='3306',
                                          user='root', passwd='redmarss',
                                          charset='utf8', db='tushare')
-    t_stock = dbObject.fetchall(table="stock_basic_table",field="stockcode")
+    t_stock = dbObject.fetchall(table="stock_basic_table",field="stockcode", where="flag=0")
     for key in t_stock:
         li.append(key[0])
     return li
