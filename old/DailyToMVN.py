@@ -10,40 +10,12 @@ import myGlobal.myCls.msql as msql
 from urllib.request import urlopen, Request
 import json
 import re
-# import tushare as ts
-# import time
-# from tushare.stock import ref_vars as rv
+from multiprocessing.dummy import Pool as ThreadPool
+from functools import partial
 
 
 
-#获取股票日线数据
-# def getDayData(code=None,start="2017-01-01",end="2018-12-31"):
-#     for _ in range(3):
-#         time.sleep(0.001)
-#         symbol = gf.code_to_symbol(code)       #将代码转换成标准格式
-#         if gf.isStockA(symbol):
-#             url = 'http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayqfq2017&param=%s,day,%s,%s,640,qfq'%(symbol,start,end)
-#             try:
-#                 request=Request(url)
-#                 lines=urlopen(request,timeout=10).read()
-#                 if len(lines)<100:  #no data
-#                     return None
-#             except Exception as e:
-#                 print(e)
-#             else:
-#                 lines=lines.decode('utf-8')
-#                 lines = lines.split('=')[1]
-#                 reg = re.compile(r',{"nd.*?}')
-#                 lines = re.subn(reg, '', lines)
-#                 reg=re.compile(r',"qt":{.*?}')
-#                 lines = re.subn(reg, '', lines[0])
-#                 reg=r',"mx_price".*?"version":"4"'
-#                 lines = re.subn(reg, '', lines[0])
-#                 reg=r',"mx_price".*?"version":"12"'
-#                 lines = re.subn(reg, '', lines[0])
-#                 #将str格式转换成byte
-#                 textByte=bytes(lines[0],encoding='utf-8')
-#             return textByte
+
 
 def _getDayData(stock_code, stardate, filetype, count, fq):
     for _ in range(3):
