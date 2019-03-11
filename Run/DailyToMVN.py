@@ -13,6 +13,7 @@ import re
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
 
+list_fq = ['no', 'front', 'back']
 
 
 
