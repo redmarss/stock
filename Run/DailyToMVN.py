@@ -30,13 +30,13 @@ def _getDayData(fqtype, stock_code_list, startdate, filetype, count): #fqtype作
                 t = json.loads(lines)
                 t['stock_code'] = stock_code
                 rbyte = json.dumps(t).encode()
-            print("开始写入%s  %s数据" % (stock_code,fqtype))
             urlPost = "http://localhost:8080/stock/detail/%s" % fqtype
             gf.postData(rbyte,urlPost,stock_code)
             sql = "update stock_basic_table set flag='1' where stockcode='%s'" % stock_code
             cur.execute(sql)
             conn.commit()
 
+    cur.close()
 
             #dbObject.update(table="stock_basic_table", where='stockcode="%s"' % stock_code, flag='1')
 
