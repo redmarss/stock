@@ -195,7 +195,7 @@ def lastTddate(strdate):
 
 
 #将byte数据Post至jar服务中
-def postData(textByte,urlPost,code=None):
+def postData(textByte,urlPost,flag=None):
     if isinstance(textByte,str):
         textByte=bytes(textByte,encoding='utf8')
     elif isinstance(textByte,bytes):
@@ -209,10 +209,10 @@ def postData(textByte,urlPost,code=None):
         req.add_header('Content-Length',len(textByte))
         response=urlopen(req,textByte)
         if response.status==200:
-            if code is None:
+            if flag is None:
                 print("龙虎榜数据完成")
             else:
-                print("%s完成"%code)
+                pass
     except Exception as e:
         print(e)
 
@@ -236,7 +236,7 @@ def getAllStock():
     dbObject = msql.SingletonModel(host='localhost', port='3306',
                                          user='root', passwd='redmarss',
                                          charset='utf8', db='tushare')
-    t_stock = dbObject.fetchall(table="stock_basic_table",field="stockcode", where="flag='0'")
+    t_stock = dbObject.fetchall(table="stock_basic_table",field="stockcode", where="no_flag='0' or back_flag='0' or front_flag='0'")
     for key in t_stock:
         li.append(key[0])
     return li
