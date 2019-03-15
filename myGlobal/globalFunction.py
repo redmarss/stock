@@ -230,13 +230,13 @@ def getAllBroker(table):
             broker_list.append(t[0])
     return broker_list
 
-def getAllStock():
+def getAllStock(where='1=1'):
     li = []
     # 创建数据库对象（单例模式）
     dbObject = msql.SingletonModel(host='localhost', port='3306',
                                          user='root', passwd='redmarss',
                                          charset='utf8', db='tushare')
-    t_stock = dbObject.fetchall(table="stock_basic_table",field="stockcode", where="no_flag='0' or back_flag='0' or front_flag='0'")
+    t_stock = dbObject.fetchall(table="stock_basic_table",field="stockcode", where=where,order="stockcode")
     for key in t_stock:
         li.append(key[0])
     return li
