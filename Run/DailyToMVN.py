@@ -6,6 +6,7 @@ from urllib.request import urlopen, Request
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
 import pymysql
+import datetime
 import myGlobal.myCls.msql as msql
 import time
 
@@ -13,8 +14,6 @@ import time
 list_fq = ['no', 'front', 'back']
 # 获取所有股票列表
 stock_li = gf.getAllStock(where="no_flag=0 or front_flag=0 or back_flag=0")
-print(stock_li)
-print()
 def _getDayData(stock_code, date, filetype, count, list_fq): #fqtype作为多线程参数一定要放第一个
     '''
     获取股票日线数据及技术指标，分别存入对应的三张表中
@@ -23,6 +22,7 @@ def _getDayData(stock_code, date, filetype, count, list_fq): #fqtype作为多线
     :param date: 取该日期前的数据
     :param filetype: json
     :param count: 获取数据天数
+    flag : 0:还未处理数据，1：正常处理数据，2：出错数据
     :return:
     '''
     conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='redmarss', db='tushare',
@@ -37,10 +37,18 @@ def _getDayData(stock_code, date, filetype, count, list_fq): #fqtype作为多线
                 lines = urlopen(request, timeout=10).read()
             except Exception as e:
                 print(e)
+                return
             else:
-                t = json.loads(lines)
-                t['stock_code'] = stock_code
-                rbyte = json.dumps(t).encode()
+                if len(lines)<50:
+                    print("无法取得%s股票相关数据" % stock_code)
+                    sql = "update stock_basic_table set %s_flag='2' where stockcode='%s'" % (fqtype, stock_code)
+                    cur.execute(sql)
+                    conn.commit()
+                    return
+                else:
+                    t = json.loads(lines)
+                    t['stock_code'] = stock_code
+                    rbyte = json.dumps(t).encode()
             urlPost = "http://localhost:8080/stock/detail/%s" % fqtype
             gf.postData(rbyte,urlPost,flag="daily")
             sql = "update stock_basic_table set %s_flag='1' where stockcode='%s'" % (fqtype, stock_code)
@@ -67,5 +75,25 @@ def RunGetDayData(date,filetype,count,list_fq):
     pool.join()                     #主进程阻塞等待子进程的退出
 
 
+#根据日期取出机构交易数据并调用postData函数至数据库
+def brokerInfo(startDate=None, endDate=None, pagesize=200000):
+    urlPost="http://localhost:8080/broker/purchaseSummary"
+    LHBYYBSBCS="http://datainterface3.eastmoney.com/EM_DataCenter_V3/Api//LHBYYBSBCS/GetLHBYYBSBCS?tkn=eastmoney&mkt=&dateNum=&startDateTime=%s&endDateTime=%s&sortRule=1&sortColumn=JmMoney&pageNum=1&pageSize=%s&cfg=lhbyybsbcs"
+    try:
+        request=Request(LHBYYBSBCS%(startDate,endDate,pagesize))
+        text=urlopen(request, timeout=10).read()                     #type is byte
+        gf.postData(text,urlPost)
+    except Exception as e:
+        print(e)
+
 if __name__ == '__main__':
-    RunGetDayData("20190101","json","30",list_fq)
+    if datetime.datetime.today().hour > 18:     #运行时间大于18点
+        start = str(datetime.datetime.today().date()-datetime.timedelta(days=7))
+        end = str(datetime.datetime.today().date() + datetime.timedelta(days=1))
+    else:
+        start = str(datetime.datetime.today().date() - datetime.timedelta(days=8))
+        end = str(datetime.datetime.today().date())
+    # 每日获取股票相关数据
+    RunGetDayData("20190101","json","500",list_fq)
+    #每日获取机构数据
+    #brokerInfo(start,end)
