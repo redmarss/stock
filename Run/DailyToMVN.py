@@ -94,6 +94,6 @@ if __name__ == '__main__':
         start = str(datetime.datetime.today().date() - datetime.timedelta(days=8))
         end = str(datetime.datetime.today().date())
     # 每日获取股票相关数据
-    RunGetDayData("20190101","json","500",list_fq)
+    # RunGetDayData("20190101","json","500",list_fq)
     #每日获取机构数据
-    #brokerInfo(start,end)
+    brokerInfo(start,end)

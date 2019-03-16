@@ -208,8 +208,10 @@ def postData(textByte,urlPost,flag=None):
         req.add_header('Content-Type','application/json;charset=utf-8')
         req.add_header('Content-Length',len(textByte))
         response=urlopen(req,textByte)
-        if response.status==200:
+        if response.status == 200:
             if flag is None:
+                print(dir(response))
+                print(response.recordCount)
                 print("龙虎榜数据完成")
             else:
                 pass
