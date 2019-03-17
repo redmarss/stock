@@ -208,6 +208,8 @@ def postData(textByte,urlPost,flag=None):
         req.add_header('Content-Type','application/json;charset=utf-8')
         req.add_header('Content-Length',len(textByte))
         response=urlopen(req,textByte)
+        body = response.read()
+        print(body)
         if response.status == 200:
             if flag is None:
                 print(dir(response))
