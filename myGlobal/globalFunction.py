@@ -5,6 +5,7 @@ from urllib.request import Request,urlopen
 import datetime
 from inspect import signature
 from functools import wraps
+import json
 
 #装饰函数，限定所有函数的数据类型
 def typeassert(*type_args, **type_kwargs):
@@ -207,14 +208,13 @@ def postData(textByte,urlPost,flag=None):
         req=Request(urlPost)
         req.add_header('Content-Type','application/json;charset=utf-8')
         req.add_header('Content-Length',len(textByte))
-        response=urlopen(req,textByte)
-        body = response.read()
-        print(body)
-        if response.status == 200:
+        response=urlopen(req,textByte).read()
+        dictResponse = json.loads(response)
+
+        if dictResponse['status'] == 200:
             if flag is None:
-                print(dir(response))
-                print(response.recordCount)
-                print("龙虎榜数据完成")
+                #print(response.recordCount)
+                print("龙虎榜数据完成,%s条数据导入成功" % dictResponse['recordCount'])
             else:
                 pass
     except Exception as e:

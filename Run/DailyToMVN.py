@@ -69,7 +69,7 @@ def RunGetDayData(date,filetype,count,list_fq):
     :return:
     '''
     mapfunc = partial(_getDayData,date=date,filetype=filetype,count=count,list_fq=list_fq)
-    pool = ThreadPool(30)        #3个线程分别对应front,back,no
+    pool = ThreadPool(10)        #3个线程分别对应front,back,no
     pool.map(mapfunc,stock_li)       #会将list_fq参数放在_getDayData参数拦最左边
     pool.close()                    #关闭进程池，不再接受新的进程
     pool.join()                     #主进程阻塞等待子进程的退出
@@ -94,6 +94,6 @@ if __name__ == '__main__':
         start = str(datetime.datetime.today().date() - datetime.timedelta(days=8))
         end = str(datetime.datetime.today().date())
     # 每日获取股票相关数据
-    # RunGetDayData("20190101","json","500",list_fq)
+    RunGetDayData("20190101","json","500",list_fq)
     #每日获取机构数据
-    brokerInfo(start,end)
+    #brokerInfo(start,end)
