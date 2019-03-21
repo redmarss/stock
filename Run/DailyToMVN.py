@@ -90,10 +90,14 @@ if __name__ == '__main__':
     if datetime.datetime.today().hour > 18:     #运行时间大于18点
         start = str(datetime.datetime.today().date()-datetime.timedelta(days=7))
         end = str(datetime.datetime.today().date() + datetime.timedelta(days=1))
+
+
     else:
         start = str(datetime.datetime.today().date() - datetime.timedelta(days=8))
         end = str(datetime.datetime.today().date())
+
+    everyday = start.replace("-","")
     # 每日获取股票相关数据
-    RunGetDayData("20190101","json","500",list_fq)
+    # RunGetDayData(everyday,"json","60",list_fq)
     #每日获取机构数据
-    #brokerInfo(start,end)
+    brokerInfo(start,end)

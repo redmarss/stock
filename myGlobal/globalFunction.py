@@ -209,14 +209,17 @@ def postData(textByte,urlPost,flag=None):
         req.add_header('Content-Type','application/json;charset=utf-8')
         req.add_header('Content-Length',len(textByte))
         response=urlopen(req,textByte).read()
-        dictResponse = json.loads(response)
+        if len(response) > 0:               #长度大于0，说明能取到正确的字段属性
+            dictResponse = json.loads(response)
 
-        if dictResponse['status'] == 200:
-            if flag is None:
-                #print(response.recordCount)
-                print("龙虎榜数据完成,%s条数据导入成功" % dictResponse['recordCount'])
-            else:
-                pass
+            if dictResponse['status'] == 200:
+                if flag is None:
+                    #print(response.recordCount)
+                    print("龙虎榜数据完成,%s条数据导入成功" % dictResponse['recordCount'])
+                else:
+                    pass
+        else:
+            print("龙虎榜数据完成")
     except Exception as e:
         print(e)
 
