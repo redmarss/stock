@@ -227,6 +227,8 @@ class TableOperate(SingletonModel):
             return
 
 
+
+
 # sq = TableOperate(host='localhost', port='3306', user='root', passwd='redmarss', charset='utf8', db='tushare')
 # sql = '''
 #         CREATE TABLE `tushare`.`%s` (
