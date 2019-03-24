@@ -2,39 +2,23 @@
 # -*- coding:utf-8 -*-
 
 import pymysql
-import logging
+import myGlobal.myCls.mylogger as mylogger
 import sys
 
-#加入日志
-#获取logger实例
-logger = logging.getLogger("baseSpider")
-#指定输出格式
-formatter = logging.Formatter('%(asctime)s\
-              %(levelname)-8s:%(message)s')
-#文件日志
-file_handler = logging.FileHandler("baseSpider.log")
-file_handler.setFormatter(formatter)
-#控制台日志
-console_handler = logging.StreamHandler(sys.stdout)
-console_handler.setFormatter(formatter)
 
-#为logger添加具体的日志处理器
-logger.addHandler(file_handler)
-logger.addHandler(console_handler)
-
-logger.setLevel(logging.INFO)
 
 
 class DBHelper:
     # 构造函数
-    def __init__(self, host='127.0.0.1', user='root',
-                 pwd='123456', db='testdb'):
+    def __init__(self, host='127.0.0.1', user='root', pwd='123456', db='tushare'):
         self.host = host
         self.user = user
         self.pwd = pwd
         self.db = db
         self.conn = None
         self.cur = None
+        self.logger = mylogger.mylogger('test.log')
+
 
     # 连接数据库
     def connectDatabase(self):
@@ -42,7 +26,7 @@ class DBHelper:
             self.conn = pymysql.connect(self.host, self.user,
                                         self.pwd, self.db, charset='utf8')
         except:
-            logger.error("connectDatabase failed")
+            self.logger.error("connectDatabase failed")
             return False
         self.cur = self.conn.cursor()
         return True
@@ -65,8 +49,8 @@ class DBHelper:
                 self.cur.execute(sql, params)
                 self.conn.commit()
         except:
-            logger.error("execute failed: " + sql)
-            logger.error("params: " + params)
+            self.logger.error("execute failed: " + sql)
+            self.logger.error("params: " + params)
             self.close()
             return False
         return True
@@ -80,12 +64,4 @@ class DBHelper:
 if __name__ == '__main__':
     dbhelper = DBHelper()
     # 创建数据库的表
-    sql = "create table maoyan('id'varchar(8),\
-            'title'varchar(50),\
-            'star'varchar(200), \
-            'time'varchar(100),primary key('id'));"
-    result = dbhelper.execute(sql, None)
-    if result:
-        logger.info("maoyan　table创建成功")
-    else:
-        logger.error("maoyan　table创建失败")
+    dbhelper.connectDatabase()
