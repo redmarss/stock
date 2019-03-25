@@ -8,14 +8,14 @@ import pandas as pd
 from decimal import Decimal
 from myGlobal.myCls.mylogger import mylogger
 from myGlobal.myCls.msql import DBHelper
-
-mylogger=mylogger()
+#定义日志类及路径
+#mylogger=mylogger()
 
 
 #Stock类
 #输入股票代码，日期作为参数
 class Stock(object):
-    @gf.typeassert(code=str, ts_date=str)
+    #@gf.typeassert(code=str, ts_date=str)
     def __init__(self, code, ts_date):
         self._ts_date = ts_date
         #返回标准股票代码，若无法转换，返回None
@@ -24,16 +24,14 @@ class Stock(object):
             return
         #判断参数合规性
         if not gf.is_tradeday(code, ts_date):                   #停牌或其他（没有交易记录）
-            mylogger.error("%s在%s未查询到交易记录" % (code, ts_date))
+            mylogger().error("%s在%s未查询到交易记录" % (code, ts_date))
             return
-        #创建数据库对象（单例模式）
-        self._dbHelper = DBHelper()
+        #创建数据库对象
         # 获取股票当日交易信息
-        self._tuplestock = self._dbObject.fetchone(table='stock_trade_history_info',
-                                                  where='stock_code="%s" and ts_date="%s"' % (code, ts_date))
         sql_stock = '''select * from stock_trade_history_info where 
                     stock_code="%s" and ts_date="%s"''' % (self._code, self._ts_date)
-        self._tuplestock = self._dbHelper.fetchone()
+        self._tuplestock = DBHelper().fetchone(sql_stock)
+
 
     @property
     def code(self):
@@ -83,18 +81,17 @@ class Stock(object):
     @gf.typeassert(days=int)
     def next_some_days(self, days=7):
         '''
-            参数示例：7，‘7’，‘7s'
-            返回类型：list,list,None
+            返回类型：list, or None
             len(list)应等于days，list中每个元素应为Stock类型
         '''
         if self._code is None:
             return
         stocklist=[]
         i = 0
-        date = self._ts_date         #str类型
+        date = str(self._ts_date)         #str类型
         #当stocklist函数长度小于days且数据库中有数据
         while len(stocklist) < days:
-            if gf.is_tradeday(str(self._code), str(date)):
+            if gf.is_tradeday(str(self._code), date):
                 s = Stock(self._code, date)
                 stocklist.append(s)
             date = myTime.diffDay(date, 1)

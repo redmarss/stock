@@ -237,7 +237,7 @@ class DBHelper:
         self.db = db
         self.conn = None
         self.cur = None
-        self.logger = mylogger.mylogger()
+
 
 
     # 连接数据库
@@ -246,7 +246,7 @@ class DBHelper:
             self.conn = pymysql.connect(self.host, self.user,
                                         self.pwd, self.db, charset='utf8')
         except:
-            self.logger.error("connectDatabase failed")
+            mylogger.mylogger().error("connectDatabase failed")
             return False
         self.cur = self.conn.cursor()
         return True

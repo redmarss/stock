@@ -167,11 +167,11 @@ def is_tradeday(code, ts_date):
     :param tsdate: 交易日期
     :return: True or False 参数错误返回None
     '''
-    if code is None:
+    if code is None or ts_date is None:
         return
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
-    istradeday = dbObject.fetchone(table='stock_trade_history_info',where="stock_code='%s' and ts_date='%s'"%(code,ts_date))
-    if istradeday is not None:
+    dbHelp = msql.DBHelper()
+    sql = "select * from stock_trade_history_info where stock_code='%s' and ts_date='%s'" % (code, ts_date)
+    if dbHelp.fetchone(sql) is not None:            #查询到交易记录
         return True
     else:
         return False

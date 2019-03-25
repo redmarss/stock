@@ -3,6 +3,7 @@
 
 import logging
 
+
 class mylogger:
     def __init__(self, filepath='.\log\default.log', dlevel=logging.DEBUG,clevel=logging.DEBUG, flevel=logging.DEBUG):
         self.logger = logging.getLogger(filepath)
