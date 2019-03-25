@@ -10,14 +10,14 @@ import sys
 
 class DBHelper:
     # 构造函数
-    def __init__(self, host='127.0.0.1', user='root', pwd='123456', db='tushare'):
+    def __init__(self, host='127.0.0.1', user='root', pwd='redmarss', db='tushare'):
         self.host = host
         self.user = user
         self.pwd = pwd
         self.db = db
         self.conn = None
         self.cur = None
-        self.logger = mylogger.mylogger('test.log')
+        self.logger = mylogger.mylogger()
 
 
     # 连接数据库
@@ -57,11 +57,10 @@ class DBHelper:
 
     # 用来查询表数据
     def fetchall(self, sql, params=None):
+        #self.connectDatabase()
         self.execute(sql, params)
         return self.cur.fetchall()
 
 
 if __name__ == '__main__':
-    dbhelper = DBHelper()
-    # 创建数据库的表
-    dbhelper.connectDatabase()
+    pass

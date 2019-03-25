@@ -4,7 +4,7 @@
 import logging
 
 class mylogger:
-    def __init__(self, filepath, dlevel=logging.DEBUG,clevel=logging.DEBUG, flevel=logging.DEBUG):
+    def __init__(self, filepath='.\log\default.log', dlevel=logging.DEBUG,clevel=logging.DEBUG, flevel=logging.DEBUG):
         self.logger = logging.getLogger(filepath)
         self.logger.setLevel(dlevel)
         fmt = logging.Formatter('[%(asctime)s]-[%(name)s]-[%(levelname)s]:[%(message)s]','%Y-%m-%d %H:%M:%S')

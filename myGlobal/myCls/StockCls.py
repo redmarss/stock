@@ -1,13 +1,15 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
-import myGlobal.myCls.msql as msql
+
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as myTime
 import datetime
 import pandas as pd
 from decimal import Decimal
-from multiprocessing.dummy import Pool as ThreadPool
+from myGlobal.myCls.mylogger import mylogger
+from myGlobal.myCls.msql import DBHelper
 
+mylogger=mylogger()
 
 
 #Stock类
@@ -15,24 +17,23 @@ from multiprocessing.dummy import Pool as ThreadPool
 class Stock(object):
     @gf.typeassert(code=str, ts_date=str)
     def __init__(self, code, ts_date):
-        self._ts_date = None
-        self._code = None
-        #股票代码标准化
-        code = gf.code_to_symbol(code)
-        if code is None:        #code参数非沪深A股，退出
+        self._ts_date = ts_date
+        #返回标准股票代码，若无法转换，返回None
+        self._code = gf.code_to_symbol(code)        #结果可能为None
+        if self._code is None:        #code参数非沪深A股，退出
             return
         #判断参数合规性
         if not gf.is_tradeday(code, ts_date):                   #停牌或其他（没有交易记录）
-            print("%s在%s未查询到交易记录" % (code, ts_date))
+            mylogger.error("%s在%s未查询到交易记录" % (code, ts_date))
             return
         #创建数据库对象（单例模式）
-        self._dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
-                                            db='tushare', charset='utf8')
+        self._dbHelper = DBHelper()
         # 获取股票当日交易信息
-        self.__tuplestock = self._dbObject.fetchone(table='stock_trade_history_info',
+        self._tuplestock = self._dbObject.fetchone(table='stock_trade_history_info',
                                                   where='stock_code="%s" and ts_date="%s"' % (code, ts_date))
-        self._ts_date = ts_date
-        self._code = code                       #标准化后的code
+        sql_stock = '''select * from stock_trade_history_info where 
+                    stock_code="%s" and ts_date="%s"''' % (self._code, self._ts_date)
+        self._tuplestock = self._dbHelper.fetchone()
 
     @property
     def code(self):
