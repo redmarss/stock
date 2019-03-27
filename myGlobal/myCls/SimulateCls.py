@@ -6,55 +6,34 @@ from myGlobal.myCls.mylogger import mylogger
 from myGlobal.myCls.StockCls import Stock
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as mTime
-
-import myGlobal.myCls.msql as msql
+from myGlobal.myCls.msql import DBHelper
 import datetime
 from abc import ABC,abstractmethod,ABCMeta
 
 
 class Simulate(metaclass=ABCMeta):                  #抽象类
-    @gf.typeassert(tablename=str,startdate=str,enddate=str)
     def __init__(self, tablename, startdate, enddate):
-        if mTime.isDate(startdate) is True and mTime.isDate(enddate) is True:
-            self.tablename = tablename
-            self.startdate = mTime.strTodate(startdate)
-            self.enddate = mTime.strTodate(enddate)
-        else:
-            mylogger().error("输入的日期参数不合法")
-
+        self.tablename = tablename
+        self.startdate = startdate
+        self.enddate = enddate
 
 
     @abstractmethod
-    @gf.typeassert(tablename=str, sql=str)
     def _createtable(self, tablename, sql):
         return
 
     @abstractmethod
-    @gf.typeassert(amount=int, ftype=int)
     def simulatebuy(self, amount=1000, ftype=1):
-        # #若开始日期或结束日期或机构编码为空，说明构造函数输入错误，返回
-        # if self.startdate is None or self.enddate is None or self.broker_code is None:
-        #     return
-        # #如果table表不存在，则创建
-        # if self.dbObject.isTableExists(self.tablename) is False:
-        #     self._createtable(self.tablename)
-        # #开始循环
-        # self.ts_date = self.startdate
-        # while self.ts_date <= self.enddate:
-        #     #获取当日所购买股票
-        #     self.__recordToSql(str(self.ts_date), amount, ftype)
-        #     self.ts_date = self.ts_date + datetime.timedelta(days=1)
         return
 
 
 
 
 #根据输入的机构代码，开始、结束日期，写入tablename表
-class BrokerSimulate(Broker,Simulate):
+class BrokerSimulate(Simulate):
     #构造函数
-    def __init__(self, broker_code, tablename, startdate, enddate):
+    def __init__(self, tablename, startdate, enddate):
             Simulate.__init__(self, tablename, startdate, enddate)
-            Broker.__init__(self, broker_code)
 
 
     def _createtable(self, tablename):
@@ -77,9 +56,9 @@ class BrokerSimulate(Broker,Simulate):
         UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC)
         )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=DEFAULT ;
         ''' % tablename
-        super()._createtable(tablename,sql)
+        DBHelper().execute(sql)
 
-
+    def _CaculateStock(self,amount=1000,ftype=1):
 
     @gf.typeassert(amount=int,ftype=int)
     def simulatebuy(self, amount=1000,ftype=1):
