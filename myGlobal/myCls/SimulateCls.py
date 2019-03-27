@@ -2,9 +2,11 @@
 #-*- coding: utf-8 -*-
 
 from myGlobal.myCls.BrokerCls import Broker
+from myGlobal.myCls.mylogger import mylogger
 from myGlobal.myCls.StockCls import Stock
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as mTime
+
 import myGlobal.myCls.msql as msql
 import datetime
 from abc import ABC,abstractmethod,ABCMeta
@@ -17,19 +19,15 @@ class Simulate(metaclass=ABCMeta):                  #抽象类
             self.tablename = tablename
             self.startdate = mTime.strTodate(startdate)
             self.enddate = mTime.strTodate(enddate)
-            self.dbObject = msql.SingletonModel(host="localhost", port="3306", user="root", passwd="redmarss",
-                                                db="tushare", charset="utf8")
         else:
-            print("输入的日期参数不合法")
+            mylogger().error("输入的日期参数不合法")
 
 
 
     @abstractmethod
     @gf.typeassert(tablename=str, sql=str)
     def _createtable(self, tablename, sql):
-        if sql is None:
-            return
-        self.dbObject.createtable(tablename, sql)
+        return
 
     @abstractmethod
     @gf.typeassert(amount=int, ftype=int)
@@ -46,7 +44,7 @@ class Simulate(metaclass=ABCMeta):                  #抽象类
         #     #获取当日所购买股票
         #     self.__recordToSql(str(self.ts_date), amount, ftype)
         #     self.ts_date = self.ts_date + datetime.timedelta(days=1)
-        pass
+        return
 
 
 
