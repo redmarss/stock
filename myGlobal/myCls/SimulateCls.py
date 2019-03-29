@@ -12,10 +12,8 @@ from abc import ABC,abstractmethod,ABCMeta
 
 
 class Simulate(metaclass=ABCMeta):                  #抽象类
-    def __init__(self, tablename, startdate, enddate):
+    def __init__(self, tablename):
         self.tablename = tablename
-        self.startdate = startdate
-        self.enddate = enddate
 
 
     @abstractmethod
@@ -32,8 +30,11 @@ class Simulate(metaclass=ABCMeta):                  #抽象类
 #根据输入的机构代码，开始、结束日期，写入tablename表
 class BrokerSimulate(Simulate):
     #构造函数
-    def __init__(self, tablename, startdate, enddate):
-            Simulate.__init__(self, tablename, startdate, enddate)
+    def __init__(self, tablename, broker_code,ts_date):
+        Simulate.__init__(self, tablename)
+        self.broker_code = broker_code
+        self.ts_date = ts_date
+
 
 
     def _createtable(self, tablename):
@@ -43,41 +44,36 @@ class BrokerSimulate(Simulate):
         `ts_date` VARCHAR(45) NOT NULL,
         `broker_code` VARCHAR(45) NOT NULL,
         `stock_code` VARCHAR(45) NOT NULL,
+        `stock_name` VARCHAR(45) NOT NULL,
         `buy_date` VARCHAR(45) NULL,
         `sell_date` VARCHAR(45) NULL,
         `buy_price` VARCHAR(45) NULL,
         `sell_price` VARCHAR(45) NULL,
+        `get_day` VARCHAR(45) NULL,
         `amount` VARCHAR(45) NULL,
         `gainmoney` VARCHAR(45) NULL,
         `gainpercent` VARCHAR(45) NULL,
         `ftype` VARCHAR(5) NULL,
         PRIMARY KEY (`id`),
         UNIQUE INDEX `id_UNIQUE` (`id` ASC),
-        UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC)
+        UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC,`ftype` ASC)
         )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=DEFAULT ;
         ''' % tablename
         DBHelper().execute(sql)
 
-    def _CaculateStock(self,amount=1000,ftype=1):
 
-    @gf.typeassert(amount=int,ftype=int)
-    def simulatebuy(self, amount=1000,ftype=1):
-        #若开始日期或结束日期或机构编码为空，说明构造函数输入错误，返回
-        if self.startdate is None or self.enddate is None or self.broker_code is None:
-            return
-        #如果table表不存在，则创建
-        if self.dbObject.isTableExists(self.tablename) is False:
-            self._createtable(self.tablename)
-        #开始循环
-        date = self.startdate
-        while date <= self.enddate:
-            self.__recordToSql(str(date), amount, ftype)
-            date = date + datetime.timedelta(days=1)
+    def simulatebuy(self, stock_code,amount=1000,ftype=1):
+        result = self._CaculateStock(stock_code,amount, ftype)
+        self.__recordToSql(result)
 
 
-    #按顺序写入ts_date,broker_code,stock_code,buy_date,sell_date,buy_price,sell_price,amount,gainmoney,gainpercent
-    @gf.typeassert(ts_date=str, amount=int, ftype=int)
-    def __recordToSql(self, ts_date, amount, ftype):
+    #计算相应股票数据，返回元组，后续存入数据库
+    def _CaculateStock(self, amount=1000, ftype=1):
+        switch = {
+            1:
+        }
+
+    def _recordToSql(self, ts_date, amount, ftype):
         li_stock = self.getBuyStock(ts_date)
         if len(li_stock)>0:
             for stock_code in li_stock:
