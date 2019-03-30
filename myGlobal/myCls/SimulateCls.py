@@ -1,7 +1,6 @@
 #!/bin/usr/env python
 #-*- coding: utf-8 -*-
 
-from myGlobal.myCls.BrokerCls import Broker
 from myGlobal.myCls.mylogger import mylogger
 from myGlobal.myCls.StockCls import Stock
 import myGlobal.globalFunction as gf
@@ -11,31 +10,26 @@ import datetime
 from abc import ABC,abstractmethod,ABCMeta
 
 
+# region Simulate抽象类
 class Simulate(metaclass=ABCMeta):                  #抽象类
     def __init__(self, tablename):
         self.tablename = tablename
 
-
     @abstractmethod
-    def _createtable(self, tablename, sql):
+    def _createtable(self, sql):
         return
 
     @abstractmethod
-    def simulatebuy(self, amount=1000, ftype=1):
+    def simulatebuy(self, broker_code, ts_date, stock_code, amount=1000, ftype=1):
         return
-
-
-
+# endregion
 
 #根据输入的机构代码，开始、结束日期，写入tablename表
 class BrokerSimulate(Simulate):
-    #构造函数
     def __init__(self, tablename, broker_code,ts_date):
         Simulate.__init__(self, tablename)
         self.broker_code = broker_code
         self.ts_date = ts_date
-
-
 
     def _createtable(self, tablename):
         sql = '''
@@ -61,7 +55,6 @@ class BrokerSimulate(Simulate):
         ''' % tablename
         DBHelper().execute(sql)
 
-
     def simulatebuy(self, stock_code,amount=1000,ftype=1):
         result = self._CaculateStock(stock_code,amount, ftype)
         self.__recordToSql(result)
@@ -70,8 +63,10 @@ class BrokerSimulate(Simulate):
     #计算相应股票数据，返回元组，后续存入数据库
     def _CaculateStock(self, amount=1000, ftype=1):
         switch = {
-            1:
+            1: self._strategy1(amount),
+            2: self._strategy2(amount)
         }
+        switch.get(ftype)
 
     def _recordToSql(self, ts_date, amount, ftype):
         li_stock = self.getBuyStock(ts_date)
@@ -93,7 +88,11 @@ class BrokerSimulate(Simulate):
                     except Exception as e:
                         print("数据库中已存在%s于%s购买%s的记录" % (self.broker_code, ts_date, stock_code))
 
+    def _strategy1(self,amount):
+        pass
 
+    def _strategy2(self,amount):
+        pass
 
 #根据输入的股票代码，开始、结束日期，写入table表
 class StockSimulate(Stock, Simulate):

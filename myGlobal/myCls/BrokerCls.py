@@ -34,13 +34,17 @@ class Broker(BrokerSimulate):
                     li_buy_stock.append(stock)
         return li_buy_stock
 
+    #根据日期及代码，返回写入Simulate表的相关数值，并返回元组
+    # def _CaculateStock(self, type=1):           #type代表策略
+    #     pass
+
 
     #模拟买入并写入数据库
-    def Simulate(self):
+    def Simulate(self,type=1):
         if len(self.stocklist) >0:
             for stock_code in self.stocklist:
                 #计算每个股票
-
+                t = self._CaculateStock(type)
                 #写入数据库
 
 

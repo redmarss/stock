@@ -18,5 +18,6 @@ def _getPrice(brokercode,date,type=1):
 
 if __name__ =='__main__':
     s = Broker("80032251","2019-03-20")
-    s.Simulate()
+    s.Simulate(2)
+    print()
 
