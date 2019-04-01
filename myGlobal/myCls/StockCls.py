@@ -42,6 +42,13 @@ class Stock(object):
         return self._ts_date
 
     @property
+    def name(self):
+        sql = 'select stockname from stock_basic_table where stockcode="%s"' % self._code
+        t = DBHelper().execute(sql)[0]
+        return t
+
+
+    @property
     def open_price(self):
         if self.__tuplestock is not None:
             return float(self.__tuplestock[3])
@@ -274,21 +281,21 @@ def Main(t):
     s.KDJ()
     s.getMA(5,10,15,20,30,60,120,250)
 
-if __name__ == "__main__":
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
-                                db='tushare', charset='utf8')
-    t = dbObject.fetchall(table="stock_trade_history_info",field="stock_code,ts_date",
-                         where="ts_date between '%s' and '%s' order by stock_code,ts_date "
-                               %("2017-01-01","2017-01-31"))
-    list_t = list(t)
-    pool = ThreadPool(10)
-    while len(list_t)>0:
-        t_temp = list_t[:10]
-        for i in range(10):
-            list_t.pop(i)
-        pool.map(Main,t_temp)
-        pool.close()
-        pool.join()
+# if __name__ == "__main__":
+#     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
+#                                 db='tushare', charset='utf8')
+#     t = dbObject.fetchall(table="stock_trade_history_info",field="stock_code,ts_date",
+#                          where="ts_date between '%s' and '%s' order by stock_code,ts_date "
+#                                %("2017-01-01","2017-01-31"))
+#     list_t = list(t)
+#     pool = ThreadPool(10)
+#     while len(list_t)>0:
+#         t_temp = list_t[:10]
+#         for i in range(10):
+#             list_t.pop(i)
+#         pool.map(Main,t_temp)
+#         pool.close()
+#         pool.join()
 
 
 
