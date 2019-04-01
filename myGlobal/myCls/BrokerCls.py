@@ -40,13 +40,10 @@ class Broker(BrokerSimulate):
 
 
     #模拟买入并写入数据库
-    def Simulate(self,type=1):
+    def Simulate(self,amount=1000,type=1):
         if len(self.stocklist) >0:
             for stock_code in self.stocklist:
-                #计算每个股票
-                t = self._CaculateStock(type)
-                #写入数据库
-
+                self.simulatebuy("test123456",stock_code,amount,type)
 
 
 

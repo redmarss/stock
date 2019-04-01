@@ -55,9 +55,9 @@ class BrokerSimulate(Simulate):
         ''' % tablename
         DBHelper().execute(sql)
 
-    def simulatebuy(self, stock_code,amount=1000,ftype=1):
+    def simulatebuy(self, tablename,stock_code,amount=1000,ftype=1):
         result = self._CaculateStock(stock_code,amount, ftype)
-        self.__recordToSql(result)
+        self._recordToSql(tablename,result)
 
 
     #计算相应股票数据，返回元组，后续存入数据库
@@ -69,8 +69,10 @@ class BrokerSimulate(Simulate):
         return switch.get(ftype)
 
 
-    def _recordToSql(self, ts_date, amount, ftype):
-        pass
+    def _recordToSql(self, tablename,t):
+        sql = "insert into %s values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)" %tablename
+
+        DBHelper().execute(sql,t)
 
     #策略1：上榜后第二天开盘买，第三天开盘卖
     def _strategy1(self,stock_code,amount):

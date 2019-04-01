@@ -44,7 +44,7 @@ class Stock(object):
     @property
     def name(self):
         sql = 'select stockname from stock_basic_table where stockcode="%s"' % self._code
-        t = DBHelper().execute(sql)[0]
+        t = DBHelper().fetchone(sql)[0]
         return t
 
 
