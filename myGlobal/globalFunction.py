@@ -216,10 +216,12 @@ def postData(textByte,urlPost,flag=None):
                 if flag is None:
                     #print(response.recordCount)
                     print("龙虎榜数据完成,%s条数据导入成功" % dictResponse['recordCount'])
+                elif flag == "stock":
+                    pass
                 else:
                     pass
         else:
-            print("龙虎榜数据完成")
+            pass
     except Exception as e:
         print(e)
 

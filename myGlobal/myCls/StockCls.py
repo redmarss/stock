@@ -30,7 +30,7 @@ class Stock(object):
         # 获取股票当日交易信息
         sql_stock = '''select * from stock_trade_history_info where 
                     stock_code="%s" and ts_date="%s"''' % (self._code, self._ts_date)
-        self._tuplestock = DBHelper().fetchone(sql_stock)
+        self.__tuplestock = DBHelper().fetchone(sql_stock)
 
 
     @property

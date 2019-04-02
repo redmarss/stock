@@ -47,7 +47,6 @@ class BrokerSimulate(Simulate):
         `gainmoney` VARCHAR(45) NULL,
         `gainpercent` VARCHAR(45) NULL,
         `ftype` VARCHAR(5) NULL,
-        `cflag` VARCHAR(5) NULL,
         PRIMARY KEY (`id`),
         UNIQUE INDEX `id_UNIQUE` (`id` ASC),
         UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC,`ftype` ASC)
@@ -56,6 +55,8 @@ class BrokerSimulate(Simulate):
         DBHelper().execute(sql)
 
     def simulatebuy(self, tablename,stock_code,amount=1000,ftype=1):
+        if DBHelper().isTableExists(tablename) is False:        #表不存在，则创建表
+            self._createtable(tablename)
         result = self._CaculateStock(stock_code,amount, ftype)
         self._recordToSql(tablename,result)
 
@@ -70,14 +71,17 @@ class BrokerSimulate(Simulate):
 
 
     def _recordToSql(self, tablename,t):
-        sql = "insert into %s values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)" %tablename
-
-        DBHelper().execute(sql,t)
+        sql = "insert into %s values %s" %(tablename,t)
+        print(sql)
+        DBHelper().execute(sql)
 
     #策略1：上榜后第二天开盘买，第三天开盘卖
     def _strategy1(self,stock_code,amount):
         stockA = Stock(stock_code,self.ts_date)     #实例化股票对象，以便后续计算
         t_price = stockA.next_some_days(3)          #从买入当天，取3天数据
+        if len(t_price)!=3:
+            print("数据长度不对")
+            return
         #计算返回值信息
         ts_date = self.ts_date
         broker_code = self.broker_code
@@ -95,6 +99,6 @@ class BrokerSimulate(Simulate):
         return ts_date,broker_code,stock_code,stock_name,buy_date,sell_date,buy_price,sell_price,get_day,amount,gainmoney,gainpercent,ftype
 
 
-    def _strategy2(self,amount):
+    def _strategy2(self,stock_code,amount):
         pass
 

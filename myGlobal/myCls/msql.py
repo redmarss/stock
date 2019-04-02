@@ -240,6 +240,7 @@ class DBHelper:
 
 
 
+
     # 连接数据库
     def connectDatabase(self):
         try:
@@ -269,8 +270,9 @@ class DBHelper:
                 self.cur.execute(sql, params)
                 self.conn.commit()
         except:
-            self.logger.error("execute failed: " + sql)
-            self.logger.error("params: " + params)
+            mylogger.mylogger().error("execute failed: " + sql)
+            if params is not None:
+                mylogger.mylogger().error("params: " + params)
             self.close()
             return False
         return True
@@ -284,6 +286,15 @@ class DBHelper:
     def fetchone(self,sql,params=None):
         self.execute(sql,params)
         return self.cur.fetchone()
+
+    def isTableExists(self, tablename):
+        sql = "show tables;"
+        t = self.fetchall(sql)
+        li_table = [str(i[0]) for i in t]
+        if tablename in li_table:
+            return True
+        else:
+            return False
 
 
 # sq = TableOperate(host='localhost', port='3306', user='root', passwd='redmarss', charset='utf8', db='tushare')
