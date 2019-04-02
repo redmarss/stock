@@ -96,7 +96,8 @@ class BrokerSimulate(Simulate):
         gainmoney = round((sell_price-buy_price) * amount, 2)
         gainpercent = round(gainmoney/(buy_price*amount), 4)
         ftype = 1
-        return ts_date,broker_code,stock_code,stock_name,buy_date,sell_date,buy_price,sell_price,get_day,amount,gainmoney,gainpercent,ftype
+        #第一个字段随便设个int值作为id（会自动增长）
+        return 0,ts_date,broker_code,stock_code,stock_name,buy_date,sell_date,buy_price,sell_price,get_day,amount,gainmoney,gainpercent,ftype
 
 
     def _strategy2(self,stock_code,amount):
