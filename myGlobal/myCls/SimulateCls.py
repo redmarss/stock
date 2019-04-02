@@ -30,7 +30,7 @@ class BrokerSimulate(Simulate):
         self.broker_code = broker_code
         self.ts_date = ts_date
 
-    def _createtable(self, tablename):
+    def __createtable(self, tablename):
         sql = '''
         CREATE TABLE `tushare`.`%s` (
         `id` INT NOT NULL AUTO_INCREMENT,
@@ -56,26 +56,26 @@ class BrokerSimulate(Simulate):
 
     def simulatebuy(self, tablename,stock_code,amount=1000,ftype=1):
         if DBHelper().isTableExists(tablename) is False:        #表不存在，则创建表
-            self._createtable(tablename)
-        result = self._CaculateStock(stock_code,amount, ftype)
-        self._recordToSql(tablename,result)
-
+            self.__createtable(tablename)
+        result = self.__CaculateStock(stock_code,amount, ftype)
+        self.__recordToSql(tablename,result)
+        print("%s机构于%s购买%s(%s股)记录成功，策略：（%s）" %(self.broker_code,stock_code,amount,ftype))
 
     #计算相应股票数据，返回元组，后续存入数据库
-    def _CaculateStock(self, stock_code,amount=1000, ftype=1):
+    def __CaculateStock(self, stock_code,amount, ftype):
         switch = {
-            1: self._strategy1(stock_code,amount),
-            2: self._strategy2(stock_code,amount)
+            1: self.__strategy1(stock_code,amount),
+            2: self.__strategy2(stock_code,amount)
         }
         return switch.get(ftype)
 
 
-    def _recordToSql(self, tablename,t):
+    def __recordToSql(self, tablename,t):
         sql = "insert into %s values %s" %(tablename,t)
-        print(sql)
         DBHelper().execute(sql)
 
-    #策略1：上榜后第二天开盘买，第三天开盘卖
+
+    # region 策略1：上榜后第二天开盘买，第三天开盘卖
     def _strategy1(self,stock_code,amount):
         stockA = Stock(stock_code,self.ts_date)     #实例化股票对象，以便后续计算
         t_price = stockA.next_some_days(3)          #从买入当天，取3天数据
@@ -98,8 +98,9 @@ class BrokerSimulate(Simulate):
         ftype = 1
         #第一个字段随便设个int值作为id（会自动增长）
         return 0,ts_date,broker_code,stock_code,stock_name,buy_date,sell_date,buy_price,sell_price,get_day,amount,gainmoney,gainpercent,ftype
+    # endregion
 
 
-    def _strategy2(self,stock_code,amount):
+    def __strategy2(self,stock_code,amount):
         pass
 

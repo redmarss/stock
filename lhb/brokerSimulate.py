@@ -3,16 +3,12 @@ from myGlobal.myCls.BrokerCls import Broker
 from myGlobal.myCls.StockCls import Stock
 
 #多线程模拟每日机构买卖股票
-def DailySimulate(brokercode,startdate,type):
+def _DailySimulate(brokercode,startdate,type):
     pass
 
-#获取模拟机构的买入价及卖出价并计算盈利
-def _getPrice(brokercode,date,type=1):
-    b = Broker(brokercode,date)
-    li_stock = b.getBuyStock()            #获取机构当天买入股票列表，存入list
-    if len(li_stock)>0:
-        for code in li_stock():
-            s = Stock(code,date)
+#多线程执行每日模拟计算（方法1+方法2）
+def mapDailySimulate():
+
 
 
 

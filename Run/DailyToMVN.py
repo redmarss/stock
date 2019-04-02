@@ -80,6 +80,6 @@ if __name__ == '__main__':
 
     #everyday = start.replace("-","")
     #每日获取股票相关数据
-    RunGetDayData(start,end)
+    #RunGetDayData(start,end)
     #每日获取机构数据
     brokerInfo(start,end)
