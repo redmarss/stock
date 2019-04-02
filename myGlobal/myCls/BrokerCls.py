@@ -34,17 +34,18 @@ class Broker(BrokerSimulate):
                     li_buy_stock.append(stock)
         return li_buy_stock
 
-    #根据日期及代码，返回写入Simulate表的相关数值，并返回元组
-    # def _CaculateStock(self, type=1):           #type代表策略
-    #     pass
+
 
 
     #模拟买入并写入数据库
-    def Simulate(self,tablename,amount=1000,type=1):
+    def simulate(self,tablename,amount=1000,ftype=1):
 
-        if len(self.stocklist) >0:
+        if len(self.stocklist) > 0:
             for stock_code in self.stocklist:
-                self.simulatebuy(tablename,stock_code,amount,type)
+                #调用simulatebuy函数，如果没有，调用父函数（BrokerSimulate）的
+                self.simulatebuy(tablename,stock_code,amount,ftype)
+        else:
+            print("%s机构%s没有买入股票" % (self.broker_code,self.ts_date))
 
 
 
