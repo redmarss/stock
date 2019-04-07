@@ -2,6 +2,7 @@
 # -*-coding:utf-8 -*-
 
 from urllib.request import urlopen,Request
+from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 from myGlobal.myCls.SimulateCls import BrokerSimulate
 import myGlobal.myCls.msql as msql
@@ -10,10 +11,22 @@ import myGlobal.globalFunction as gf
 import myGlobal.myTime as myTime
 
 
+#
+def _getStock(code):
+    url = "http://quote.eastmoney.com/%s.html" % code
+    try:
+        page = urlopen(url).read()
+    except HTTPError as e:
+        if e.code == 404:
+            print("股票代码%s不存在" % code)
+            #是否要去数据库删除该记录？
 
-#将股票代码及名称写入数据库(每月运行一次）
+#多线程访问东方财富网，判断股票是否退市或上市，并存入数据库
 def getAllStock():
-    url = "http://quote.eastmoney.com/stocklist.html"
+    sh_list = ['sh{:0>6d}'.format(i) for i in range(600000, 604000)]         #上海股票代码，目前为从600000至603999(读者传媒)
+    sz_list = ['sz{:0>6d}'.format(i) for i in range(1,2999)]            #深圳股票代码，目前从‘000001’至‘002999’
+    cy_list = ['sz{:0>6d}'.format(i) for i in range(300000,300999)]     #创业板股票代码，目前从‘300000’至‘300999’
+    url = "http://quote.eastmoney.com/"
     page = urlopen(url).read().decode('gbk')
     soup = BeautifulSoup(page, 'html5lib')
     links = soup.findAll('a')
@@ -140,26 +153,13 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
 #         b = BrokerSimulate(broker_code,ts_date)              #日期参数必须为str类型
 #         b.simulate_buy(amount)
 
-@gf.typeassert(table=str,startdate=(str,type(None)),enddate=(str,type(None)))
-def simulate_buy(table, startdate=None, enddate=None):
-    if enddate is None:
-        enddate = myTime.diffDay(myTime.today(), -4)
-    if startdate is None:
-        startdate = myTime.diffDay(enddate, -60)
-    #参数非日期，则返回
-    if myTime.isDate(startdate) is False or myTime.isDate(enddate) is False:
-        print("startdate or enddate 不是日期")
-        return
-    #获取数据库中所有机构编码
-    broker_list = gf.getAllBroker("broker_info")
-    for b in broker_list:
-        bs = BrokerSimulate(b, startdate, enddate)
-        bs.simulatebuy(table,1000)
+
 
 
 if __name__ == "__main__":
     #每月10日运行
     #getAllStock()
+    _getStock("sh650000")
     #getBrokerInfo()
     #simulate_buy("simulate_buy")
     #is_holiday("2017-01-01","2019-12-31")
