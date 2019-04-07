@@ -26,36 +26,11 @@ def typeassert(*type_args, **type_kwargs):
 
 @typeassert((str,type(None)))
 def code_to_symbol(code):
-    '''
-    格式化股票代码，与数据库中股票基本信息表做（stock_basic_table）对比
-    :param code: "600000","6000000.sh","sh600000" or None
-    :return:(str)sh600000、sz000001 or None
-    '''
-    if code is None:
-        return
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
-                                   charset='utf8')
-    if len(code) == 6:
-        _code = 'sh'+code if code[:1] in ["6"] else 'sz'+code   #6打头为上海，其余为深圳
-
-    elif len(code) > 6:
-        if code[:1].lower() == 's':
-            _code = code[2:8]
-            _code = 'sh'+_code if _code[:1] in ["6"] else 'sz'+_code
-        elif code[-2].lower() == 's':
-            _code = code[:6]
-            _code = 'sh' + _code if _code[:1] in ["6"] else 'sz' + _code
-        else:
-            _code = code
-    else:                   #code长度不足6位
-        _code = "error"
-
-    tcode = dbObject.fetchone(table="stock_basic_table",field="stockcode",where="stockcode='%s'"%_code)
-    if tcode is not None:
-        return str(tcode[0])
+    if len(code) != 6 :
+        code = code[:6]
+        return 'sh%s'%code if code[:1] in ['5', '6', '9'] else 'sz%s'%code
     else:
-        print("所输入代码[%s]非沪深A股"%code)
-        return
+        return 'sh%s'%code if code[:1] in ['5', '6', '9'] else 'sz%s'%code
 
 
 @typeassert((str,type(None)))

@@ -30,7 +30,7 @@ class BrokerSimulate(Simulate):
         self.broker_code = broker_code
         self.ts_date = ts_date
 
-    def __createtable(self, tablename):
+    def _createtable(self, tablename):
         sql = '''
         CREATE TABLE `tushare`.`%s` (
         `id` INT NOT NULL AUTO_INCREMENT,
@@ -56,7 +56,7 @@ class BrokerSimulate(Simulate):
 
     def simulatebuy(self, tablename,stock_code,amount=1000,ftype=1):
         if DBHelper().isTableExists(tablename) is False:        #表不存在，则创建表
-            self.__createtable(tablename)
+            self._createtable(tablename)
         result = self.__CaculateStock(stock_code,amount, ftype)
         self.__recordToSql(tablename,result)
         print("%s机构于%s购买%s(%s股)记录成功，策略：（%s）" %(self.broker_code,stock_code,amount,ftype))
@@ -76,7 +76,7 @@ class BrokerSimulate(Simulate):
 
 
     # region 策略1：上榜后第二天开盘买，第三天开盘卖
-    def _strategy1(self,stock_code,amount):
+    def __strategy1(self,stock_code,amount):
         stockA = Stock(stock_code,self.ts_date)     #实例化股票对象，以便后续计算
         t_price = stockA.next_some_days(3)          #从买入当天，取3天数据
         if len(t_price)!=3:
