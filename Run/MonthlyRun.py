@@ -3,22 +3,43 @@
 
 from urllib.request import urlopen,Request
 from urllib.error import HTTPError
+import requests
 from bs4 import BeautifulSoup
 from myGlobal.myCls.SimulateCls import BrokerSimulate
 import myGlobal.myCls.msql as msql
 import datetime
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as myTime
+from myGlobal.myCls.msql import DBHelper
+from multiprocessing.dummy import Pool as ThreadPool
+from functools import partial
 
 
-#
+# region 多线程获取股票名称及代码，存入或更新stock_basic_table表
+def _basicinfotosql(code,stockname,tablename="stock_basic_table"):
+    sql_select = 'select * from %s where stockcode="%s"'%(tablename,code)
+    sql1 = 'insert into %s (stockcode,stockname) VALUES ("%s","%s")' % (tablename,code,stockname)
+    sql2 = 'update %s set stockname="%s" where stockcode = "%s"' % (tablename,stockname,code)
+    t = DBHelper().fetchall(sql_select)
+    if len(t)>0:
+        DBHelper().execute(sql2)
+        print("修改%s名称为%s" % (code,stockname))
+    else:
+        DBHelper().execute(sql1)
+        print("新增%s名称为%s" % (code,stockname))
+
+
+#获取股票的代码和名称，并存入数据库
 def _getStock(code):
     url = "http://quote.eastmoney.com/%s.html" % code
     try:
-        page = urlopen(url).read()
+        page = urlopen(url).read().decode('gbk')
+        soup = BeautifulSoup(page, 'html5lib')
+        stockname = soup.find(id='name').string             #取网页上的股票名称
+        _basicinfotosql(code,stockname,"stock_basic_table")          #存入stock_basic_table表
     except HTTPError as e:
         if e.code == 404:
-            print("股票代码%s不存在" % code)
+            pass                   #股票代码不存在，什么都不做
             #是否要去数据库删除该记录？
 
 #多线程访问东方财富网，判断股票是否退市或上市，并存入数据库
@@ -26,28 +47,17 @@ def getAllStock():
     sh_list = ['sh{:0>6d}'.format(i) for i in range(600000, 604000)]         #上海股票代码，目前为从600000至603999(读者传媒)
     sz_list = ['sz{:0>6d}'.format(i) for i in range(1,2999)]            #深圳股票代码，目前从‘000001’至‘002999’
     cy_list = ['sz{:0>6d}'.format(i) for i in range(300000,300999)]     #创业板股票代码，目前从‘300000’至‘300999’
+    stock_all = sh_list+sz_list+cy_list                 #拼接
+
     url = "http://quote.eastmoney.com/"
-    page = urlopen(url).read().decode('gbk')
-    soup = BeautifulSoup(page, 'html5lib')
-    links = soup.findAll('a')
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
-                                   db='tushare', charset='utf8')
-    for link in links:
-        if link.text.find('(') > 0:
-            pos = link.text.find('(')
-            stockName = link.text[:pos]
-            stockCode = link.text[pos+1:-1]
-            if stockCode.startswith('30') or stockCode.startswith('60') or stockCode.startswith('00'):
-                stockCode = 'sh'+stockCode if stockCode.startswith('6') else 'sz'+stockCode
-                #写入数据库
-                read_sql = dbObject.fetchone(field='stockname', table='stock_basic_table', where='stockcode="%s"'%stockCode)
-                if read_sql is None:
-                    dbObject.insert(table='stock_basic_table', stockcode=stockCode, stockname=stockName)
-                else:
-                    dbObject.update(table='stock_basic_table', where='stockcode="%s"'%stockCode,stockname=stockName)
-                    # if getStauts(stockCode) == False:
-                    #     dbObject.update(table='stock_basic_table', where='stockcode="%s"'%stockCode,status='已退市')
-    dbObject.delete(table='stock_basic_table', where='stockname like "%%退%%"')
+
+    mapfunc = partial(_getStock)
+    pool = ThreadPool(10)
+    pool.map(mapfunc,stock_all)
+    pool.close()
+    pool.join()
+# endregion
+
 
 #判断股票是否退市（每判断一次都要访问一个网页，效率有点低）
 def getStauts(code):
@@ -157,9 +167,8 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
 
 
 if __name__ == "__main__":
-    #每月10日运行
-    #getAllStock()
-    _getStock("sh650000")
+    #每月运行一次，获取股票最新代码及股票名称
+    getAllStock()
     #getBrokerInfo()
     #simulate_buy("simulate_buy")
     #is_holiday("2017-01-01","2019-12-31")
