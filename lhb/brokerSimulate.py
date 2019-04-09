@@ -4,6 +4,8 @@ from myGlobal.myCls.StockCls import Stock
 from myGlobal.myCls.msql import DBHelper
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
+import myGlobal.myTime as myTime
+import datetime
 
 #多线程模拟每日机构买卖股票
 def _DailySimulate(brokercode,strdate,tablename,amount,type):
@@ -35,4 +37,9 @@ def mapDailySimulate(strdate,tablename,amount,type):
 
 
 if __name__ =='__main__':
-    mapDailySimulate("2019-03-21","test123456",1000,1)
+    startdate = "2017-01-01"
+    enddate = "2017-12-31"
+    date = myTime.strTodate(startdate)
+    while date <= myTime.strTodate(enddate):
+        mapDailySimulate(str(date),"simulate_buy",1000,1)
+        date = date+datetime.timedelta(days=1)

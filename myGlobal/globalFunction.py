@@ -1,39 +1,46 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
 import myGlobal.myCls.msql as msql
-from urllib.request import Request,urlopen
+from urllib.request import Request,urlopen,HTTPError
 import datetime
 from inspect import signature
 from functools import wraps
 import json
 
 #装饰函数，限定所有函数的数据类型
-def typeassert(*type_args, **type_kwargs):
-    def decorate(func):
-        sig = signature(func)
-        bound_types = sig.bind_partial(*type_args, **type_kwargs).arguments
+# def typeassert(*type_args, **type_kwargs):
+#     def decorate(func):
+#         sig = signature(func)
+#         bound_types = sig.bind_partial(*type_args, **type_kwargs).arguments
+#
+#         @wraps(func)
+#         def wrapper(*args, **kwargs):
+#             bound_values = sig.bind(*args, **kwargs)
+#             for name, value in bound_values.arguments.items():
+#                 if name in bound_types:
+#                     if not isinstance(value, bound_types[name]):
+#                         raise TypeError('{}函数参数{}必须是{},不能为{}'.format(func.__name__, name, bound_types[name],value))
+#             return func(*args, **kwargs)
+#         return wrapper
+#     return decorate
 
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            bound_values = sig.bind(*args, **kwargs)
-            for name, value in bound_values.arguments.items():
-                if name in bound_types:
-                    if not isinstance(value, bound_types[name]):
-                        raise TypeError('{}函数参数{}必须是{},不能为{}'.format(func.__name__, name, bound_types[name],value))
-            return func(*args, **kwargs)
-        return wrapper
-    return decorate
 
-@typeassert((str,type(None)))
 def code_to_symbol(code):
+    if code.startswith(('sh','sz')) and len(code) == 8:            #形似“sh600000,sz000001”，则原样返回
+        return code
+    if code.endswith(('.sh','sz')) and len(code) ==9:              #形似"600000.sh,000001.sz"，则返回sh600000
+        return code[-2:]+code[:6]
     if len(code) != 6 :
         code = code[:6]
         return 'sh%s'%code if code[:1] in ['5', '6', '9'] else 'sz%s'%code
     else:
         return 'sh%s'%code if code[:1] in ['5', '6', '9'] else 'sz%s'%code
 
+code = code_to_symbol("600000.sh")
+print(code)
+print()
 
-@typeassert((str,type(None)))
+
 def isStockA(stock):
     code = code_to_symbol(stock)
     if code is None:
@@ -197,8 +204,8 @@ def postData(textByte,urlPost,flag=None):
                     pass
         else:
             pass
-    except Exception as e:
-        print(e)
+    except HTTPError as e:
+        return e.code
 
 
 

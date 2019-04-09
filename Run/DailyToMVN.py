@@ -2,9 +2,10 @@
 # -*- coding:utf8 -*-
 import myGlobal.globalFunction as gf
 import json
-from urllib.request import urlopen, Request
+from urllib.request import urlopen, Request,HTTPError
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
+from myGlobal.myCls.msql import DBHelper
 import pymysql
 import datetime
 import myGlobal.myCls.msql as msql
@@ -12,35 +13,42 @@ import time
 import re
 
 
+
 def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多线程参数一定要放第一个
     url = 'http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayqfq2017&param=%s,day,%s,%s,640,qfq'\
           %(code,start,end)
-    try:
-        request = Request(url)
-        lines = urlopen(request, timeout=10).read()
-        if len(lines) < 100:  # no data
-            return None
-    except Exception as e:
-        print(e)
-    else:
-        lines = lines.decode('utf-8')
-        lines = lines.split('=')[1]
-        reg = re.compile(r',{"nd.*?}')
-        lines = re.subn(reg, '', lines)
-        reg = re.compile(r',"qt":{.*?}')
-        lines = re.subn(reg, '', lines[0])
-        reg = r',"mx_price".*?"version":"4"'
-        lines = re.subn(reg, '', lines[0])
-        reg = r',"mx_price".*?"version":"12"'
-        lines = re.subn(reg, '', lines[0])
-        # 将str格式转换成byte
-        textByte = bytes(lines[0], encoding='utf-8')
+    for _ in range(3):
+        try:
+            request = Request(url)
+            lines = urlopen(request, timeout=10).read()
+            if len(lines) < 100:  # no data
+                return None
+        except HTTPError as e:
+            print(e.code)
+        else:
+            lines = lines.decode('utf-8')
+            lines = lines.split('=')[1]
+            reg = re.compile(r',{"nd.*?}')
+            lines = re.subn(reg, '', lines)
+            reg = re.compile(r',"qt":{.*?}')
+            lines = re.subn(reg, '', lines[0])
+            reg = r',"mx_price".*?"version":"4"'
+            lines = re.subn(reg, '', lines[0])
+            reg = r',"mx_price".*?"version":"12"'
+            lines = re.subn(reg, '', lines[0])
+            # 将str格式转换成byte
+            textByte = bytes(lines[0], encoding='utf-8')
     urlPost = 'http://localhost:8080/stock/tradeHistory'
-    gf.postData(textByte,urlPost,flag='stock')          #flag标记为每日股票数据
-    print("%s股票从%s至%s数据导入完成"%(code,start,end))
+    status = gf.postData(textByte,urlPost,flag='stock')          #flag标记为每日股票数据
+    if status == 500:
+        sql = "update tushare.stock_basic_table set tui_flag='1' where stockcode = '%s'" %code
+        DBHelper().execute(sql)
+        print("%s或已退市,已标记"%code)
+    else:
+        print("%s股票从%s至%s数据导入完成"%(code,start,end))
 
 
-def RunGetDayData(start="2017-01-01",end="2019-04-01"):
+def RunGetDayData(start="2017-01-01",end="2019-04-09",stock_li=[]):
     '''
 
     :param stock_list:需要运行的股票列表
@@ -49,7 +57,8 @@ def RunGetDayData(start="2017-01-01",end="2019-04-01"):
     :param count:往前倒数的天数
     :return:
     '''
-    stock_li = gf.getAllStock()
+    if len(stock_li)==0:
+        stock_li = gf.getAllStock(where="tui_flag=0")
     mapfunc = partial(_getDayData,start=start,end=end)
     pool = ThreadPool(10)        #3个线程分别对应front,back,no
     pool.map(mapfunc,stock_li)       #会将list_fq参数放在_getDayData参数拦最左边
@@ -80,6 +89,6 @@ if __name__ == '__main__':
 
     #everyday = start.replace("-","")
     #每日获取股票相关数据
-    #RunGetDayData(start,end)
+    RunGetDayData(stock_li=["sz300304"])
     #每日获取机构数据
-    brokerInfo(start,end)
+    #brokerInfo(start,end)

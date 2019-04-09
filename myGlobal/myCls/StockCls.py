@@ -19,7 +19,7 @@ class Stock(object):
     def __init__(self, code, ts_date):
         self._ts_date = ts_date
         #返回标准股票代码，若无法转换，返回None
-        self._code = gf.code_to_symbol(code)        #结果可能为None
+        self._code = code      #结果可能为None
         if self._code is None:        #code参数非沪深A股，退出
             return
         #判断参数合规性
@@ -85,7 +85,6 @@ class Stock(object):
 
 
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
-    @gf.typeassert(days=int)
     def next_some_days(self, days=7):
         '''
             返回类型：list, or None
