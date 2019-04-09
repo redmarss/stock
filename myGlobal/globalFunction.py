@@ -1,6 +1,6 @@
 #!/bin/usr/env python
 # -*- coding:utf-8 -*-
-import myGlobal.myCls.msql as msql
+from myGlobal.myCls.msql import DBHelper
 from urllib.request import Request,urlopen,HTTPError
 import datetime
 from inspect import signature
@@ -24,13 +24,15 @@ def typeassert(*type_args, **type_kwargs):
         return wrapper
     return decorate
 
-
+@typeassert(code=str)
 def code_to_symbol(code):
     '''
-    标准化股票代码并输出
+    标准化股票代码并输出（20190409修改）
     :param code: 股票代码，可接受如sh600000,600000sh,600000.sh
     :return: sh600000    若输入错误，返回'code_error’
     '''
+    if code is None:
+        return "code_error"
     if len(code) == 8 and code.startswith(('sh', 'sz')):              #形似“sh600000,sz000001”，则原样返回
         return code
     elif code.endswith(('.sh','sz','sh','sz')):              #形似"600000.sh,000001.sz,600000sh,000001sz"，则返回sh600000
@@ -40,82 +42,48 @@ def code_to_symbol(code):
     else:
         return 'code_error'
 
+def isStockA(code):
+    '''
+    查询股票是否存于stock_basic_table表中（修改于20190409）
+    :param code: 需查询的代码
+    :return: True or False
+    '''
+    symbol = code_to_symbol(code)       #代码标准化
+    sql = "select * from stock_basic_table where stockcode = '%s' and ts_flag=0" % symbol
+    t = DBHelper().fetchall()
+    if len(t) > 0:          #查到该股票代码存于stock_basic_table表中
+        return True
+    else:
+        return False
 
-
-# def isStockA(stock):
-#     code = code_to_symbol(stock)
-#     if code is None:
-#         return False
-#     else:
-#         return True
-
-# def isBroker(code):
-#     '''
-#     判断code是否机构代码
-#     :param code: str类型，机构代码
-#     :return: 如果从broker_info找到相应代码，则返回True，否则返回False
-#     '''
-#     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
-#                                    charset='utf8')
-#     t = dbObject.fetchone(table="broker_info",where="broker_code='%s'"%code)
-#     if t is not None:
-#         return True
-#     else:
-#         return False
-
-
-# def isLimit(code, openPrice, nowPrice):
-#     '''
-#     判断该股票是否涨停板，名称中含S的股票（ST，S），涨幅为5%，超出涨幅则返回None
-#     :param code:股票代码（str）
-#     :param openPrice: 开盘价（基准价）(float)
-#     :param nowPrice: 收盘价或现价(float)
-#     :return:涨停返回True，未涨停返回False，超出涨幅则返回None
-#     '''
-#     #格式化参数
-#     code = code_to_symbol(code)
-#     if code is None:            #所输入代码非沪深A股
-#         return
-#     #获取股票名称
-#     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
-#     namelist = dbObject.fetchone(table='stock_basic_table', field='stockname', where='stockcode="%s"'%code)
-#     name = str(namelist[0])
-#
-#
-#     if name.upper().find('S')>0:                #名字中包含S，涨幅为5%
-#         if nowPrice == round(1.05*openPrice, 2):
-#             return True
-#         elif nowPrice > round(1.05*openPrice, 2):
-#             print("超出每日限制涨幅")
-#             return
-#         else:
-#             return False
-#     else:
-#         if nowPrice == round(1.1*openPrice, 2):
-#             return True
-#         elif nowPrice > round(1.1*openPrice, 2):
-#             print("超出每日限制涨幅")
-#             return
-#         else:
-#             return False
-
+def isBroker(code):
+    '''
+    判断code是否机构代码(修改于20190409)
+    :param code: str类型，机构代码
+    :return: 如果从broker_info找到相应代码，则返回True，否则返回False
+    '''
+    sql = "select * from broker_info where broker_code ='%s'"%code
+    t = DBHelper().fetchall(sql)
+    if len(t) > 0:
+        return True
+    else:
+        return False
 
 def RaiseOrFall(open, close):
     '''
-    判断股票涨或跌，涨返回True，跌或平返回False
+    判断股票涨或跌，涨返回True，跌或平返回False（修改于20190409）
     :param open:开盘价（基准价）（float）
     :param close: 收盘价（现价）(float)
-    :return: 涨返回True，跌或平返回False,参数错误返回None
+    :return: 涨返回True，跌或平返回False
     '''
     if open < close:
         return True
     else:
         return False
 
-
 def ChangeRange(priceLastClose,priceNow):
     '''
-        输入两个价格，返回幅度
+        输入两个价格，返回幅度（修改于20190409）
         priceLastClose:昨日收盘价（今日开盘基准价）
         priceNow:今日收盘价或现价
         返回：涨幅，保留4位小数
@@ -123,15 +91,14 @@ def ChangeRange(priceLastClose,priceNow):
     changerange = (priceNow-priceLastClose)/priceLastClose
     return round(changerange, 4)
 
-
 def is_holiday(date):
     '''
-    #判断是否为交易日(休息日)，工作日返回False or 节假日返回True
+    #判断是否为交易日(休息日)，工作日返回False or 节假日返回True(修改于20190409)
     :param date: 日期
     :return: 工作日返回FALSE，节假日返回True，日期输入有误返回None
     '''
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
-    flag = dbObject.fetchone(table='is_holiday',field='isholiday',where='date="%s"'%date)
+    sql = "select isholiday from is_holiday where date='%s'" % str(date)
+    flag = DBHelper().fetchone(sql)
     if flag is not None:
         if flag[0] == '1':
             return True
@@ -139,25 +106,22 @@ def is_holiday(date):
             return False
     else:
         print("日期输入错误")
-        return None
 
-
+@typeassert(code=str,ts_date=str)
 def is_tradeday(code, ts_date):
     '''
-    判断股票在数据库中是否有交易数据
+    判断股票在数据库中是否有交易数据(修改于20190409)
     :param code: 股票代码
     :param tsdate: 交易日期
     :return: True or False 参数错误返回None
     '''
-    if code is None or ts_date is None:
-        return
-    dbHelp = msql.DBHelper()
-    sql = "select * from stock_trade_history_info where stock_code='%s' and ts_date='%s'" % (code, ts_date)
-    if dbHelp.fetchone(sql) is not None:            #查询到交易记录
+    symbol = code_to_symbol(code)
+    sql = "select * from stock_trade_history_info where stock_code='%s' and ts_date='%s'" % (symbol, ts_date)
+    t = DBHelper().fetchone(sql)
+    if t is not None:            #查询到交易记录
         return True
     else:
         return False
-
 
 def lastTddate(strdate):
     '''
@@ -244,5 +208,38 @@ def getAllStock(where='1=1'):
 #                                    db='tushare', charset='utf8')
 #     t_date = dbObject.fetchone(table="broker_buy_summary order by ts_date desc", field="ts_date")
 #     return t_date[0]
-
+# def isLimit(code, openPrice, nowPrice):
+#     '''
+#     判断该股票是否涨停板，名称中含S的股票（ST，S），涨幅为5%，超出涨幅则返回None
+#     :param code:股票代码（str）
+#     :param openPrice: 开盘价（基准价）(float)
+#     :param nowPrice: 收盘价或现价(float)
+#     :return:涨停返回True，未涨停返回False，超出涨幅则返回None
+#     '''
+#     #格式化参数
+#     code = code_to_symbol(code)
+#     if code is None:            #所输入代码非沪深A股
+#         return
+#     #获取股票名称
+#     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare', charset='utf8')
+#     namelist = dbObject.fetchone(table='stock_basic_table', field='stockname', where='stockcode="%s"'%code)
+#     name = str(namelist[0])
+#
+#
+#     if name.upper().find('S')>0:                #名字中包含S，涨幅为5%
+#         if nowPrice == round(1.05*openPrice, 2):
+#             return True
+#         elif nowPrice > round(1.05*openPrice, 2):
+#             print("超出每日限制涨幅")
+#             return
+#         else:
+#             return False
+#     else:
+#         if nowPrice == round(1.1*openPrice, 2):
+#             return True
+#         elif nowPrice > round(1.1*openPrice, 2):
+#             print("超出每日限制涨幅")
+#             return
+#         else:
+#             return False
 
