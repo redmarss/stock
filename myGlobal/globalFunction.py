@@ -8,21 +8,21 @@ from functools import wraps
 import json
 
 #装饰函数，限定所有函数的数据类型
-# def typeassert(*type_args, **type_kwargs):
-#     def decorate(func):
-#         sig = signature(func)
-#         bound_types = sig.bind_partial(*type_args, **type_kwargs).arguments
-#
-#         @wraps(func)
-#         def wrapper(*args, **kwargs):
-#             bound_values = sig.bind(*args, **kwargs)
-#             for name, value in bound_values.arguments.items():
-#                 if name in bound_types:
-#                     if not isinstance(value, bound_types[name]):
-#                         raise TypeError('{}函数参数{}必须是{},不能为{}'.format(func.__name__, name, bound_types[name],value))
-#             return func(*args, **kwargs)
-#         return wrapper
-#     return decorate
+def typeassert(*type_args, **type_kwargs):
+    def decorate(func):
+        sig = signature(func)
+        bound_types = sig.bind_partial(*type_args, **type_kwargs).arguments
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            bound_values = sig.bind(*args, **kwargs)
+            for name, value in bound_values.arguments.items():
+                if name in bound_types:
+                    if not isinstance(value, bound_types[name]):
+                        raise TypeError('{}函数参数{}必须是{},不能为{}'.format(func.__name__, name, bound_types[name],value))
+            return func(*args, **kwargs)
+        return wrapper
+    return decorate
 
 
 def code_to_symbol(code):
@@ -141,7 +141,7 @@ def is_holiday(date):
         print("日期输入错误")
         return None
 
-@typeassert(str, str)
+
 def is_tradeday(code, ts_date):
     '''
     判断股票在数据库中是否有交易数据
@@ -158,7 +158,7 @@ def is_tradeday(code, ts_date):
     else:
         return False
 
-@typeassert(str)
+
 def lastTddate(strdate):
     '''
     返回上一交易日
@@ -210,7 +210,7 @@ def postData(textByte,urlPost,flag=None):
 
 
 
-@typeassert(table=str)
+
 def getAllBroker(table):
     broker_list=[]
     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
