@@ -10,7 +10,7 @@ import datetime
 #多线程模拟每日机构买卖股票
 def _DailySimulate(brokercode,strdate,tablename,amount,type):
     b = Broker(brokercode,strdate)
-    b.simulate(tablename=tablename,amount=amount,ftype=type)
+    b.simulate(tablename=tablename,ts_date=strdate,amount=amount,ftype=type)
 
 #根据输入日期，找出当日上榜机构
 def _getBrokerToday(strdate):

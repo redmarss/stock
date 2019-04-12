@@ -38,12 +38,12 @@ class Broker(BrokerSimulate):
 
 
     #模拟买入并写入数据库
-    def simulate(self,tablename,amount=1000,ftype=1):
+    def simulate(self,tablename,ts_date,amount=1000,ftype=1):
 
         if len(self.stocklist) > 0:
             for stock_code in self.stocklist:
                 #调用simulatebuy函数，如果没有，调用父函数（BrokerSimulate）的
-                self.simulatebuy(tablename,stock_code,amount,ftype)
+                self.simulatebuy(tablename,stock_code,ts_date,amount,ftype)
         else:
             print("%s机构%s没有买入股票" % (self.broker_code,self.ts_date))
 

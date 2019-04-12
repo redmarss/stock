@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import pymysql
-import myGlobal.myCls.mylogger as mylogger
+from myGlobal.myCls.mylogger import mylogger
 import sys
 
 
@@ -17,7 +17,8 @@ class DBHelper:
         self.db = db
         self.conn = None
         self.cur = None
-        self.logger = mylogger.mylogger()
+        self.isConnect = self.connectDatabase()
+
 
 
     # 连接数据库
@@ -26,7 +27,7 @@ class DBHelper:
             self.conn = pymysql.connect(self.host, self.user,
                                         self.pwd, self.db, charset='utf8')
         except:
-            self.logger.error("connectDatabase failed")
+            mylogger().error("connectDatabase failed")
             return False
         self.cur = self.conn.cursor()
         return True
@@ -42,15 +43,16 @@ class DBHelper:
     # 执行数据库的sq语句,主要用来做插入操作
     def execute(self, sql, params=None):
         # 连接数据库
-        self.connectDatabase()
+        if self.isConnect is False:
+            self.connectDatabase()
         try:
             if self.conn and self.cur:
                 # 正常逻辑，执行sql，提交操作
                 self.cur.execute(sql, params)
                 self.conn.commit()
         except:
-            self.logger.error("execute failed: " + sql)
-            self.logger.error("params: " + params)
+            mylogger().error("execute failed: " + sql)
+            mylogger().error("params: " + params)
             self.close()
             return False
         return True

@@ -54,36 +54,50 @@ class BrokerSimulate(Simulate):
         ''' % tablename
         DBHelper().execute(sql)
 
-    def simulatebuy(self, tablename,stock_code,amount=1000,ftype=1):
+    def simulatebuy(self, tablename,stock_code,ts_date,amount=1000,ftype=1):
         if DBHelper().isTableExists(tablename) is False:        #表不存在，则创建表
             self._createtable(tablename)
-        result = self.__CaculateStock(stock_code,amount, ftype)
+        result = self.__CaculateStock(stock_code,ts_date,amount, ftype)
         self.__recordToSql(tablename,result)
-        print("%s机构于%s购买%s(%s股)记录成功，策略：（%s）" %(self.broker_code,stock_code,amount,ftype))
+        print("%s机构于%s购买%s(%s股)记录成功，策略：（%s）" %(self.broker_code,ts_date,stock_code,amount,ftype))
+
 
     #计算相应股票数据，返回元组，后续存入数据库
-    def __CaculateStock(self, stock_code,amount, ftype):
+    def __CaculateStock(self, stock_code,ts_date,amount, ftype):
         switch = {
-            1: self.__strategy1(stock_code,amount),
-            2: self.__strategy2(stock_code,amount)
+            1: self.__strategy1(stock_code,ts_date,amount),
+            2: self.__strategy2(stock_code,ts_date,amount)
         }
         return switch.get(ftype)
 
 
     def __recordToSql(self, tablename,t):
-        sql = "insert into %s values %s" %(tablename,t)
-        DBHelper().execute(sql)
+        #先去查数据库中是否有这笔记录，没有的话再添加
+        ts_date = t[1]
+        broker_code = t[2]
+        stock_name = t[3]
+        ftype= t[13]
+        sql = "select * from %s where ts_date='%s' and broker_code='%s' and stock_name='%s' and ftype='%s'" \
+             % (tablename,ts_date,broker_code,stock_name,ftype)
+        result = DBHelper().fetchall(sql)
+        if len(result)==0:
+            sql2 = "insert into %s values %s" %(tablename,t)
+            try:
+                DBHelper().execute(sql2)
+            except:
+                mylogger().error()
+
 
 
     # region 策略1：上榜后第二天开盘买，第三天开盘卖
-    def __strategy1(self,stock_code,amount):
+    def __strategy1(self,stock_code,ts_date,amount):
         stockA = Stock(stock_code,self.ts_date)     #实例化股票对象，以便后续计算
         t_price = stockA.next_some_days(3)          #从买入当天，取3天数据
         if len(t_price)!=3:
             print("数据长度不对")
             return
         #计算返回值信息
-        ts_date = self.ts_date
+        ts_date = ts_date
         broker_code = self.broker_code
         stock_code = stock_code
         stock_name = stockA.name
@@ -101,6 +115,6 @@ class BrokerSimulate(Simulate):
     # endregion
 
 
-    def __strategy2(self,stock_code,amount):
+    def __strategy2(self,stock_code,ts_date,amount):
         pass
 

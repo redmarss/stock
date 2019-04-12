@@ -23,7 +23,7 @@ class Stock(object):
         if self._code is None:        #code参数非沪深A股，退出
             return
         #判断参数合规性
-        if not gf.is_tradeday(code, ts_date):                   #停牌或其他（没有交易记录）
+        if not gf.stock_is_tradeday(code, ts_date):                   #停牌或其他（没有交易记录）
             mylogger().error("%s在%s未查询到交易记录" % (code, ts_date))
             return
         #创建数据库对象
@@ -97,7 +97,7 @@ class Stock(object):
         date = str(self._ts_date)         #str类型
         #当stocklist函数长度小于days且数据库中有数据
         while len(stocklist) < days:
-            if gf.is_tradeday(str(self._code), date):
+            if gf.stock_is_tradeday(str(self._code), date):
                 s = Stock(self._code, date)
                 stocklist.append(s)
             date = myTime.diffDay(date, 1)

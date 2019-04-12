@@ -6,6 +6,7 @@ import datetime
 from inspect import signature
 from functools import wraps
 import json
+import sys
 
 #装饰函数，限定所有函数的数据类型
 def typeassert(*type_args, **type_kwargs):
@@ -33,6 +34,7 @@ def code_to_symbol(code):
     '''
     if code is None:
         return "code_error"
+    code = str.lower(code)
     if len(code) == 8 and code.startswith(('sh', 'sz')):              #形似“sh600000,sz000001”，则原样返回
         return code
     elif code.endswith(('.sh','sz','sh','sz')):              #形似"600000.sh,000001.sz,600000sh,000001sz"，则返回sh600000
@@ -91,13 +93,14 @@ def ChangeRange(priceLastClose,priceNow):
     changerange = (priceNow-priceLastClose)/priceLastClose
     return round(changerange, 4)
 
+@typeassert(date=str)
 def is_holiday(date):
     '''
-    #判断是否为交易日(休息日)，工作日返回False or 节假日返回True(修改于20190409)
-    :param date: 日期
+    #判断是否为交易日(休息日)，工作日返回False or 节假日返回True(修改于20190412)
+    :param date: 日期(str格式)
     :return: 工作日返回FALSE，节假日返回True，日期输入有误返回None
     '''
-    sql = "select isholiday from is_holiday where date='%s'" % str(date)
+    sql = "select isholiday from is_holiday where date='%s'" % date
     flag = DBHelper().fetchone(sql)
     if flag is not None:
         if flag[0] == '1':
@@ -108,9 +111,9 @@ def is_holiday(date):
         print("日期输入错误")
 
 @typeassert(code=str,ts_date=str)
-def is_tradeday(code, ts_date):
+def stock_is_tradeday(code, ts_date):
     '''
-    判断股票在数据库中是否有交易数据(修改于20190409)
+    判断股票在数据库中是否有交易数据(修改于20190412)
     :param code: 股票代码
     :param tsdate: 交易日期
     :return: True or False 参数错误返回None
@@ -123,9 +126,10 @@ def is_tradeday(code, ts_date):
     else:
         return False
 
+@typeassert(strdate=str)
 def lastTddate(strdate):
     '''
-    返回上一交易日
+    返回A股上一交易日（修改于20190412）
     :param strdate: （str）
     :return:不包含当前日期的上一交易日（str）
     '''
@@ -141,8 +145,15 @@ def lastTddate(strdate):
 
 
 
-#将byte数据Post至jar服务中
+
 def postData(textByte,urlPost,flag=None):
+    '''
+    将byte数据Post至jar服务中
+    :param textByte:要推送的byte数据
+    :param urlPost: post服务地址
+    :param flag: 推送标志，目前有'stock'
+    :return: 如果出错，返回出错代码,int值
+    '''
     if isinstance(textByte,str):
         textByte=bytes(textByte,encoding='utf8')
     elif isinstance(textByte,bytes):
@@ -171,30 +182,43 @@ def postData(textByte,urlPost,flag=None):
     except HTTPError as e:
         return e.code
 
-
-
-
-
-def getAllBroker(table):
+def getAllBroker(table='broker_info',field='broker_code',where='1=1'):
+    '''
+    从数据表（默认为broker_info）中获取机构代码（修改于20190412）
+    :param table:表名，默认为broker_info
+    :param field:获取的字段，默认为broker_code
+    :param where:筛选条件，默认为全选
+    :return:机构列表
+    '''
     broker_list=[]
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
-                                   charset='utf8')
-    t_broker = dbObject.fetchall(table=table, field="broker_code")
-    for t in t_broker:
-        if t[0] not in broker_list:
-            broker_list.append(t[0])
-    return broker_list
+    sql = ' select %s from %s where %s' %(field,table,where)
+    try:
+        t_broker = DBHelper().fetchall(sql)
+        for t in t_broker:
+            if t[0] not in broker_list:
+                broker_list.append(t[0])
+        return broker_list
+    except:
+        print('%s出错'%getAllBroker.__name__)
 
-def getAllStock(where='1=1'):
+def getAllStockFromTable(table='stock_basic_table',field='stockcode',where='1=1'):
+    '''
+    从数据表stock_basic_table中获取所有股票代码（修改于20190412）
+    :param where: 检索条件
+    :param table: 检索的表名（默认为stock_basic_table）
+    :return: 股票列表
+    '''
     li = []
     # 创建数据库对象（单例模式）
-    dbObject = msql.SingletonModel(host='localhost', port='3306',
-                                         user='root', passwd='redmarss',
-                                         charset='utf8', db='tushare')
-    t_stock = dbObject.fetchall(table="stock_basic_table",field="stockcode", where=where,order="stockcode")
-    for key in t_stock:
-        li.append(key[0])
-    return li
+    sql = 'select %s from %s where %s and ordery by stockcode' % (field,table,where)
+    try:
+        t_stock = DBHelper().fetchall(sql)
+        for key in t_stock:
+            if key[0] not in li:
+                li.append(key[0])
+        return li
+    except:
+        print('%s出错' % getAllStockFromTable.__name__)
 
 
 

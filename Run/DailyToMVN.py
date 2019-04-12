@@ -58,7 +58,7 @@ def RunGetDayData(start="2017-01-01",end="2019-04-09",stock_li=[]):
     :return:
     '''
     if len(stock_li)==0:
-        stock_li = gf.getAllStock(where="tui_flag=0")
+        stock_li = gf.getAllStockFromTable(where="tui_flag=0")
     mapfunc = partial(_getDayData,start=start,end=end)
     pool = ThreadPool(10)        #3个线程分别对应front,back,no
     pool.map(mapfunc,stock_li)       #会将list_fq参数放在_getDayData参数拦最左边
