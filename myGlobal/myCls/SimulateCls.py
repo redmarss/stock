@@ -72,13 +72,16 @@ class BrokerSimulate(Simulate):
 
 
     def __recordToSql(self, tablename,t):
+        #策略找不到相关历史数据，t的位置返回None
+        if t is None:
+            return
         #先去查数据库中是否有这笔记录，没有的话再添加
         ts_date = t[1]
         broker_code = t[2]
-        stock_name = t[3]
+        stock_code = t[3]
         ftype= t[13]
-        sql = "select * from %s where ts_date='%s' and broker_code='%s' and stock_name='%s' and ftype='%s'" \
-             % (tablename,ts_date,broker_code,stock_name,ftype)
+        sql = "select * from %s where ts_date='%s' and broker_code='%s' and stock_code='%s' and ftype='%s'" \
+             % (tablename,ts_date,broker_code,stock_code,ftype)
         result = DBHelper().fetchall(sql)
         if len(result)==0:
             sql2 = "insert into %s values %s" %(tablename,t)
