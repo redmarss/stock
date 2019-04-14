@@ -263,7 +263,8 @@ class DBHelper:
     # 执行数据库的sq语句,主要用来做插入操作
     def execute(self, sql, params=None):
         # 连接数据库
-        self.connectDatabase()
+        if self.conn is not True:
+            self.connectDatabase()
         try:
             if self.conn and self.cur:
                 # 正常逻辑，执行sql，提交操作
@@ -280,12 +281,16 @@ class DBHelper:
     # 用来查询表数据
     def fetchall(self, sql, params=None):
         self.execute(sql, params)
-        return self.cur.fetchall()
+        result = self.cur.fetchall()
+        self.close()                #关闭连接，否则多线程操作时会超过最大连接数
+        return result
 
     # 获取一条数据
     def fetchone(self,sql,params=None):
         self.execute(sql,params)
-        return self.cur.fetchone()
+        result =  self.cur.fetchone()
+        self.close()                #关闭连接，否则多线程操作时会超过最大连接数
+        return result
 
     def isTableExists(self, tablename):
         sql = "show tables;"

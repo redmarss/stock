@@ -8,6 +8,7 @@ import myGlobal.myTime as mTime
 from myGlobal.myCls.msql import DBHelper
 import datetime
 from abc import ABC,abstractmethod,ABCMeta
+from myGlobal.myCls.mylogger import mylogger
 
 # region Simulate抽象类
 class Simulate(metaclass=ABCMeta):                  #抽象类
@@ -97,7 +98,7 @@ class BrokerSimulate(Simulate):
         stockA = Stock(stock_code,self.ts_date)     #实例化股票对象，以便后续计算
         t_price = stockA.next_some_days(3)          #从买入当天，取3天数据
         if len(t_price)!=3:
-            print("数据长度不对")
+            mylogger().error("无法获取%s于%s前交易数据"%(stock_code,ts_date))
             return
         #计算返回值信息
         ts_date = ts_date

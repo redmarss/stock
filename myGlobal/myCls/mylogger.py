@@ -14,9 +14,9 @@ class mylogger:
         sh.setFormatter(fmt)
         sh.setLevel(clevel)
         #设置文件日志
-        #fh = logging.FileHandler(filepath)
-        #fh.setFormatter(fmt)
-        #fh.setLevel(flevel)
+        fh = logging.FileHandler(filepath)
+        fh.setFormatter(fmt)
+        fh.setLevel(flevel)
 
         self.logger.addHandler(sh)
         #self.logger.addHandler(fh)
