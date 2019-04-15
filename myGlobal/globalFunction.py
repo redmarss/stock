@@ -34,6 +34,8 @@ def code_to_symbol(code):
     '''
     if code is None:
         return "code_error"
+    if code.startswith(('2','9')) or code[2] in ['2','9']:
+        return "code_error"                 #去除以2,9开头的代码（B股）
     code = str.lower(code)
     if len(code) == 8 and code.startswith(('sh', 'sz')):              #形似“sh600000,sz000001”，则原样返回
         return code
@@ -210,7 +212,7 @@ def getAllStockFromTable(table='stock_basic_table',field='stockcode',where='1=1'
     '''
     li = []
     # 创建数据库对象（单例模式）
-    sql = 'select %s from %s where %s and ordery by stockcode' % (field,table,where)
+    sql = 'select %s from %s where %s order by stockcode' % (field,table,where)
     try:
         t_stock = DBHelper().fetchall(sql)
         for key in t_stock:

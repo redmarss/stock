@@ -56,11 +56,13 @@ class BrokerSimulate(Simulate):
         DBHelper().execute(sql)
 
     def simulatebuy(self, tablename,stock_code,ts_date,amount=1000,ftype=1):
+        if stock_code =='code_error':               #非沪深A股
+            return
         if DBHelper().isTableExists(tablename) is False:        #表不存在，则创建表
             self._createtable(tablename)
         result = self.__CaculateStock(stock_code,ts_date,amount, ftype)
         self.__recordToSql(tablename,result)
-        print("%s机构于%s购买%s(%s股)记录成功，策略：（%s）" %(self.broker_code,ts_date,stock_code,amount,ftype))
+
 
 
     #计算相应股票数据，返回元组，后续存入数据库
@@ -81,6 +83,7 @@ class BrokerSimulate(Simulate):
         broker_code = t[2]
         stock_code = t[3]
         ftype= t[13]
+        amount=t[10]
         sql = "select * from %s where ts_date='%s' and broker_code='%s' and stock_code='%s' and ftype='%s'" \
              % (tablename,ts_date,broker_code,stock_code,ftype)
         result = DBHelper().fetchall(sql)
@@ -88,6 +91,7 @@ class BrokerSimulate(Simulate):
             sql2 = "insert into %s values %s" %(tablename,t)
             try:
                 DBHelper().execute(sql2)
+                print("%s机构于%s购买%s(%s股)记录成功，策略：（%s）" % (self.broker_code, ts_date, stock_code, amount, ftype))
             except:
                 mylogger().error()
 
@@ -119,6 +123,28 @@ class BrokerSimulate(Simulate):
     # endregion
 
 
+    # region 策略1：上榜后第二天开盘买，第四天开盘卖
     def __strategy2(self,stock_code,ts_date,amount):
-        pass
+        stockA = Stock(stock_code,self.ts_date)     #实例化股票对象，以便后续计算
+        t_price = stockA.next_some_days(4)          #从买入当天，取3天数据
+        if len(t_price)!=4:
+            mylogger().error("无法获取%s于%s前交易数据"%(stock_code,ts_date))
+            return
+        #计算返回值信息
+        ts_date = ts_date
+        broker_code = self.broker_code
+        stock_code = stock_code
+        stock_name = stockA.name
+        buy_date = mTime.diffDay(ts_date,1)
+        sell_date = mTime.diffDay(ts_date,3)
+        buy_price = t_price[1].open_price
+        sell_price = t_price[3].open_price
+        get_day = 2             #持有一天
+        amount= amount
+        gainmoney = round((sell_price-buy_price) * amount, 2)
+        gainpercent = round(gainmoney/(buy_price*amount), 4)
+        ftype = 2
+        #第一个字段随便设个int值作为id（会自动增长）
+        return 0,ts_date,broker_code,stock_code,stock_name,buy_date,sell_date,buy_price,sell_price,get_day,amount,gainmoney,gainpercent,ftype
+    # endregion
 

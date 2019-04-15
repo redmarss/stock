@@ -40,15 +40,15 @@ def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多�
             textByte = bytes(lines[0], encoding='utf-8')
     urlPost = 'http://localhost:8080/stock/tradeHistory'
     status = gf.postData(textByte,urlPost,flag='stock')          #flag标记为每日股票数据
-    if status == 500:
-        sql = "update tushare.stock_basic_table set tui_flag='1' where stockcode = '%s'" %code
-        DBHelper().execute(sql)
-        print("%s或已退市,已标记"%code)
-    else:
-        print("%s股票从%s至%s数据导入完成"%(code,start,end))
+    # if status == 500:
+    #     sql = "update tushare.stock_basic_table set tui_flag='1' where stockcode = '%s'" %code
+    #     DBHelper().execute(sql)
+    #     print("%s或已退市,已标记"%code)
+    # else:
+    print("%s股票从%s至%s数据导入完成"%(code,start,end))
 
 
-def RunGetDayData(start="2017-01-01",end="2019-04-09",stock_li=[]):
+def RunGetDayData(start="2017-01-01",end="2019-04-15",stock_li=[]):
     '''
 
     :param stock_list:需要运行的股票列表
@@ -58,7 +58,7 @@ def RunGetDayData(start="2017-01-01",end="2019-04-09",stock_li=[]):
     :return:
     '''
     if len(stock_li)==0:
-        stock_li = gf.getAllStockFromTable(where="tui_flag=0")
+        stock_li = gf.getAllStockFromTable()
     mapfunc = partial(_getDayData,start=start,end=end)
     pool = ThreadPool(10)        #3个线程分别对应front,back,no
     pool.map(mapfunc,stock_li)       #会将list_fq参数放在_getDayData参数拦最左边
@@ -89,6 +89,6 @@ if __name__ == '__main__':
 
     #everyday = start.replace("-","")
     #每日获取股票相关数据
-    #RunGetDayData()
+    RunGetDayData(end=end)
     #每日获取机构数据
     brokerInfo(start,end)

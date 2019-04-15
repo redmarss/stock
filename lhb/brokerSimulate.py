@@ -41,5 +41,6 @@ if __name__ =='__main__':
     enddate = "2019-04-01"
     date = myTime.strTodate(startdate)
     while date <= myTime.strTodate(enddate):
-        mapDailySimulate(str(date),"simulate_buy",1000,1)
+        #mapDailySimulate(str(date),"simulate_buy",1000,1)
+        mapDailySimulate(str(date),"simulate_buy",1000,2)
         date = date+datetime.timedelta(days=1)

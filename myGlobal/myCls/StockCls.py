@@ -20,7 +20,7 @@ class Stock(object):
         self._ts_date = ts_date
         #返回标准股票代码，若无法转换，返回None
         self._code = code      #结果可能为None
-        if self._code is None:        #code参数非沪深A股，退出
+        if self._code == "code_error":        #code参数非沪深A股，退出
             return
         #判断参数合规性
         if not gf.stock_is_tradeday(code, ts_date):                   #停牌或其他（没有交易记录）

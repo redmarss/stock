@@ -19,7 +19,7 @@ class mylogger:
         fh.setLevel(flevel)
 
         self.logger.addHandler(sh)
-        #self.logger.addHandler(fh)
+        self.logger.addHandler(fh)
 
     def debug(self, message):
         self.logger.debug(message)
