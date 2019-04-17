@@ -104,6 +104,9 @@ class BrokerSimulate(Simulate):
         if len(t_price)!=3:
             mylogger().error("无法获取%s于%s前交易数据"%(stock_code,ts_date))
             return
+        #第二天开盘涨幅大于8%，不买
+        if gf.ChangeRange(t_price[0].close_price,t_price[1].open_price) > 0.08:
+            return
         #计算返回值信息
         ts_date = ts_date
         broker_code = self.broker_code
@@ -129,6 +132,9 @@ class BrokerSimulate(Simulate):
         t_price = stockA.next_some_days(4)          #从买入当天，取3天数据
         if len(t_price)!=4:
             mylogger().error("无法获取%s于%s前交易数据"%(stock_code,ts_date))
+            return
+        #第二天开盘涨幅大于8%，不买
+        if gf.ChangeRange(t_price[0].close_price,t_price[1].open_price) > 0.08:
             return
         #计算返回值信息
         ts_date = ts_date
