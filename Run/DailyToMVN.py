@@ -73,7 +73,7 @@ def brokerInfo(startDate=None, endDate=None, pagesize=200000):
     try:
         request=Request(LHBYYBSBCS%(startDate,endDate,pagesize))
         text=urlopen(request, timeout=10).read()                     #type is byte
-        gf.postData(text,urlPost)
+        gf.postData(text,urlPost,flag='lhb')
     except Exception as e:
         print(e)
 
@@ -89,6 +89,6 @@ if __name__ == '__main__':
 
     #everyday = start.replace("-","")
     #每日获取股票相关数据
-    RunGetDayData(end=end)
+    #RunGetDayData(start=start,end=end)
     #每日获取机构数据
     brokerInfo(start,end)

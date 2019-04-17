@@ -172,7 +172,7 @@ def postData(textByte,urlPost,flag=None):
             dictResponse = json.loads(response)
 
             if dictResponse['status'] == 200:
-                if flag is None:
+                if flag == 'lhb':
                     #print(response.recordCount)
                     print("龙虎榜数据完成,%s条数据导入成功" % dictResponse['recordCount'])
                 elif flag == "stock":

@@ -15,6 +15,10 @@ class Broker(BrokerSimulate):
         self.broker_code = broker_code
         self.ts_date = ts_date
         self.stocklist = self._getBuyStock()
+        self.stockpricelist = None
+
+
+
 
 
 
@@ -46,6 +50,19 @@ class Broker(BrokerSimulate):
                 self.simulatebuy(tablename,stock_code,ts_date,amount,ftype)
         else:
             print("%s机构%s没有买入股票" % (self.broker_code,self.ts_date))
+
+    #根据ts_date为机构打分，返回具体分值
+    def score(self,start='2017-01-01'):
+        #如果当天机构没有交易数据，记0分
+        if len(self.stocklist) == 0:
+            return 0
+        #取出数据库中当前的score值
+        sql = "select score from broker_info where broker_code='%s'" % self.broker_code
+        score = DBHelper().execute(sql)[0]
+
+
+
+
 
 
 
