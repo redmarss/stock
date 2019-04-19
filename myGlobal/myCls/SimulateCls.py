@@ -48,6 +48,7 @@ class BrokerSimulate(Simulate):
         `gainmoney` VARCHAR(45) NULL,
         `gainpercent` VARCHAR(45) NULL,
         `ftype` VARCHAR(5) NULL,
+        `getscore` VARCHAR(20) NULL,
         PRIMARY KEY (`id`),
         UNIQUE INDEX `id_UNIQUE` (`id` ASC),
         UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC,`ftype` ASC)
@@ -68,8 +69,8 @@ class BrokerSimulate(Simulate):
     #计算相应股票数据，返回元组，后续存入数据库
     def __CaculateStock(self, stock_code,ts_date,amount, ftype):
         switch = {
-            1: self.__strategy1(stock_code,ts_date,amount),
-            2: self.__strategy2(stock_code,ts_date,amount)
+            1: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype),
+            2: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype)
         }
         return switch.get(ftype)
 
@@ -95,16 +96,20 @@ class BrokerSimulate(Simulate):
             except:
                 mylogger().error()
 
+    #根据策略类型及其他相关数据计算此次得分
+    def __cacuscore(self,ftype):
+
+
 
 
     # region 策略1：上榜后第二天开盘买，第三天开盘卖
-    def __strategy1(self,stock_code,ts_date,amount):
+    def __strategyOpenbuyOpensell(self,stock_code,ts_date,amount,ftype):
         stockA = Stock(stock_code,self.ts_date)     #实例化股票对象，以便后续计算
-        t_price = stockA.next_some_days(3)          #从买入当天，取3天数据
-        if len(t_price)!=3:
-            mylogger().error("无法获取%s于%s前交易数据"%(stock_code,ts_date))
+        t_price = stockA.next_some_days(int(ftype)+2)          #从买入当天，取3天数据
+        if len(t_price)!= int(ftype)+2:
+            mylogger().error("无法获取%s于%s买入后%s天交易数据"%(stock_code,ts_date,int(ftype)+2))
             return
-        #第二天开盘涨幅大于8%，不买
+        #第二天开盘涨幅大于8%，不买(但要给机构加分)
         if gf.ChangeRange(t_price[0].close_price,t_price[1].open_price) > 0.08:
             return
         #计算返回值信息
@@ -113,44 +118,19 @@ class BrokerSimulate(Simulate):
         stock_code = stock_code
         stock_name = stockA.name
         buy_date = mTime.diffDay(ts_date,1)
-        sell_date = mTime.diffDay(ts_date,2)
+        sell_date = mTime.diffDay(ts_date,int(ftype)+1)
         buy_price = t_price[1].open_price
-        sell_price = t_price[2].open_price
-        get_day = 1             #持有一天
+        sell_price = t_price[int(ftype)+1].open_price
+        get_day = ftype             #持有天数
         amount= amount
         gainmoney = round((sell_price-buy_price) * amount, 2)
         gainpercent = round(gainmoney/(buy_price*amount), 4)
-        ftype = 1
+        ftype = ftype
+        getscore = self.__cacuscore(ftype)
         #第一个字段随便设个int值作为id（会自动增长）
-        return 0,ts_date,broker_code,stock_code,stock_name,buy_date,sell_date,buy_price,sell_price,get_day,amount,gainmoney,gainpercent,ftype
+        return 0,ts_date,broker_code,stock_code,stock_name,buy_date,sell_date,buy_price,sell_price,get_day,amount,gainmoney,gainpercent,ftype,getscore
     # endregion
 
 
-    # region 策略1：上榜后第二天开盘买，第四天开盘卖
-    def __strategy2(self,stock_code,ts_date,amount):
-        stockA = Stock(stock_code,self.ts_date)     #实例化股票对象，以便后续计算
-        t_price = stockA.next_some_days(4)          #从买入当天，取3天数据
-        if len(t_price)!=4:
-            mylogger().error("无法获取%s于%s前交易数据"%(stock_code,ts_date))
-            return
-        #第二天开盘涨幅大于8%，不买
-        if gf.ChangeRange(t_price[0].close_price,t_price[1].open_price) > 0.08:
-            return
-        #计算返回值信息
-        ts_date = ts_date
-        broker_code = self.broker_code
-        stock_code = stock_code
-        stock_name = stockA.name
-        buy_date = mTime.diffDay(ts_date,1)
-        sell_date = mTime.diffDay(ts_date,3)
-        buy_price = t_price[1].open_price
-        sell_price = t_price[3].open_price
-        get_day = 2             #持有一天
-        amount= amount
-        gainmoney = round((sell_price-buy_price) * amount, 2)
-        gainpercent = round(gainmoney/(buy_price*amount), 4)
-        ftype = 2
-        #第一个字段随便设个int值作为id（会自动增长）
-        return 0,ts_date,broker_code,stock_code,stock_name,buy_date,sell_date,buy_price,sell_price,get_day,amount,gainmoney,gainpercent,ftype
-    # endregion
+
 
