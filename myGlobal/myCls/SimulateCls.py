@@ -24,6 +24,8 @@ class Simulate(metaclass=ABCMeta):                  #抽象类
         return
 # endregion
 
+
+
 #根据输入的机构代码，开始、结束日期，写入tablename表
 class BrokerSimulate(Simulate):
     def __init__(self, tablename, broker_code,ts_date):
@@ -68,12 +70,12 @@ class BrokerSimulate(Simulate):
 
     #计算相应股票数据，返回元组，后续存入数据库
     def __CaculateStock(self, stock_code,ts_date,amount, ftype):
-        switch = {
-            1: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype),
-            2: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype)
-        }
-        return switch.get(ftype)
-
+        # switch = {
+        #     1: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype),
+        #     2: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype)
+        # }
+        # return switch.get(ftype)
+        return self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype)
 
     def __recordToSql(self, tablename,t):
         #策略找不到相关历史数据，t的位置返回None
@@ -97,19 +99,19 @@ class BrokerSimulate(Simulate):
                 mylogger().error()
 
     #根据策略类型及其他相关数据计算此次得分
-    def __cacuscore(self,ftype):
+    def __cacuscore(self,ftype,gainmoney,gainpercent):
+        return gainpercent
 
 
 
-
-    # region 策略1：上榜后第二天开盘买，第三天开盘卖
+    # region 策略1(2)：上榜后第二天开盘买，第三(四)天开盘卖
     def __strategyOpenbuyOpensell(self,stock_code,ts_date,amount,ftype):
         stockA = Stock(stock_code,self.ts_date)     #实例化股票对象，以便后续计算
         t_price = stockA.next_some_days(int(ftype)+2)          #从买入当天，取3天数据
         if len(t_price)!= int(ftype)+2:
             mylogger().error("无法获取%s于%s买入后%s天交易数据"%(stock_code,ts_date,int(ftype)+2))
             return
-        #第二天开盘涨幅大于8%，不买(但要给机构加分)
+        #第二天开盘涨幅大于8%，不买
         if gf.ChangeRange(t_price[0].close_price,t_price[1].open_price) > 0.08:
             return
         #计算返回值信息
@@ -126,7 +128,7 @@ class BrokerSimulate(Simulate):
         gainmoney = round((sell_price-buy_price) * amount, 2)
         gainpercent = round(gainmoney/(buy_price*amount), 4)
         ftype = ftype
-        getscore = self.__cacuscore(ftype)
+        getscore = self.__cacuscore(ftype,gainmoney,gainpercent)
         #第一个字段随便设个int值作为id（会自动增长）
         return 0,ts_date,broker_code,stock_code,stock_name,buy_date,sell_date,buy_price,sell_price,get_day,amount,gainmoney,gainpercent,ftype,getscore
     # endregion
