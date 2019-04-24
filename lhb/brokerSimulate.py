@@ -37,10 +37,11 @@ def mapDailySimulate(strdate,tablename,amount,type):
 
 
 if __name__ =='__main__':
+    simulate_list =[1,2]
     startdate = "2017-01-01"
     enddate = "2019-04-01"
     date = myTime.strTodate(startdate)
     while date <= myTime.strTodate(enddate):
-        mapDailySimulate(str(date),"simulate_buy",1000,1)
-        mapDailySimulate(str(date),"simulate_buy",1000,2)
+        for ftype in simulate_list:
+            mapDailySimulate(str(date), "simulate_buy", 1000, int(ftype))
         date = date+datetime.timedelta(days=1)
