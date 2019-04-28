@@ -1,32 +1,57 @@
-import numpy as np
-import myGlobal.myCls.msql as msql
-import pandas as pd
-from multiprocessing.dummy import Pool as ThreadPool
-from urllib.request import urlopen, Request
-import json
+from functools import wraps
+
+from concurrent.futures import ThreadPoolExecutor
 
 
-# url = "https://gupiao.baidu.com/api/stocks/stockdaybar?from=pc&os_ver=1&cuid=xxx&vv=100&format=json&stock_code=sh600500&step=3&start=20170105&count=160&fq_type=no"
-#
-# try:
-#     request = Request(url)
-#     lines = urlopen(request, timeout=10).read()
-# except Exception as e:
-#     print(e)
-#
-# t = json.loads(lines)
-# t['stock_code']="600000"
-# l = json.dumps(t).encode()
-# print(l)
+class Tomorrow():
+
+    def __init__(self, future, timeout):
+        self._future = future
+        self._timeout = timeout
+
+    def __getattr__(self, name):
+        result = self._wait()
+        return result.__getattribute__(name)
+
+    def _wait(self):
+        return self._future.result(self._timeout)
 
 
-url = "http://datainterface3.eastmoney.com/EM_DataCenter_V3/Api//LHBYYBSBCS/GetLHBYYBSBCS?tkn=eastmoney&mkt=&dateNum=&startDateTime=2019-02-18&endDateTime=2019-02-18&sortRule=1&sortColumn=JmMoney&pageNum=1&pageSize=200000&cfg=lhbyybsbcs"
+def async(n, base_type, timeout=None):
+    def decorator(f):
+        if isinstance(n, int):
+            pool = base_type(n)
+        elif isinstance(n, base_type):
+            pool = n
+        else:
+            raise TypeError(
+                "Invalid type: %s"
+                % type(base_type)
+            )
 
-try:
-    request = Request(url)
-    lines = urlopen(request,timeout=10).read()
-except Exception as e:
-    print(e)
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            return Tomorrow(
+                pool.submit(f, *args, **kwargs),
+                timeout=timeout
+            )
 
-d = json.loads(lines)
-print(len(d['Data'][0]['Data']))
+        return wrapped
+
+    return decorator
+
+
+def threads(n, timeout=None):
+    return async(n, ThreadPoolExecutor, timeout)
+
+
+
+
+@threads(10)
+def test(code):
+    print(code)
+
+
+
+if __name__ == '__main__':
+    [test(code) for code in [1,2,3,4,5,6,7,8]]

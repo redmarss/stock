@@ -6,6 +6,8 @@ import datetime
 from inspect import signature
 from functools import wraps
 import json
+from multiprocessing.dummy import Pool as ThreadPool
+from functools import partial
 import sys
 
 #装饰函数，限定所有函数的数据类型
@@ -221,6 +223,9 @@ def getAllStockFromTable(table='stock_basic_table',field='stockcode',where='1=1'
         return li
     except:
         print('%s出错' % getAllStockFromTable.__name__)
+
+
+    def MuliteThreadPool(func,):
 
 
 

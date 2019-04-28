@@ -91,4 +91,4 @@ if __name__ == '__main__':
     #每日获取股票相关数据
     RunGetDayData(start="2019-01-01",end=end)
     #每日获取机构数据
-    #brokerInfo(start,end)
+    brokerInfo(start,end)
