@@ -63,13 +63,13 @@ class BrokerSimulate(Simulate):
             return
         if DBHelper().isTableExists(tablename) is False:        #表不存在，则创建表
             self._createtable(tablename)
-        #判断broker_buy_stock_info中simulate_flag状态，如果与ftype相等，则说明已写入，return
-        sql = "SELECT simulate_flag FROM broker_buy_stock_info as a,broker_buy_summary as b where b.ts_date='%s' and b.broker_code='%s' and a.broker_buy_summary_id=b.id and a.stock_code like '%s%%'"%
-        (ts_date,self.broker_code,stock_code[:6])
-        t = DBHelper().execute(sql)[0]
-        #判断simulate_flag在ftype是否写入过数据库
-        if self.__is_simulate(t,ftype) is False:        #已写入过数据库
-            return
+        # #判断broker_buy_stock_info中simulate_flag状态，如果与ftype相等，则说明已写入，return
+        # sql = "SELECT simulate_flag FROM broker_buy_stock_info as a,broker_buy_summary as b where b.ts_date='%s' and b.broker_code='%s' and a.broker_buy_summary_id=b.id and a.stock_code like '%s%%'"%
+        # (ts_date,self.broker_code,stock_code[:6])
+        # t = DBHelper().execute(sql)[0]
+        # #判断simulate_flag在ftype是否写入过数据库
+        # if self.__is_simulate(t,ftype) is False:        #已写入过数据库
+        #     return
 
         result = self.__CaculateStock(stock_code,ts_date,amount, ftype)
         self.__recordToSql(tablename,result)
@@ -83,13 +83,13 @@ class BrokerSimulate(Simulate):
             return False
 
 
-    def __get_simulate_flag(self,broker_code,ts_date,stock_code):
-        sql = "SELECT simulate_flag FROM broker_buy_stock_info as a,broker_buy_summary as b where b.ts_date='%s' and b.broker_code='%s' and a.broker_buy_summary_id=b.id and a.stock_code like '%s%%'"%
-        (ts_date,self.broker_code,stock_code[:6])
+    # def __get_simulate_flag(self,broker_code,ts_date,stock_code):
+    #     sql = "SELECT simulate_flag FROM broker_buy_stock_info as a,broker_buy_summary as b where b.ts_date='%s' and b.broker_code='%s' and a.broker_buy_summary_id=b.id and a.stock_code like '%s%%'"%
+    #     (ts_date,self.broker_code,stock_code[:6])
 
-    #更新simulate_flag状态
-    def __update_brokerbuystockinfo(self,ftype):
-        #取得broker_buy_stock_info数据库中当前状态
+    # #更新simulate_flag状态
+    # def __update_brokerbuystockinfo(self,ftype):
+    #     #取得broker_buy_stock_info数据库中当前状态
 
 
 

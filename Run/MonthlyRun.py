@@ -11,8 +11,7 @@ import datetime
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as myTime
 from myGlobal.myCls.msql import DBHelper
-from multiprocessing.dummy import Pool as ThreadPool
-from functools import partial
+from myGlobal.myCls.multiProcess import threads
 
 
 # region 多线程获取股票名称及代码，存入或更新stock_basic_table表
@@ -43,19 +42,14 @@ def _getStock(code):
             #是否要去数据库删除该记录？
 
 #多线程访问东方财富网，判断股票是否退市或上市，并存入数据库
+@threads(10)
 def getAllStock():
     sh_list = ['sh{:0>6d}'.format(i) for i in range(600000, 604000)]         #上海股票代码，目前为从600000至603999(读者传媒)
     sz_list = ['sz{:0>6d}'.format(i) for i in range(1,2999)]            #深圳股票代码，目前从‘000001’至‘002999’
     cy_list = ['sz{:0>6d}'.format(i) for i in range(300000,300999)]     #创业板股票代码，目前从‘300000’至‘300999’
     stock_all = sh_list+sz_list+cy_list                 #拼接
 
-    url = "http://quote.eastmoney.com/"
-
-    mapfunc = partial(_getStock)
-    pool = ThreadPool(10)
-    pool.map(mapfunc,stock_all)
-    pool.close()
-    pool.join()
+    [_getStock(code) for code in stock_all]
 # endregion
 
 

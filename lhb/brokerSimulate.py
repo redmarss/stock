@@ -6,7 +6,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
 import myGlobal.myTime as myTime
 import datetime
-import myGlobal.myCls.multiProcess as mp
+from myGlobal.myCls.multiProcess import threads
 
 #多线程模拟每日机构买卖股票
 def _DailySimulate(brokercode,strdate,tablename,amount,type):
@@ -25,15 +25,12 @@ def _getBrokerToday(strdate):
     return li_broker
 
 #多线程执行每日模拟计算（方法1+方法2）
-
-def mapDailySimulate(strdate,tablename,amount,type):
+@threads(10)
+def DailySimulate(strdate,tablename,amount,type):
     #先根据输入日期找出当日上榜机构,存入list
     li_broker = _getBrokerToday(strdate)
-    mapfunc = partial(_DailySimulate,strdate=strdate,tablename=tablename,amount=amount,type=type)
-    pool = ThreadPool(10)
-    pool.map(mapfunc,li_broker)
-    pool.close()
-    pool.join()
+    [_DailySimulate(brokercode,strdate=strdate,tablename=tablename,amount=amount,type=type) for brokercode in li_broker]
+
 
 
 
@@ -45,5 +42,5 @@ if __name__ =='__main__':
     date = myTime.strTodate(startdate)
     while date <= myTime.strTodate(enddate):
         for ftype in simulate_list:
-            mapDailySimulate(str(date), "simulate_buy", 1000, int(ftype))
+            DailySimulate(str(date), "simulate_buy", 1000, int(ftype))
         date = date+datetime.timedelta(days=1)
