@@ -63,17 +63,18 @@ class BrokerSimulate(Simulate):
             return
         if DBHelper().isTableExists(tablename) is False:        #表不存在，则创建表
             self._createtable(tablename)
-        # #判断broker_buy_stock_info中simulate_flag状态，如果与ftype相等，则说明已写入，return
-        # sql = "SELECT simulate_flag FROM broker_buy_stock_info as a,broker_buy_summary as b where b.ts_date='%s' and b.broker_code='%s' and a.broker_buy_summary_id=b.id and a.stock_code like '%s%%'"%
-        # (ts_date,self.broker_code,stock_code[:6])
-        # t = DBHelper().execute(sql)[0]
-        # #判断simulate_flag在ftype是否写入过数据库
-        # if self.__is_simulate(t,ftype) is False:        #已写入过数据库
-        #     return
+        # 取出数据库broker_buy_stock_info中simulate_flag状态，然后进行判断
+        simulate_flag = self.__get_simulate_flag(self.broker_code,ts_date,stock_code)
+        #判断simulate_flag在ftype是否写入过数据库
+        simulate_flag = 7
+        if self.__is_simulate(simulate_flag,ftype) is True:        #已写入过数据库
+            return
+        else:
 
-        result = self.__CaculateStock(stock_code,ts_date,amount, ftype)
-        self.__recordToSql(tablename,result)
-        self.__update_brokerbuystockinfo(ftype)
+            result = self.__CaculateStock(stock_code,ts_date,amount, ftype)
+            self.__recordToSql(tablename,result)
+            #把broker_buy_stock_info表中simulate_flag状态的第ftype位（从右往左数）置为1 ，表示已计算
+            self.__update_brokerbuystockinfo(ftype)
 
 
     def __is_simulate(self, t, ftype):
@@ -83,13 +84,16 @@ class BrokerSimulate(Simulate):
             return False
 
 
-    # def __get_simulate_flag(self,broker_code,ts_date,stock_code):
-    #     sql = "SELECT simulate_flag FROM broker_buy_stock_info as a,broker_buy_summary as b where b.ts_date='%s' and b.broker_code='%s' and a.broker_buy_summary_id=b.id and a.stock_code like '%s%%'"%
-    #     (ts_date,self.broker_code,stock_code[:6])
+    def __get_simulate_flag(self,broker_code,ts_date,stock_code):
+        sql = "SELECT simulate_flag FROM broker_buy_stock_info as a,broker_buy_summary as b where b.ts_date='%s' and b.broker_code='%s' and a.broker_buy_summary_id=b.id and a.stock_code like '%s'" % (
+        ts_date, broker_code, '%%%s%%' % stock_code[2:9])
+        t = DBHelper().fetchone(sql)[0]
+        return t
 
-    # #更新simulate_flag状态
-    # def __update_brokerbuystockinfo(self,ftype):
-    #     #取得broker_buy_stock_info数据库中当前状态
+    #更新simulate_flag状态
+    def __update_brokerbuystockinfo(self,ftype):
+        #取得broker_buy_stock_info数据库中当前状态
+        simulate_flag = self.__get_simulate_flag()
 
 
 

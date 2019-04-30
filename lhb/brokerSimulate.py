@@ -25,7 +25,7 @@ def _getBrokerToday(strdate):
     return li_broker
 
 #多线程执行每日模拟计算（方法1+方法2）
-@threads(10)
+#@threads(10)
 def DailySimulate(strdate,tablename,amount,type):
     #先根据输入日期找出当日上榜机构,存入list
     li_broker = _getBrokerToday(strdate)
