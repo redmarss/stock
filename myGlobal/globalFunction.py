@@ -225,7 +225,7 @@ def getAllStockFromTable(table='stock_basic_table',field='stockcode',where='1=1'
         print('%s出错' % getAllStockFromTable.__name__)
 
 
-    def MuliteThreadPool(func,):
+
 
 
 

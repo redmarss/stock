@@ -6,6 +6,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
 import myGlobal.myTime as myTime
 import datetime
+import myGlobal.myCls.multiProcess as mp
 
 #多线程模拟每日机构买卖股票
 def _DailySimulate(brokercode,strdate,tablename,amount,type):
@@ -24,6 +25,7 @@ def _getBrokerToday(strdate):
     return li_broker
 
 #多线程执行每日模拟计算（方法1+方法2）
+
 def mapDailySimulate(strdate,tablename,amount,type):
     #先根据输入日期找出当日上榜机构,存入list
     li_broker = _getBrokerToday(strdate)
