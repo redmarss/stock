@@ -8,7 +8,7 @@ from myGlobal.myCls.StockCls import Stock
 import datetime
 import Run.DailyRun as DailyRun
 
-class Broker(BrokerSimulate):
+class Broker(object):
 
     #构造函数，参数为broker_code
     def __init__(self,broker_code,ts_date):
@@ -44,7 +44,7 @@ class Broker(BrokerSimulate):
 
         if len(self.stocklist) > 0:
             for stock_code in self.stocklist:
-                #调用simulatebuy函数，如果没有，调用父函数（BrokerSimulate）的
+                #调用simulatebuy函数，如果没有，调用子函数（BrokerSimulate）的
                 self.simulatebuy(tablename,stock_code,ts_date,amount,ftype)
         else:
             print("%s机构%s没有买入股票" % (self.broker_code,self.ts_date))

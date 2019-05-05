@@ -9,31 +9,32 @@ from myGlobal.myCls.msql import DBHelper
 import datetime
 from abc import ABC,abstractmethod,ABCMeta
 from myGlobal.myCls.mylogger import mylogger
+from myGlobal.myCls.BrokerCls import Broker
 
-# region Simulate抽象类
-class Simulate(metaclass=ABCMeta):                  #抽象类
-    def __init__(self, tablename):
-        self.tablename = tablename
-
-    @abstractmethod
-    def _createtable(self, sql):
-        return
-
-    @abstractmethod
-    def simulatebuy(self, broker_code, ts_date, stock_code, amount=1000, ftype=1):
-        return
-# endregion
+# # region Simulate抽象类
+# class Simulate(metaclass=ABCMeta):                  #抽象类
+#     def __init__(self, tablename):
+#         self.tablename = tablename
+#
+#     @abstractmethod
+#     def _createtable(self, sql):
+#         return
+#
+#     @abstractmethod
+#     def simulatebuy(self, broker_code, ts_date, stock_code, amount=1000, ftype=1):
+#         return
+# # endregion
 
 
 
 #根据输入的机构代码，开始、结束日期，写入tablename表
-class BrokerSimulate(Simulate):
+class BrokerSimulate(Broker):
     def __init__(self, tablename, broker_code,ts_date):
-        Simulate.__init__(self, tablename)
-        self.broker_code = broker_code
-        self.ts_date = ts_date
+        Broker(broker_code,ts_date)
+        self._tablename = tablename
 
-    def _createtable(self, tablename):
+
+    def _createtable(self):
         sql = '''
         CREATE TABLE `tushare`.`%s` (
         `id` INT NOT NULL AUTO_INCREMENT,
@@ -55,24 +56,23 @@ class BrokerSimulate(Simulate):
         UNIQUE INDEX `id_UNIQUE` (`id` ASC),
         UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC,`ftype` ASC)
         )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=DEFAULT ;
-        ''' % tablename
+        ''' % self._tablename
         DBHelper().execute(sql)
 
-    def simulatebuy(self, tablename,stock_code,ts_date,amount=1000,ftype=1):
+    def simulatebuy(self, stock_code,amount=1000,ftype=1):
         if stock_code =='code_error':               #非沪深A股
             return
-        if DBHelper().isTableExists(tablename) is False:        #表不存在，则创建表
-            self._createtable(tablename)
+        if DBHelper().isTableExists(self._tablename) is False:        #表不存在，则创建表
+            self._createtable(self._tablename)
         # 取出数据库broker_buy_stock_info中simulate_flag状态，然后进行判断
-        simulate_flag = self.__get_simulate_flag(self.broker_code,ts_date,stock_code)
+        simulate_flag = self.__get_simulate_flag(self.broker_code,self._ts_date,stock_code)
         #判断simulate_flag在ftype是否写入过数据库
-        simulate_flag = 7
         if self.__is_simulate(simulate_flag,ftype) is True:        #已写入过数据库
             return
         else:
 
-            result = self.__CaculateStock(stock_code,ts_date,amount, ftype)
-            self.__recordToSql(tablename,result)
+            result = self.__CaculateStock(stock_code,amount, ftype)
+            self.__recordToSql(result)
             #把broker_buy_stock_info表中simulate_flag状态的第ftype位（从右往左数）置为1 ，表示已计算
             self.__update_brokerbuystockinfo(ftype)
 
@@ -84,9 +84,9 @@ class BrokerSimulate(Simulate):
             return False
 
 
-    def __get_simulate_flag(self,broker_code,ts_date,stock_code):
+    def __get_simulate_flag(self,stock_code):
         sql = "SELECT simulate_flag FROM broker_buy_stock_info as a,broker_buy_summary as b where b.ts_date='%s' and b.broker_code='%s' and a.broker_buy_summary_id=b.id and a.stock_code like '%s'" % (
-        ts_date, broker_code, '%%%s%%' % stock_code[2:9])
+        self._ts_date, self._broker_code, '%%%s%%' % stock_code[2:9])
         t = DBHelper().fetchone(sql)[0]
         return t
 
@@ -99,15 +99,15 @@ class BrokerSimulate(Simulate):
 
 
     #计算相应股票数据，返回元组，后续存入数据库
-    def __CaculateStock(self, stock_code,ts_date,amount, ftype):
+    def __CaculateStock(self, stock_code,amount, ftype):
         # switch = {
         #     1: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype),
         #     2: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype)
         # }
         # return switch.get(ftype)
-        return self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype)
+        return self.__strategyOpenbuyOpensell(stock_code,self._ts_date,amount,ftype)
 
-    def __recordToSql(self, tablename,t):
+    def __recordToSql(self,t):
         #策略找不到相关历史数据，t的位置返回None
         if t is None:
             return
@@ -121,7 +121,7 @@ class BrokerSimulate(Simulate):
              % (tablename,ts_date,broker_code,stock_code,ftype)
         result = DBHelper().fetchall(sql)
         if len(result)==0:
-            sql2 = "insert into %s values %s" %(tablename,t)
+            sql2 = "insert into %s values %s" %(self._tablename,t)
             try:
                 DBHelper().execute(sql2)
                 print("%s机构于%s购买%s(%s股)记录成功，策略：（%s）" % (self.broker_code, ts_date, stock_code, amount, ftype))
