@@ -32,12 +32,12 @@ def code_to_symbol(code):
     '''
     标准化股票代码并输出（20190409修改）
     :param code: 股票代码，可接受如sh600000,600000sh,600000.sh
-    :return: sh600000    若输入错误，返回'code_error’
+    :return: sh600000    若输入错误，返回None
     '''
     if code is None:
-        return "code_error"
+        return None
     if code.startswith(('2','9')) or code[2] in ['2','9']:
-        return "code_error"                 #去除以2,9开头的代码（B股）
+        return None                 #去除以2,9开头的代码（B股）
     code = str.lower(code)
     if len(code) == 8 and code.startswith(('sh', 'sz')):              #形似“sh600000,sz000001”，则原样返回
         return code
@@ -46,7 +46,7 @@ def code_to_symbol(code):
     elif len(code) == 6 :
         return 'sh%s'%code if code[:1] in ['5', '6', '9'] else 'sz%s'%code
     else:
-        return 'code_error'
+        return None
 
 def isStockA(code):
     '''
@@ -225,6 +225,43 @@ def getAllStockFromTable(table='stock_basic_table',field='stockcode',where='1=1'
         print('%s出错' % getAllStockFromTable.__name__)
 
 
+def isLimit(code, openPrice, nowPrice , flag=1):
+    '''
+    判断该股票是否涨停板，名称中含S的股票（ST，S），涨幅为5%，超出涨幅则返回None
+    :param code:股票代码（str）
+    :param openPrice: 开盘价（基准价）(float)
+    :param nowPrice: 收盘价或现价(float)
+    :param flag=1为判断是否涨停，flag=-1为判断是否跌停
+    :return:涨停返回True，未涨停返回False，超出涨幅则返回None
+    '''
+    #先判断flag参数是否合规，只能为1或-1
+    if flag !=1 or flag!=-1:
+        return
+    #格式化code参数
+    symbol = code_to_symbol(code)
+    if symbol is None:            #所输入代码非沪深A股
+        return
+    #获取股票名称
+    sql = "select stockname from stock_basic_table where stockcode = '%s'" % (symbol)
+    name = DBHelper().fetchone(sql)[0]
+
+
+    if name.upper().find('S')>0:                #名字中包含S，涨幅为5%
+        if nowPrice == round((1+0.05*flag)*openPrice, 2):
+            return True
+        elif nowPrice > round((1+0.05*flag)*openPrice, 2):
+            print("超出每日限制涨幅")
+            return
+        else:
+            return False
+    else:
+        if nowPrice == round((1+0.1*flag)*openPrice, 2):
+            return True
+        elif nowPrice > round((1+0.1*flag)*openPrice, 2):
+            print("超出每日限制涨幅")
+            return
+        else:
+            return False
 
 
 

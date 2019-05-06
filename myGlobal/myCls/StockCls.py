@@ -20,12 +20,12 @@ class Stock(object):
         self._ts_date = ts_date
         #返回标准股票代码，若无法转换，返回None
         self._code = code      #结果可能为None
-        if self._code == "code_error":        #code参数非沪深A股，退出
+        if self._code is None:        #code参数非沪深A股，退出
             return
         #判断参数合规性
         if not gf.stock_is_tradeday(code, ts_date):                   #停牌或其他（没有交易记录）
             mylogger().error("%s在%s未查询到交易记录" % (code, ts_date))
-            return
+
         #创建数据库对象
         # 获取股票当日交易信息
         sql_stock = '''select * from stock_trade_history_info where 
@@ -100,6 +100,8 @@ class Stock(object):
             if gf.stock_is_tradeday(str(self._code), date):
                 s = Stock(self._code, date)
                 stocklist.append(s)
+            else:
+                return
             date = myTime.diffDay(date, 1)
             # 如果日期最终大于”今天”，则中断循环，否则死循环
             if datetime.datetime.strptime(date, "%Y-%m-%d").date() > datetime.datetime.today().date():
