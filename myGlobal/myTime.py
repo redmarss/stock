@@ -4,6 +4,7 @@
 import datetime
 import time
 import myGlobal.globalFunction as gf
+from myGlobal.myCls.msqlHelper import DBHelper
 
 @gf.typeassert(strdate=str)
 def isDate(strdate):
@@ -78,3 +79,22 @@ def diffDay(strdate,day=0):
         print("diffDay函数所输入的日期非交易日，请修改")
         return None
 
+def getAllTradeDate(startdate='2017-01-01',enddate='2017-12-31'):
+    date_list = []
+    try:
+        start = datetime.datetime.strptime(startdate,"%Y-%m-%d")
+        end = datetime.datetime.strptime(enddate,"%Y-%m-%d")
+    except:
+        print("输入日期有误")
+    if start>end:
+        print("开始日期应小于结束日期")
+        return
+    sql = 'select date from is_holiday where date between "%s" and "%s" and isholiday=0' % (startdate,enddate)
+    t = DBHelper().fetchall(sql)
+    for i in range(len(t)):
+        if t[i][0] not in date_list:
+            date_list.append(t[i][0])
+    return date_list
+
+
+print(getAllTradeDate("2017-01-03","2017-01-03"))
