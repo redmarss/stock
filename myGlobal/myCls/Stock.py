@@ -15,8 +15,28 @@ from myGlobal.myCls.msql import DBHelper
 #Stock类
 #输入股票代码，日期作为参数
 class Stock(object):
+    @gf.typeassert(code=str,ts_date=str)
+    def __new__(cls, code,ts_date):
+        #判断股票代码及日期是否合规，如果合规，则运行__init__函数
+        #1.判断股票代码是否合规
+        symbol = gf.code_to_symbol(code)
+        if symbol is None:
+            #股票代码不合法，报错
+            return
+        elif myTime.isDate(ts_date) is False:
+            #不是日期格式，报错
+            return
+        elif:
+            #日期、代码均合法，判断是否数据库中是否有相关交易记录，如果没，则返回
+            return
+
+        return cls.__init__(cls,code,ts_date)
+
+
+
     #@gf.typeassert(code=str, ts_date=str)
     def __init__(self, code, ts_date):
+        print(code,ts_date)
         self._ts_date = ts_date
         #返回标准股票代码，若无法转换，返回None
         self._code = code      #结果可能为None
@@ -282,21 +302,8 @@ def Main(t):
     s.KDJ()
     s.getMA(5,10,15,20,30,60,120,250)
 
-# if __name__ == "__main__":
-#     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
-#                                 db='tushare', charset='utf8')
-#     t = dbObject.fetchall(table="stock_trade_history_info",field="stock_code,ts_date",
-#                          where="ts_date between '%s' and '%s' order by stock_code,ts_date "
-#                                %("2017-01-01","2017-01-31"))
-#     list_t = list(t)
-#     pool = ThreadPool(10)
-#     while len(list_t)>0:
-#         t_temp = list_t[:10]
-#         for i in range(10):
-#             list_t.pop(i)
-#         pool.map(Main,t_temp)
-#         pool.close()
-#         pool.join()
+if __name__ == "__main__":
+    Stock("600000","2017-01-03")
 
 
 

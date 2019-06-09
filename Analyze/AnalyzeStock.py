@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 import myGlobal.globalFunction as gf
 from myGlobal.myCls.mylogger import mylogger
-from myGlobal.myCls.StockCls import Stock
+from myGlobal.myCls.Stock import Stock
 import myGlobal.myTime as myTime
 import datetime
 from myGlobal.myCls.multiProcess import threads

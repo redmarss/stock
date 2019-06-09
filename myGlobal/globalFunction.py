@@ -27,10 +27,10 @@ def typeassert(*type_args, **type_kwargs):
         return wrapper
     return decorate
 
-@typeassert(code=str)
+@typeassert(code=(str,type(None)))
 def code_to_symbol(code):
     '''
-    标准化股票代码并输出（20190409修改）
+    标准化股票代码并输出（20190609修改）
     :param code: 股票代码，可接受如sh600000,600000sh,600000.sh
     :return: sh600000    若输入错误，返回None
     '''
@@ -45,7 +45,7 @@ def code_to_symbol(code):
         return code[-2:]+code[:6]
     elif len(code) == 6 :
         return 'sh%s'%code if code[:1] in ['5', '6', '9'] else 'sz%s'%code
-    else:
+    else:                                               #其余情况则返回None
         return None
 
 def isStockA(code):

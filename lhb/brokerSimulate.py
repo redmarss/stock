@@ -1,6 +1,6 @@
 # -*- coding:utf8  -*-
 from myGlobal.myCls.BrokerCls import Broker
-from myGlobal.myCls.StockCls import Stock
+from myGlobal.myCls.Stock import Stock
 from myGlobal.myCls.msql import DBHelper
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial

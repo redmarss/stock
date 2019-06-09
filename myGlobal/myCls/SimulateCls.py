@@ -2,7 +2,7 @@
 #-*- coding: utf-8 -*-
 
 from myGlobal.myCls.mylogger import mylogger
-from myGlobal.myCls.StockCls import Stock
+from myGlobal.myCls.Stock import Stock
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as mTime
 from myGlobal.myCls.msql import DBHelper

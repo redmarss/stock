@@ -4,7 +4,7 @@ import myGlobal.globalFunction as gf
 from myGlobal.myCls.msql import DBHelper
 from myGlobal.myCls.SimulateCls import BrokerSimulate
 import myGlobal.myTime as mTime
-from myGlobal.myCls.StockCls import Stock
+from myGlobal.myCls.Stock import Stock
 import datetime
 import Run.DailyRun as DailyRun
 
