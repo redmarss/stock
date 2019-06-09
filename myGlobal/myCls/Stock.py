@@ -22,16 +22,25 @@ class Stock(object):
         symbol = gf.code_to_symbol(code)
         if symbol is None:
             #股票代码不合法，报错
+            print("股票代码不合法")
             return
         elif myTime.isDate(ts_date) is False:
             #不是日期格式，报错
+            print("日期格式不合法")
             return
-        elif:
+        elif gf.is_holiday(ts_date) is True:
+            #休息日
+            print(f"{ts_date}是休息日")
+            return
+        else:
             #日期、代码均合法，判断是否数据库中是否有相关交易记录，如果没，则返回
-            return
-
-        return cls.__init__(cls,code,ts_date)
-
+            sql = f"select * from stock_trade_histor_info where stock_code='{code}' and ts_date='{ts_date}'"
+            t = DBHelper().fetchall(sql)
+            if len(t) == 0:
+                print(f"没有找到{code}股票在{ts_date}交易记录")
+                return
+            else:
+                return cls.__init__(cls,code,ts_date)
 
 
     #@gf.typeassert(code=str, ts_date=str)
@@ -303,7 +312,7 @@ def Main(t):
     s.getMA(5,10,15,20,30,60,120,250)
 
 if __name__ == "__main__":
-    Stock("600000","2017-01-03")
+    print(Stock("600000","2017-01-03"))
 
 
 

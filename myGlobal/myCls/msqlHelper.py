@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import pymysql
-from myGlobal.myCls.mylogger import mylogger
+#from myGlobal.myCls.mylogger import mylogger
 import sys
 
 
@@ -27,7 +27,7 @@ class DBHelper:
             self.conn = pymysql.connect(self.host, self.user,
                                         self.pwd, self.db, charset='utf8')
         except:
-            mylogger().error("connectDatabase failed")
+            #mylogger().error("connectDatabase failed")
             return False
         self.cur = self.conn.cursor()
         return True
@@ -51,8 +51,8 @@ class DBHelper:
                 self.cur.execute(sql, params)
                 self.conn.commit()
         except:
-            mylogger().error("execute failed: " + sql)
-            mylogger().error("params: " + params)
+            #mylogger().error("execute failed: " + sql)
+            #mylogger().error("params: " + params)
             self.close()
             return False
         return True

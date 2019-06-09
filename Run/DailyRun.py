@@ -28,4 +28,9 @@ def getStockEveryDay(date=None, count=32):
 
 
 if __name__ == "__main__":
+    # start ="2019-03-01"
+    # startdate = mt.strTodate(start)
+    # while startdate<mt.strTodate(mt.today()):
+    #     print(getStockEveryDay(str(startdate)))
+    #     startdate = startdate + datetime.timedelta(days=1)
     print(getStockEveryDay())
