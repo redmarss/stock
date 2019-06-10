@@ -4,10 +4,19 @@
 import logging
 import os
 
-file
+
+curPath = os.path.dirname(os.path.abspath(__file__))
+rootPath = curPath[:curPath.find("myProject\\")+len("myProject\\")]     #获取根目录
+
 
 class mylogger:
-    def __init__(self, filepath='stock\log\default.log', dlevel=logging.DEBUG,clevel=logging.DEBUG, flevel=logging.DEBUG):
+    def __init__(self, filepath='\stock\log\default.log', dlevel=logging.DEBUG,clevel=logging.DEBUG, flevel=logging.DEBUG):
+        fullpath = rootPath+filepath
+        if not os.path.exists(fullpath):        #文件不存在，则创建文件
+            f = open(fullpath,'a+')
+            f.close()
+
+        print()
         self.logger = logging.getLogger(filepath)
         self.logger.setLevel(dlevel)
         fmt = logging.Formatter('[%(asctime)s]-[%(name)s]-[%(levelname)s]:[%(message)s]','%Y-%m-%d %H:%M:%S')
@@ -16,7 +25,7 @@ class mylogger:
         sh.setFormatter(fmt)
         sh.setLevel(clevel)
         #设置文件日志
-        fh = logging.FileHandler(filepath)
+        fh = logging.FileHandler(fullpath)
         fh.setFormatter(fmt)
         fh.setLevel(flevel)
 

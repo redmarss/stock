@@ -7,7 +7,7 @@ import datetime
 import pandas as pd
 from decimal import Decimal
 from myGlobal.myCls.mylogger import mylogger
-from myGlobal.myCls.msql import DBHelper
+from myGlobal.myCls.msqlHelper import DBHelper
 #定义日志类及路径
 #mylogger=mylogger()
 
@@ -35,13 +35,15 @@ class Stock(object):
         else:
             #日期、代码均合法，判断是否数据库中是否有相关交易记录，如果没，则返回
             sql = f"select * from stock_trade_histor_info where stock_code='{code}' and ts_date='{ts_date}'"
-            t = DBHelper().fetchall(sql)
-            if len(t) == 0:
-                print(f"没有找到{code}股票在{ts_date}交易记录")
-                return
-            else:
-                return cls.__init__(cls,code,ts_date)
-
+            try:
+                t = DBHelper().fetchall(sql)
+                if len(t) == 0:
+                    print(f"没有找到{code}股票在{ts_date}交易记录")
+                    return
+                else:
+                    return cls.__init__(cls,code,ts_date)
+            except:
+                mylogger().error(f"语句{sql}错误，请检查")
 
     #@gf.typeassert(code=str, ts_date=str)
     def __init__(self, code, ts_date):

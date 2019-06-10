@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import pymysql
-#from myGlobal.myCls.mylogger import mylogger
+from myGlobal.myCls.mylogger import mylogger
 import sys
 
 
@@ -27,7 +27,7 @@ class DBHelper:
             self.conn = pymysql.connect(self.host, self.user,
                                         self.pwd, self.db, charset='utf8')
         except:
-            #mylogger().error("connectDatabase failed")
+            mylogger().error("connectDatabase failed")
             return False
         self.cur = self.conn.cursor()
         return True
@@ -60,8 +60,20 @@ class DBHelper:
     # 用来查询表数据
     def fetchall(self, sql, params=None):
         #self.connectDatabase()
-        self.execute(sql, params)
-        return self.cur.fetchall()
+        try:
+            self.execute(sql, params)
+            return self.cur.fetchall()
+        except:
+            #mylogger().error("execute failed: " + sql)
+            return
+
+    def fetchone(self,sql,params=None):
+        try:
+            self.execute(sql,params)
+            return self.cur.fetchone()
+        except:
+            #mylogger.error("execute failed: " + sql)
+            return
 
 
 if __name__ == '__main__':
