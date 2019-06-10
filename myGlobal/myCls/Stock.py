@@ -17,7 +17,15 @@ from myGlobal.myCls.msqlHelper import DBHelper
 class Stock(object):
     @gf.typeassert(code=str,ts_date=str)
     def __new__(cls, code,ts_date):
-        #判断股票代码及日期是否合规，如果合规，则运行__init__函数
+        '''
+        更新日期：20190610
+        判断code是否合规；
+        判断日期是否合规；
+        合规后运行init函数，否则报错并退出
+        :param code:股票代码
+        :param ts_date: 交易日期
+        :return: 跳转至init函数
+        '''
         #1.判断股票代码是否合规
         symbol = gf.code_to_symbol(code)
         if symbol is None:
@@ -34,35 +42,32 @@ class Stock(object):
             return
         else:
             #日期、代码均合法，判断是否数据库中是否有相关交易记录，如果没，则返回
-            sql = f"select * from stock_trade_histor_info where stock_code='{code}' and ts_date='{ts_date}'"
-            try:
-                t = DBHelper().fetchall(sql)
-                if len(t) == 0:
-                    print(f"没有找到{code}股票在{ts_date}交易记录")
-                    return
-                else:
-                    return cls.__init__(cls,code,ts_date)
-            except:
-                mylogger().error(f"语句{sql}错误，请检查")
+            sql = f"select * from stock_trade_history_info where stock_code='{symbol}' and ts_date='{ts_date}'"
+            # try:
+            #     t = DBHelper().fetchall(sql)
+            #     if len(t) == 0:
+            #         print(f"没有找到{code}股票在{ts_date}交易记录")
+            #         return
+            #     else:
+            #         return object.__new__(cls,symbol,ts_date)
+            # except:
+            #     mylogger().error(f"语句{sql}错误，请检查")
+            #     return
 
-    #@gf.typeassert(code=str, ts_date=str)
-    def __init__(self, code, ts_date):
-        print(code,ts_date)
-        self._ts_date = ts_date
-        #返回标准股票代码，若无法转换，返回None
-        self._code = code      #结果可能为None
-        if self._code is None:        #code参数非沪深A股，退出
+        t = DBHelper().fetchall(sql)
+        if len(t) == 0:
+            print(f"没有找到{code}股票在{ts_date}交易记录")
             return
-        #判断参数合规性
-        if not gf.stock_is_tradeday(code, ts_date):                   #停牌或其他（没有交易记录）
-            mylogger().error("%s在%s未查询到交易记录" % (code, ts_date))
+        else:
+            return cls.__init__(cls,symbol,ts_date)
+    def __init__(self, code, ts_date):
+        self._ts_date = ts_date
+        self._code = code
 
-        #创建数据库对象
         # 获取股票当日交易信息
-        sql_stock = '''select * from stock_trade_history_info where 
-                    stock_code="%s" and ts_date="%s"''' % (self._code, self._ts_date)
+        sql_stock = f'''select * from stock_trade_history_info where 
+                    stock_code="{code}" and ts_date="{ts_date}"'''
         self.__tuplestock = DBHelper().fetchone(sql_stock)
-
 
     @property
     def code(self):
@@ -74,10 +79,9 @@ class Stock(object):
 
     @property
     def name(self):
-        sql = 'select stockname from stock_basic_table where stockcode="%s"' % self._code
+        sql = f'select stockname from stock_basic_table where stockcode="{self._code}"'
         t = DBHelper().fetchone(sql)[0]
         return t
-
 
     @property
     def open_price(self):
@@ -314,7 +318,8 @@ def Main(t):
     s.getMA(5,10,15,20,30,60,120,250)
 
 if __name__ == "__main__":
-    print(Stock("600000","2017-01-03"))
+    s = Stock("600000","2017-01-04")
+    print(s.name())
 
 
 
