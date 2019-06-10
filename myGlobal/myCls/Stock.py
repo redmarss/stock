@@ -27,8 +27,8 @@ class Stock(object):
         :return: 跳转至init函数
         '''
         #1.判断股票代码是否合规
-        symbol = gf.code_to_symbol(code)
-        if symbol is None:
+        code = gf.code_to_symbol(code)
+        if code is None:
             #股票代码不合法，报错
             print("股票代码不合法")
             return
@@ -42,31 +42,25 @@ class Stock(object):
             return
         else:
             #日期、代码均合法，判断是否数据库中是否有相关交易记录，如果没，则返回
-            sql = f"select * from stock_trade_history_info where stock_code='{symbol}' and ts_date='{ts_date}'"
-            # try:
-            #     t = DBHelper().fetchall(sql)
-            #     if len(t) == 0:
-            #         print(f"没有找到{code}股票在{ts_date}交易记录")
-            #         return
-            #     else:
-            #         return object.__new__(cls,symbol,ts_date)
-            # except:
-            #     mylogger().error(f"语句{sql}错误，请检查")
-            #     return
+            sql = f"select * from stock_trade_history_info where stock_code='{code}' and ts_date='{ts_date}'"
+            try:
+                t = DBHelper().fetchall(sql)
+                if len(t) == 0:
+                    print(f"没有找到{code}股票在{ts_date}交易记录")
+                    return
+                else:
+                    return super(Stock, cls).__new__(cls)
+            except:
+                mylogger().error(f"语句{sql}错误，请检查")
+                return
 
-        t = DBHelper().fetchall(sql)
-        if len(t) == 0:
-            print(f"没有找到{code}股票在{ts_date}交易记录")
-            return
-        else:
-            return cls.__init__(cls,symbol,ts_date)
+
     def __init__(self, code, ts_date):
         self._ts_date = ts_date
-        self._code = code
+        self._code = gf.code_to_symbol(code)
 
         # 获取股票当日交易信息
-        sql_stock = f'''select * from stock_trade_history_info where 
-                    stock_code="{code}" and ts_date="{ts_date}"'''
+        sql_stock = f'''select * from stock_trade_history_info where stock_code="{self._code}" and ts_date="{self._ts_date}"'''
         self.__tuplestock = DBHelper().fetchone(sql_stock)
 
     @property
@@ -319,7 +313,7 @@ def Main(t):
 
 if __name__ == "__main__":
     s = Stock("600000","2017-01-04")
-    print(s.name())
+    print(s.name)
 
 
 
