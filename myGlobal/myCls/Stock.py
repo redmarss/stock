@@ -54,16 +54,15 @@ class Stock(object):
                 mylogger().error(f"语句{sql}错误，请检查")
                 return
 
-
-
     def __init__(self, code, ts_date):
         self._ts_date = ts_date
         self._code = gf.code_to_symbol(code)
 
         # 获取股票当日交易信息
-        sql_stock = f'''select * from stock_trade_history_info where stock_code="{self._code}" and ts_date="{self._ts_date}"'''
+        sql_stock = f'select * from stock_trade_history_info where stock_code="{self._code}" and ts_date="{self._ts_date}"'
         self.__tuplestock = DBHelper().fetchone(sql_stock)
 
+    # region property
     @property
     def code(self):
         return self._code
@@ -101,22 +100,24 @@ class Stock(object):
 
     @property
     def low_price(self):
-        if self._tuplestock is not None:
-            return float(self._tuplestock[6])
+        if self.__tuplestock is not None:
+            return float(self.__tuplestock[6])
         else:
             return None
 
     @property
     def volume(self):
-        if self._tuplestock is not None:
-            return float(self._tuplestock[7])
+        if self.__tuplestock is not None:
+            return float(self.__tuplestock[7])
         else:
             return None
+    # endregion
 
 
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
     def next_some_days(self, days=7):
         '''
+            更新于20190611
             返回类型：list, or None
             len(list)应等于days，list中每个元素应为Stock类型
         '''
@@ -313,8 +314,8 @@ def Main(t):
     s.getMA(5,10,15,20,30,60,120,250)
 
 if __name__ == "__main__":
-    s = Stock("600000","2017-01-04")
-    print(s.name)
+    s = Stock("600000","2017-01-02")
+    print(s.code,s.name,s.open_price,s.close_price,s.ts_date,s.high_price,s.close_price,s.volume,s.low_price)
 
 
 

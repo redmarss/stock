@@ -14,7 +14,7 @@ def isDate(strdate):
     except:
         return False
 
-
+@gf.typeassert(strdate=str)
 def strTodate(strdate):
     try:
         date = datetime.datetime.strptime(strdate,"%Y-%m-%d").date()
@@ -96,5 +96,3 @@ def getAllTradeDate(startdate='2017-01-01',enddate='2017-12-31'):
             date_list.append(t[i][0])
     return date_list
 
-
-print(getAllTradeDate("2017-01-03","2017-01-03"))
