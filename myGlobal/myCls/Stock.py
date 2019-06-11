@@ -15,8 +15,8 @@ from myGlobal.myCls.msqlHelper import DBHelper
 #Stock类
 #输入股票代码，日期作为参数
 class Stock(object):
-    @gf.typeassert(code=str,ts_date=str)
-    def __new__(cls, code,ts_date):
+    @gf.typeassert(args=str)
+    def __new__(cls, *args,**kwargs):
         '''
         更新日期：20190610
         判断code是否合规；
@@ -27,32 +27,33 @@ class Stock(object):
         :return: 跳转至init函数
         '''
         #1.判断股票代码是否合规
-        code = gf.code_to_symbol(code)
+        code = gf.code_to_symbol(args[0])
         if code is None:
             #股票代码不合法，报错
             print("股票代码不合法")
             return
-        elif myTime.isDate(ts_date) is False:
+        elif myTime.isDate(args[1]) is False:
             #不是日期格式，报错
             print("日期格式不合法")
             return
-        elif gf.is_holiday(ts_date) is True:
+        elif gf.is_holiday(args[1]) is True:
             #休息日
-            print(f"{ts_date}是休息日")
+            print(f"{args[1]}是休息日")
             return
         else:
             #日期、代码均合法，判断是否数据库中是否有相关交易记录，如果没，则返回
-            sql = f"select * from stock_trade_history_info where stock_code='{code}' and ts_date='{ts_date}'"
+            sql = f"select * from stock_trade_history_info where stock_code='{code}' and ts_date='{args[1]}'"
             try:
                 t = DBHelper().fetchall(sql)
                 if len(t) == 0:
-                    print(f"没有找到{code}股票在{ts_date}交易记录")
+                    print(f"没有找到{code}股票在{args[1]}交易记录")
                     return
                 else:
-                    return super(Stock, cls).__new__(cls)
+                    return super().__new__(cls)
             except:
                 mylogger().error(f"语句{sql}错误，请检查")
                 return
+
 
 
     def __init__(self, code, ts_date):

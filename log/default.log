@@ -1,0 +1,7 @@
+[2019-06-10 16:30:35]-[\stock\log\default.log]-[ERROR]:[execute failed: select * from stock_trade_histor_info where stock_code='600000' and ts_date='2017-01-03']
+[2019-06-10 16:30:40]-[\stock\log\default.log]-[ERROR]:[execute failed: select * from stock_trade_histor_info where stock_code='600000' and ts_date='2017-01-03']
+[2019-06-10 16:30:40]-[\stock\log\default.log]-[ERROR]:[execute failed: select * from stock_trade_histor_info where stock_code='600000' and ts_date='2017-01-03']
+[2019-06-10 16:30:40]-[\stock\log\default.log]-[ERROR]:[execute failed: select * from stock_trade_histor_info where stock_code='600000' and ts_date='2017-01-03']
+[2019-06-10 16:31:49]-[\stock\log\default.log]-[ERROR]:[Óï¾äselect * from stock_trade_histor_info where stock_code='600000' and ts_date='2017-01-03'´íÎó£¬Çë¼ì²é]
+[2019-06-11 08:19:59]-[\stock\log\default.log]-[ERROR]:[Óï¾äselect * from stock_trade_history_info where stock_code='sh600000' and ts_date='2017-01-04'´íÎó£¬Çë¼ì²é]
+[2019-06-11 08:23:27]-[\stock\log\default.log]-[ERROR]:[Óï¾äselect * from stock_trade_history_info where stock_code='sh600000' and ts_date='2017-01-04'´íÎó£¬Çë¼ì²é]
