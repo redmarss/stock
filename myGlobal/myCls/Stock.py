@@ -5,6 +5,7 @@ import myGlobal.globalFunction as gf
 import myGlobal.myTime as myTime
 import datetime
 import pandas as pd
+from myGlobal.myCls.ErrorCls import StockError
 from decimal import Decimal
 from myGlobal.myCls.mylogger import mylogger
 from myGlobal.myCls.msqlHelper import DBHelper
@@ -39,7 +40,7 @@ class Stock(object):
         elif gf.is_holiday(args[1]) is True:
             #休息日
             print(f"{args[1]}是休息日")
-            return
+            return StockError("休息日")
         else:
             #日期、代码均合法，判断是否数据库中是否有相关交易记录，如果没，则返回
             sql = f"select * from stock_trade_history_info where stock_code='{code}' and ts_date='{args[1]}'"
