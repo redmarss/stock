@@ -19,7 +19,7 @@ class Stock(object):
     @gf.typeassert(args=str)
     def __new__(cls, *args,**kwargs):
         '''
-        更新日期：20190610
+        更新日期：20190613
         判断code是否合规；
         判断日期是否合规；
         合规后运行init函数，否则报错并退出
@@ -29,31 +29,38 @@ class Stock(object):
         '''
         #1.判断股票代码是否合规
         code = gf.code_to_symbol(args[0])
+        #股票代码不合法
         if code is None:
-            #股票代码不合法，报错
             print("股票代码不合法")
-            return
+            #股票代码不合法，日期也不合法
+            if myTime.isDate(args[1]) is False:
+                return StockError('code_error', 'date_error', 'code_date_error')
+            #股票代码不合法，但日期合法
+            else:
+                return StockError('code_error', args[1], 'code_error')
+        #日期不合法
         elif myTime.isDate(args[1]) is False:
-            #不是日期格式，报错
             print("日期格式不合法")
-            return
+            return StockError(args[0], 'date_error', 'date_error')
+        #日期合法，但是休息日
         elif gf.is_holiday(args[1]) is True:
-            #休息日
             print(f"{args[1]}是休息日")
-            return StockError("休息日")
+            return StockError(args[0], args[1], "rest_date")
         else:
             #日期、代码均合法，判断是否数据库中是否有相关交易记录，如果没，则返回
             sql = f"select * from stock_trade_history_info where stock_code='{code}' and ts_date='{args[1]}'"
             try:
                 t = DBHelper().fetchall(sql)
+                #停牌
                 if len(t) == 0:
                     print(f"没有找到{code}股票在{args[1]}交易记录")
-                    return
+                    return StockError(args[0], args[1], 'suspension')
                 else:
+                    #去往初始化函数
                     return super().__new__(cls)
             except:
                 mylogger().error(f"语句{sql}错误，请检查")
-                return
+                return StockError(args[0], args[1], 'sql_error')
 
     def __init__(self, code, ts_date):
         self._ts_date = ts_date
@@ -114,16 +121,13 @@ class Stock(object):
             return None
     # endregion
 
-
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
     def next_some_days(self, days=7):
         '''
-            更新于20190611
-            返回类型：list, or None
-            len(list)应等于days，list中每个元素应为Stock类型
+            更新于20190613
+            返回类型：list,
+            len(list)应等于days，list中每个元素应为Stock类型或StockError类
         '''
-        if self._code is None:
-            return
         stocklist=[]
         i = 0
         date = str(self._ts_date)         #str类型
@@ -315,8 +319,8 @@ def Main(t):
     s.getMA(5,10,15,20,30,60,120,250)
 
 if __name__ == "__main__":
-    s = Stock("600000","2017-01-02")
-    print(s.code,s.name,s.open_price,s.close_price,s.ts_date,s.high_price,s.close_price,s.volume,s.low_price)
+    s = Stock("600000", "2017-01-03")
+    print(s.next_some_days(3))
 
 
 
