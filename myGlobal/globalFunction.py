@@ -123,7 +123,7 @@ def stock_is_tradeday(code, ts_date):
     :return: True or False 参数错误返回None
     '''
     symbol = code_to_symbol(code)
-    sql = "select * from stock_trade_history_info where stock_code='%s' and ts_date='%s'" % (symbol, ts_date)
+    sql = f"select * from stock_trade_history_info where stock_code='{symbol}' and ts_date='{ts_date}'"
     t = DBHelper().fetchone(sql)
     if t is not None:            #查询到交易记录
         return True

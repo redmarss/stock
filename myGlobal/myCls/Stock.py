@@ -122,25 +122,34 @@ class Stock(object):
     # endregion
 
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
-    def next_some_days(self, days=7):
+    @gf.typeassert(startdate=(str,type(None)),days=int)
+    def next_some_days(self, startdate=None,days=7):
         '''
             更新于20190613
             返回类型：list,
             len(list)应等于days，list中每个元素应为Stock类型或StockError类
         '''
+        if startdate is None:
+            startdate = self._ts_date
+        else:
+            if myTime.isDate(startdate) is False:
+                return StockError(self._code,'date_error','date_error').next_some_days(days)
+
         stocklist=[]
         i = 0
-        date = str(self._ts_date)         #str类型
+        date = startdate
         #当stocklist函数长度小于days且数据库中有数据
         while len(stocklist) < days:
-            if gf.stock_is_tradeday(str(self._code), date):
+            if gf.stock_is_tradeday(self._code, date):
                 s = Stock(self._code, date)
                 stocklist.append(s)
-            else:
-                return
-            date = myTime.diffDay(date, 1)
-            # 如果日期最终大于”今天”，则中断循环，否则死循环
-            if datetime.datetime.strptime(date, "%Y-%m-%d").date() > datetime.datetime.today().date():
+            date = myTime.diffDay(date, 1)          #已自动跳过双休日
+            if date is None:
+                #date为None，说明diffDay参数date格式非法，在此函数中“应该”不会出现
+                pass
+            tempdate = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+            # 如果停牌一个月以上，则中断循环
+            if tempdate > datetime.datetime.strptime(startdate, "%Y-%m-%d").date()+datetime.timedelta(days=days+30):
                 break
         return stocklist
 
@@ -320,8 +329,11 @@ def Main(t):
 
 if __name__ == "__main__":
     s = Stock("600000", "2017-01-03")
-    print(s.next_some_days(3))
-
+    li = s.next_some_days(days=7)
+    li2 = s.next_some_days("2019-01-04",7)
+    print(li)
+    print(li2)
+    print()
 
 
 

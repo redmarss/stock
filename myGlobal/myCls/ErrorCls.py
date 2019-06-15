@@ -54,7 +54,7 @@ class StockError(object):
     def volume(self):
         return 0.00
 
-    def next_some_days(self,days=7):
+    def next_some_days(self,startdate,days=7):
         li = []
         for i in range(days):
             li.append(StockError('code_error', 'date_error'))
