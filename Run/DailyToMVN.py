@@ -1,17 +1,11 @@
 #!/usr/bin/env python
 # -*- coding:utf8 -*-
 import myGlobal.globalFunction as gf
-import json
 from urllib.request import urlopen, Request,HTTPError
 from multiprocessing.dummy import Pool as ThreadPool
 from functools import partial
-from myGlobal.myCls.msql import DBHelper
-import pymysql
 import datetime
-import myGlobal.myCls.msql as msql
-import time
 import re
-
 
 
 def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多线程参数一定要放第一个

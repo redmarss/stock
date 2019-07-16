@@ -5,7 +5,6 @@ from urllib.request import urlopen,Request
 from urllib.error import HTTPError
 import requests
 from bs4 import BeautifulSoup
-from myGlobal.myCls.SimulateCls import BrokerSimulate
 import myGlobal.myCls.msql as msql
 import datetime
 import myGlobal.globalFunction as gf
@@ -162,8 +161,8 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
 
 if __name__ == "__main__":
     #每月运行一次，获取股票最新代码及股票名称
-    getAllStock()
+    #getAllStock()
     #getBrokerInfo()
     #simulate_buy("simulate_buy")
-    #is_holiday("2017-01-01","2019-12-31")
+    is_holiday("2017-01-01","2019-12-31")
     print()
