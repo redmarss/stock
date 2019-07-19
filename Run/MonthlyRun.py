@@ -19,7 +19,7 @@ def _basicinfotosql(code,stockname,tablename="stock_basic_table"):
     sql1 = 'insert into %s (stockcode,stockname) VALUES ("%s","%s")' % (tablename,code,stockname)
     sql2 = 'update %s set stockname="%s" where stockcode = "%s"' % (tablename,stockname,code)
     t = DBHelper().fetchall(sql_select)
-    if len(t)>0:
+    if len(t) > 0:
         DBHelper().execute(sql2)
         print("修改%s名称为%s" % (code,stockname))
     else:
@@ -123,14 +123,15 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
         else:
             isholiday = 1   # 节假日返回1
 
-        dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
-                                       db='tushare', charset='utf8')
+        sqlfetch = f"select date from is_holiday where date='{str(date)}'"
         try:
-            if not dbObject.fetchone(table="is_holiday", field=date, where="date='%s'"%str(date)):
-                dbObject.insert(table="is_holiday", date=str(date), isholiday=str(isholiday))
+            if not DBHelper().fetchone(sqlfetch):
+                sql = f"insert into is_holiday (date,isholiday) VALUES ({str(date)},{str(isholiday)})"
+                DBHelper.execute(sql)
                 print("是否工作日%s写入数据库成功" % str(date))
             else:
-                dbObject.update(table="is_holiday",where="date='%s'" % str(date), isholiday=str(isholiday))
+                sql = f"update is_holiday set isholiday='{str(isholiday)}' where date='{str(date)}'"
+                DBHelper().execute(sql)
                 print("是否工作日%s更新成功" % str(date))
         except:
             raise ValueError

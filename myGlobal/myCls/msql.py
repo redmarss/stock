@@ -230,27 +230,24 @@ import myGlobal.myCls.mylogger as mylogger
 
 class DBHelper:
     # 构造函数
-    def __init__(self, host='127.0.0.1', user='root', pwd='redmarss', db='tushare'):
-        self.host = host
-        self.user = user
-        self.pwd = pwd
-        self.db = db
-        self.conn = None
-        self.cur = None
-
-
-
-
-    # 连接数据库
-    def connectDatabase(self):
+    def __init__(self):
+        #连接数据库
         try:
-            self.conn = pymysql.connect(self.host, self.user,
-                                        self.pwd, self.db, charset='utf8')
+            self.conn = pymysql.connect(
+                host='cdb-iar6zzqb.gz.tencentcdb.com',
+                port=10141,
+                db='tushare',
+                user='root',
+                passwd='888@XyFxBm',
+                charset='utf8'
+            )
+
         except:
             mylogger.mylogger().error("connectDatabase failed")
-            return False
-        self.cur = self.conn.cursor()
-        return True
+
+        self.cur = self.connect.cursor()
+
+
 
     # 关闭数据库
     def close(self):

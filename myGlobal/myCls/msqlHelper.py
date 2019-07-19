@@ -3,16 +3,16 @@
 
 import pymysql
 from myGlobal.myCls.mylogger import mylogger
-import sys
 
 
 
 
 class DBHelper:
     # 构造函数
-    def __init__(self, host='127.0.0.1', user='root', pwd='redmarss', db='tushare'):
+    def __init__(self, host='cdb-iar6zzqb.gz.tencentcdb.com', port=10141,user='root', pwd='888@XyFxBm', db='tushare'):
         self.host = host
         self.user = user
+        self.port = port
         self.pwd = pwd
         self.db = db
         self.conn = None
@@ -24,7 +24,7 @@ class DBHelper:
     # 连接数据库
     def connectDatabase(self):
         try:
-            self.conn = pymysql.connect(self.host, self.user,
+            self.conn = pymysql.connect(self.host, self.port, self.user,
                                         self.pwd, self.db, charset='utf8')
         except:
             mylogger().error("connectDatabase failed")
@@ -51,8 +51,7 @@ class DBHelper:
                 self.cur.execute(sql, params)
                 self.conn.commit()
         except:
-            #mylogger().error("execute failed: " + sql)
-            #mylogger().error("params: " + params)
+            mylogger().error("execute failed: " + sql)
             self.close()
             return False
         return True
@@ -64,7 +63,7 @@ class DBHelper:
             self.execute(sql, params)
             return self.cur.fetchall()
         except:
-            #mylogger().error("execute failed: " + sql)
+            mylogger().error("execute failed: " + sql)
             return
 
     def fetchone(self,sql,params=None):
@@ -72,9 +71,7 @@ class DBHelper:
             self.execute(sql,params)
             return self.cur.fetchone()
         except:
-            #mylogger.error("execute failed: " + sql)
+            mylogger.error("execute failed: " + sql)
             return
 
 
-if __name__ == '__main__':
-    pass
