@@ -15,11 +15,11 @@ from myGlobal.myCls.multiProcess import threads
 
 # region 多线程获取股票名称及代码，存入或更新stock_basic_table表
 def _basicinfotosql(code,stockname,tablename="stock_basic_table"):
-    sql_select = 'select * from %s where stockcode="%s"'%(tablename,code)
-    sql1 = 'insert into %s (stockcode,stockname) VALUES ("%s","%s")' % (tablename,code,stockname)
-    sql2 = 'update %s set stockname="%s" where stockcode = "%s"' % (tablename,stockname,code)
-    t = DBHelper().fetchall(sql_select)
-    if len(t) > 0:
+    sql_select = f'select * from {tablename} where stockcode="{code}"'
+    sql1 = f'insert into {tablename} (stockcode,stockname) VALUES ("{code}","{stockname}")'
+    sql2 = f'update {tablename} set stockname="{stockname}" where stockcode = "{code}"'
+    t = DBHelper().fetchone(sql_select)
+    if t is not None:
         DBHelper().execute(sql2)
         print("修改%s名称为%s" % (code,stockname))
     else:
@@ -90,6 +90,7 @@ def getBrokerInfo():
 #每年运行一次即可
 def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
     '''
+            更新于2019-07-21
             1、接口地址：http://api.goseek.cn/Tools/holiday?date=数字日期，支持https协议。
             2、返回数据：工作日对应结果为 0, 休息日对应结果为 1, 节假日对应的结果为 2
             3、节假日数据说明：本接口包含2017年起的中国法定节假日数据，数据来源国务院发布的公告，每年更新1次，确保数据最新
@@ -136,33 +137,12 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
             raise ValueError
         date = date + datetime.timedelta(days=1)
 
-#需重写
-#每月10日模拟买入上一月数据
-# @gf.typeassert((str,type(None)), (str,type(None)), int)
-# def simulate_buy(startdate=None,enddate=None, amount=1000):
-#     if startdate is None:
-#         startdate = datetime.datetime.today().date()+datetime.timedelta(days=-60)
-#     print(startdate)
-#     if enddate is None:
-#         enddate = datetime.datetime.today().date()
-#     print(enddate)
-#     dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss', db='tushare',
-#                                    charset='utf8')
-#     d = dbObject.fetchall(table="broker_buy_summary", field="broker_code,ts_date",
-#                           where="ts_date between '%s' and '%s' order by ts_date"%(startdate,enddate))
-#     for i in range(len(d)):
-#         broker_code = d[i][0]
-#         ts_date = str(d[i][1])
-#         b = BrokerSimulate(broker_code,ts_date)              #日期参数必须为str类型
-#         b.simulate_buy(amount)
-
 
 
 
 if __name__ == "__main__":
     #每月运行一次，获取股票最新代码及股票名称
-    #getAllStock()
+    getAllStock()                               #每月运行一次，定于每月第一个周五上午8:30
     #getBrokerInfo()
-    #simulate_buy("simulate_buy")
-    is_holiday("2017-01-01","2019-12-31")       #每年更新一次即可，下次更新时间：2019年12月28日
+    #is_holiday("2017-01-01","2019-12-31")       #每年更新一次即可，下次更新时间：2019年12月28日
     print()
