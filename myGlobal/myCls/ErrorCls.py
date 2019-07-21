@@ -1,6 +1,6 @@
 #!/bin/usr/env python
 # -*-coding:utf8 -*-
-from myGlobal.myCls.msqlHelper import DBHelper
+from myGlobal.myCls.msql import DBHelper
 
 
 #自定义错误类，处理其余类可能出现的错误

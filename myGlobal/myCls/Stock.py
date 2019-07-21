@@ -8,7 +8,7 @@ import pandas as pd
 from myGlobal.myCls.ErrorCls import StockError
 from decimal import Decimal
 from myGlobal.myCls.mylogger import mylogger
-from myGlobal.myCls.msqlHelper import DBHelper
+from myGlobal.myCls.msql import DBHelper
 #定义日志类及路径
 #mylogger=mylogger()
 

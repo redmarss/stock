@@ -88,7 +88,6 @@ def getBrokerInfo():
         print("%s机构数据清洗完毕"%broker_code,i)
 
 #每年运行一次即可
-@gf.typeassert(str,str)
 def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
     '''
             1、接口地址：http://api.goseek.cn/Tools/holiday?date=数字日期，支持https协议。
@@ -126,8 +125,8 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
         sqlfetch = f"select date from is_holiday where date='{str(date)}'"
         try:
             if not DBHelper().fetchone(sqlfetch):
-                sql = f"insert into is_holiday (date,isholiday) VALUES ({str(date)},{str(isholiday)})"
-                DBHelper.execute(sql)
+                sql = f"insert into is_holiday (date,isholiday) VALUES ('{str(date)}','{str(isholiday)}')"
+                DBHelper().execute(sql)
                 print("是否工作日%s写入数据库成功" % str(date))
             else:
                 sql = f"update is_holiday set isholiday='{str(isholiday)}' where date='{str(date)}'"
@@ -165,5 +164,5 @@ if __name__ == "__main__":
     #getAllStock()
     #getBrokerInfo()
     #simulate_buy("simulate_buy")
-    is_holiday("2017-01-01","2019-12-31")
+    is_holiday("2017-01-01","2019-12-31")       #每年更新一次即可，下次更新时间：2019年12月28日
     print()

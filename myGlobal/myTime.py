@@ -4,7 +4,7 @@
 import datetime
 import time
 import myGlobal.globalFunction as gf
-from myGlobal.myCls.msqlHelper import DBHelper
+from myGlobal.myCls.msql import DBHelper
 
 @gf.typeassert(strdate=str)
 def isDate(strdate):
