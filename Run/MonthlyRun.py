@@ -35,6 +35,8 @@ def _getStock(code):
         soup = BeautifulSoup(page, 'html5lib')
         stockname = soup.find(id='name').string             #取网页上的股票名称
         _basicinfotosql(code,stockname,"stock_basic_table")          #存入stock_basic_table表
+        #处理已退市
+
     except HTTPError as e:
         if e.code == 404:
             pass                   #股票代码不存在，什么都不做
@@ -46,7 +48,8 @@ def getAllStock():
     sh_list = ['sh{:0>6d}'.format(i) for i in range(600000, 604000)]         #上海股票代码，目前为从600000至603999(读者传媒)
     sz_list = ['sz{:0>6d}'.format(i) for i in range(1,2999)]            #深圳股票代码，目前从‘000001’至‘002999’
     cy_list = ['sz{:0>6d}'.format(i) for i in range(300000,300999)]     #创业板股票代码，目前从‘300000’至‘300999’
-    stock_all = sh_list+sz_list+cy_list                 #拼接
+    kc_list = ['sh{:0>6d}'.format(i) for i in range(688000, 688999)]    #科创板股票
+    stock_all = sh_list+sz_list+cy_list+kc_list                 #拼接
 
     [_getStock(code) for code in stock_all]
 # endregion
