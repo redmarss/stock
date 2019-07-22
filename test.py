@@ -4,10 +4,13 @@ from urllib.request import urlopen,Request
 from bs4 import BeautifulSoup
 
 
-url = "http://quote.eastmoney.com/sh600009.html"
-user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'
-referer='http://www.xxxxxx.com/'
-headers={'User-Agent':user_agent,'Referer':referer}
+url = "http://quote.eastmoney.com/sh600002.html"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/58.0.3029.110 Safari/537.36",
+    }
+
+
 request = Request(url,headers=headers)
 response =  urlopen(request)
 page = response.read().decode('gbk')
