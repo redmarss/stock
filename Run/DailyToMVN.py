@@ -70,6 +70,7 @@ def brokerInfo(startDate=None, endDate=None, pagesize=200000):
         gf.postData(text,urlPost,flag='lhb')
     except Exception as e:
         print(e)
+        print()
 
 if __name__ == '__main__':
     if datetime.datetime.today().hour > 18:     #运行时间大于18点
