@@ -82,8 +82,8 @@ if __name__ == '__main__':
         start = str(datetime.datetime.today().date() - datetime.timedelta(days=38))
         end = str(datetime.datetime.today().date())
 
-    #everyday = start.replace("-","")
+
     #每日获取股票相关数据
-    #RunGetDayData(start="2019-01-01",end=end)
+    RunGetDayData(start="2017-01-01",end=end)
     #每日获取机构数据
-    brokerInfo("2017-01-01","2017-01-10")
+    #brokerInfo("2017-01-01",end)

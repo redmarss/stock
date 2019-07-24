@@ -145,7 +145,7 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
 
 if __name__ == "__main__":
     #每月运行一次，获取股票最新代码及股票名称
-    #getAllStock()                               #每月运行一次，定于每月第一个周五上午8:30
+    getAllStock()                               #每月运行一次，定于每月第一个周五上午8:30
     #getBrokerInfo()
     #is_holiday("2017-01-01","2019-12-31")       #每年更新一次即可，下次更新时间：2019年12月28日
     print()

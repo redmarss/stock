@@ -18,11 +18,11 @@ class DBHelper(object):
         #连接数据库
         try:
             self.conn = pymysql.connect(
-                host='cdb-iar6zzqb.gz.tencentcdb.com',
-                port=10141,
+                host='127.0.0.1',
+                port=3306,
                 db='tushare',
                 user='root',
-                passwd='888@XyFxBm',
+                passwd='redmarss',
                 charset='utf8'
             )
 
