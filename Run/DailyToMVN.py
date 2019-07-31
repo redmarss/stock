@@ -63,9 +63,9 @@ def RunGetDayData(start="2017-01-01",end="2019-04-15",stock_li=[]):
 #根据日期取出机构交易数据并调用postData函数至数据库
 def brokerInfo(startDate=None, endDate=None, pagesize=200000):
     urlPost="http://localhost:8080/broker/purchaseSummary"
-    LHBYYBSBCS="http://datainterface3.eastmoney.com/EM_DataCenter_V3/Api//LHBYYBSBCS/GetLHBYYBSBCS?tkn=eastmoney&mkt=&dateNum=&startDateTime=%s&endDateTime=%s&sortRule=1&sortColumn=JmMoney&pageNum=1&pageSize=%s&cfg=lhbyybsbcs"
+    LHBYYBSBCS=f"http://datainterface3.eastmoney.com/EM_DataCenter_V3/Api//LHBYYBSBCS/GetLHBYYBSBCS?tkn=eastmoney&mkt=&dateNum=&startDateTime={startDate}&endDateTime={endDate}&sortRule=1&sortColumn=JmMoney&pageNum=1&pageSize={pagesize}&cfg=lhbyybsbcs"
     try:
-        request=Request(LHBYYBSBCS%(startDate,endDate,pagesize))
+        request=Request(LHBYYBSBCS)
         text=urlopen(request).read()                     #type is byte
         gf.postData(text,urlPost,flag='lhb')
     except Exception as e:
