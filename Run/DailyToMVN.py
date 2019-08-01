@@ -2,7 +2,7 @@
 # -*- coding:utf8 -*-
 import myGlobal.globalFunction as gf
 from urllib.request import urlopen, Request,HTTPError
-from multiprocessing.dummy import Pool as ThreadPool
+from myGlobal.myCls.multiProcess import threads
 from functools import partial
 import datetime
 import re
@@ -41,7 +41,7 @@ def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多�
     # else:
     print("%s股票从%s至%s数据导入完成"%(code,start,end))
 
-
+@threads(10)
 def RunGetDayData(start="2017-01-01",end="2019-04-15",stock_li=[]):
     '''
 
@@ -53,11 +53,7 @@ def RunGetDayData(start="2017-01-01",end="2019-04-15",stock_li=[]):
     '''
     if len(stock_li)==0:
         stock_li = gf.getAllStockFromTable()
-    mapfunc = partial(_getDayData,start=start,end=end)
-    pool = ThreadPool(10)        #3个线程分别对应front,back,no
-    pool.map(mapfunc,stock_li)       #会将list_fq参数放在_getDayData参数拦最左边
-    pool.close()                    #关闭进程池，不再接受新的进程
-    pool.join()                     #主进程阻塞等待子进程的退出
+    [_getDayData(code,start,end) for code in stock_li]
 
 
 #根据日期取出机构交易数据并调用postData函数至数据库
@@ -84,6 +80,6 @@ if __name__ == '__main__':
 
 
     #每日获取股票相关数据
-    #RunGetDayData(start=start,end=end)
+    RunGetDayData(start=start,end=end)
     #每日获取机构数据
-    brokerInfo(startDate=start,endDate=end)
+    #brokerInfo(startDate=start,endDate=end)
