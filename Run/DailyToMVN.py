@@ -8,6 +8,8 @@ import datetime
 import re
 
 
+
+# region 多线程获取每日股票信息
 def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多线程参数一定要放第一个
     url = 'http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayqfq2017&param=%s,day,%s,%s,640,qfq'\
           %(code,start,end)
@@ -41,21 +43,14 @@ def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多�
     # else:
     print("%s股票从%s至%s数据导入完成"%(code,start,end))
 
-@threads(10)
+@threads(30)
 def RunGetDayData(start="2017-01-01",end="2019-04-15",stock_li=[]):
-    '''
-
-    :param stock_list:需要运行的股票列表
-    :param date:开始日期
-    :param filetype:文件格式
-    :param count:往前倒数的天数
-    :return:
-    '''
     if len(stock_li)==0:
         stock_li = gf.getAllStockFromTable()
     [_getDayData(code,start,end) for code in stock_li]
+# endregion
 
-
+# region 获取机构龙虎榜信息
 #根据日期取出机构交易数据并调用postData函数至数据库
 def brokerInfo(startDate=None, endDate=None, pagesize=200000):
     urlPost="http://localhost:8080/broker/purchaseSummary"
@@ -66,7 +61,7 @@ def brokerInfo(startDate=None, endDate=None, pagesize=200000):
         gf.postData(text,urlPost,flag='lhb')
     except Exception as e:
         print(e)
-
+# endregion
 
 if __name__ == '__main__':
     if datetime.datetime.today().hour > 18:     #运行时间大于18点
@@ -82,4 +77,4 @@ if __name__ == '__main__':
     #每日获取股票相关数据
     RunGetDayData(start=start,end=end)
     #每日获取机构数据
-    #brokerInfo(startDate=start,endDate=end)
+    brokerInfo(startDate=start,endDate=end)

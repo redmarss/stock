@@ -29,7 +29,7 @@ from myGlobal.myCls.BrokerCls import Broker
 
 #根据输入的机构代码，开始、结束日期，写入tablename表
 class BrokerSimulate(Broker):
-    def __init__(self, tablename, broker_code,ts_date):
+    def __init__(self,broker_code,ts_date, tablename='simulate_buy'):
         Broker(broker_code,ts_date)
         self._tablename = tablename
 
@@ -65,7 +65,7 @@ class BrokerSimulate(Broker):
         if DBHelper().isTableExists(self._tablename) is False:        #表不存在，则创建表
             self._createtable(self._tablename)
         # 取出数据库broker_buy_stock_info中simulate_flag状态，然后进行判断
-        simulate_flag = self.__get_simulate_flag(self.broker_code,self._ts_date,stock_code)
+        simulate_flag = self.__get_simulate_flag(stock_code)
         #判断simulate_flag在ftype是否写入过数据库
         if self.__is_simulate(simulate_flag,ftype) is True:        #已写入过数据库
             return
