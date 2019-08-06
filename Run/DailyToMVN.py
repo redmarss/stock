@@ -2,11 +2,12 @@
 # -*- coding:utf8 -*-
 import myGlobal.globalFunction as gf
 from urllib.request import urlopen, Request,HTTPError
-from myGlobal.myCls.multiProcess import threads
+from multiprocessing import Pool
 from functools import partial
 import datetime
 import re
 
+stockAll = gf.getAllStockFromTable()
 
 
 # region 多线程获取每日股票信息
@@ -43,11 +44,15 @@ def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多�
     # else:
     print("%s股票从%s至%s数据导入完成"%(code,start,end))
 
-@threads(30)
-def RunGetDayData(start="2017-01-01",end="2019-04-15",stock_li=[]):
+
+def RunGetDayData(start,end,stock_li=[]):
     if len(stock_li)==0:
-        stock_li = gf.getAllStockFromTable()
-    [_getDayData(code,start,end) for code in stock_li]
+        stock_li = stockAll
+    #[_getDayData(code,start,end) for code in stock_li]
+    pool = Pool(30)
+    pool.map(partial(_getDayData,start=start,end=end),stock_li)
+    pool.close()
+    pool.join()
 # endregion
 
 # region 获取机构龙虎榜信息
@@ -65,16 +70,16 @@ def brokerInfo(startDate=None, endDate=None, pagesize=200000):
 
 if __name__ == '__main__':
     if datetime.datetime.today().hour > 18:     #运行时间大于18点
-        start = str(datetime.datetime.today().date()-datetime.timedelta(days=37))
+        start = str(datetime.datetime.today().date()-datetime.timedelta(days=7))
         end = str(datetime.datetime.today().date() + datetime.timedelta(days=1))
 
 
     else:
-        start = str(datetime.datetime.today().date() - datetime.timedelta(days=38))
+        start = str(datetime.datetime.today().date() - datetime.timedelta(days=8))
         end = str(datetime.datetime.today().date())
 
 
     #每日获取股票相关数据
     RunGetDayData(start=start,end=end)
     #每日获取机构数据
-    brokerInfo(startDate=start,endDate=end)
+    #brokerInfo(startDate=start,endDate=end)
