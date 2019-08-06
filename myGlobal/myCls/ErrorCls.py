@@ -26,7 +26,6 @@ class StockError(object):
 
     @property
     def name(self):
-        print(self._code)
         sql = f'select stockname from stock_basic_table where stockcode="{self._code}"'
         t = DBHelper().fetchone(sql)
         if t is not None:

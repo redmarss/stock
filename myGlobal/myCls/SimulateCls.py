@@ -13,8 +13,8 @@ from myGlobal.myCls.BrokerCls import Broker
 
 # # region Simulate抽象类
 # class Simulate(metaclass=ABCMeta):                  #抽象类
-#     def __init__(self, tablename):
-#         self.tablename = tablename
+#     def __init__(self):
+#         __metaclass__ = ABCMeta
 #
 #     @abstractmethod
 #     def _createtable(self, sql):

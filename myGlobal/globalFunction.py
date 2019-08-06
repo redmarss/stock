@@ -27,26 +27,30 @@ def typeassert(*type_args, **type_kwargs):
         return wrapper
     return decorate
 
-@typeassert(code=(str,type(None)))
 def code_to_symbol(code):
     '''
     标准化股票代码并输出（20190609修改）
-    :param code: 股票代码，可接受如sh600000,600000sh,600000.sh
-    :return: sh600000    若输入错误，返回None
+    :param code: 股票代码，可接受如【sh600000,600000sh,600000.sh，600000】
+    :return: sh600000    若输入错误，返回以code_error开头的字符串
     '''
     if code is None:
-        return None
-    if code.startswith(('2','9')) or code[2] in ['2','9']:
-        return None                 #去除以2,9开头的代码（B股）
+        return "code_error(None)"
+    if code.startswith(('1','2','4','5','7','8','9')) or code[-6] in ['1','2','4','5','7','8','9']:
+        return "code_error(NotA)"                 #去除以2,9开头的代码（B股）
     code = str.lower(code)
     if len(code) == 8 and code.startswith(('sh', 'sz')):              #形似“sh600000,sz000001”，则原样返回
-        return code
-    elif code.endswith(('.sh','sz','sh','sz')):              #形似"600000.sh,000001.sz,600000sh,000001sz"，则返回sh600000
-        return code[-2:]+code[:6]
-    elif len(code) == 6 :
-        return 'sh%s'%code if code[:1] in ['5', '6', '9'] else 'sz%s'%code
+        return 'sh%s'%code[2:] if code[2] in ['6'] else 'sz%s'%code
+    elif len(code) == 9 and code[-3]!=".":
+        return "code_error(Else)"
+    elif len(code)<=9 and code.endswith(('sh','sz')):              #形似"600000.sh,000001.sz,600000sh,000001sz"，则返回sh600000
+        return 'sh'+code[:6] if code[0] in ['6'] else 'sz'+code[:6]
+    elif len(code) == 6:
+        if code[:].isdigit():
+            return 'sh%s'%code if code[:1] in ['6'] else 'sz%s'%code
+        else:               #code只有6位且不是全数字，报错
+            return "code_error(Else)"
     else:                                               #其余情况则返回None
-        return None
+        return "code_error(Else)"
 
 def isStockA(code):
     '''

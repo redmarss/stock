@@ -23,31 +23,31 @@ class Stock(object):
         判断code是否合规；
         判断日期是否合规；
         合规后运行init函数，否则报错并退出
-        :param code:股票代码
-        :param ts_date: 交易日期
-        :return: 跳转至init函数
+        :param args[0]:股票代码
+        :param args[1]: 交易日期
+        :return: 跳转至__init__函数
         '''
         #1.判断股票代码是否合规
         code = gf.code_to_symbol(args[0])
         #股票代码不合法
-        if code is None:
+        if code.startswith("code_error"):       #包含code_error(None),code_error(NotA),code_error(Else)
             print("股票代码不合法")
             #股票代码不合法，日期也不合法
             if myTime.isDate(args[1]) is False:
-                return StockError('code_error', 'date_error', 'code_date_error')
+                return StockError('code_error', 'date_error', 'code_date_all_error')
             #股票代码不合法，但日期合法
             else:
                 return StockError('code_error', args[1], 'code_error')
-        #日期不合法
+        #股票代码合法，日期不合法
         elif myTime.isDate(args[1]) is False:
             print("日期格式不合法")
             return StockError(args[0], 'date_error', 'date_error')
-        #日期合法，但是休息日
+            #日期合法，但是休息日
         elif gf.is_holiday(args[1]) is True:
             print(f"{args[1]}是休息日")
             return StockError(args[0], args[1], "rest_date")
         else:
-            #日期、代码均合法，判断是否数据库中是否有相关交易记录，如果没，则返回
+            #不判断日期、代码是否合法，直接读数据库
             sql = f"select * from stock_trade_history_info where stock_code='{code}' and ts_date='{args[1]}'"
             try:
                 t = DBHelper().fetchall(sql)
@@ -122,7 +122,6 @@ class Stock(object):
     # endregion
 
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
-    @gf.typeassert(startdate=(str,type(None)),days=int)
     def next_some_days(self, startdate=None,days=7):
         '''
             更新于20190613
