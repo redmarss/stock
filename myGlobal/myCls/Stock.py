@@ -119,6 +119,21 @@ class Stock(object):
             return float(self.__tuplestock[7])
         else:
             return None
+    @property
+    def getbuyBroker(self):
+        broker_list = []
+        sql = f"""
+        SELECT broker_code FROM
+        broker_buy_summary INNER JOIN broker_buy_stock_info 
+        WHERE broker_buy_stock_info.broker_buy_summary_id = broker_buy_summary.id
+        AND stock_code LIKE '{self.code[2:]}%'
+        AND ts_date = '{self.ts_date}';
+        """
+        t = DBHelper().fetchall(sql)
+        for i in range(len(t)):
+            if t[i] not in broker_list:
+                broker_list.append(t[i][0])
+        return broker_list
     # endregion
 
     #根据输入参数（code,ts_date）返回下一个(或多个)交易日的数据存入Stock类
@@ -154,10 +169,9 @@ class Stock(object):
 
     #计算买入卖出策略，stype为各种策略编号
     #返回ts_date,broker_code,stock_code,buy_date,sell_date,buy_price,sell_price,amount,gainmoney,gainpercent
-    @gf.typeassert(broker_code=str, amount=int, ftype=int)
     def strategy(self, broker_code, amount, ftype):
-        if self._ts_date is None:
-            return
+        # if self._ts_date is None:
+        #     return
         #第一种策略:第二天开盘买，第三天开盘卖
         if ftype == 1:
             return self.__strategy1(broker_code,amount)
@@ -185,117 +199,117 @@ class Stock(object):
         dict1['ftype'] = '1'
         return dict1
 
-    @gf.typeassert(days=int)
-    def getStockInfo(self, days=7):
-        '''
-        获取某股票N个交易日内的所有数据,返回元组
-        :param code: 股票代码
-        :param startdate: 开始日期
-        :param days: 天数
-        :return: 股票交易信息（元组）
-        '''
-        code = self._code
-        if code is None:
-            return
-        field_list = ["a.id", "a.stock_code", "a.ts_date", "a.open_price", "a.close_price", "a.high_price",
-                      "a.low_price", "a.volume", "b.k", "b.d", "b.j"]
-        field = ""
-        for i in field_list:
-            field += "%s," % i
-        field = field.rstrip(",")
-        t = self._dbObject.fetchall(table='stock_trade_history_info as a,qualification as b',
-                                    field=field,
-                                    where="a.stock_code=b.stock_code and a.ts_date=b.ts_date and "
-                                          "a.stock_code='%s' and a.ts_date%s='%s' order by a.ts_date desc"
-                                          % (code, ('>' if days > 0 else '<'), self._ts_date),
-                                    limit=str(abs(days)))
-
-        return pd.DataFrame(list(t),columns=field_list)
+    # @gf.typeassert(days=int)
+    # def getStockInfo(self, days=7):
+    #     '''
+    #     获取某股票N个交易日内的所有数据,返回元组
+    #     :param code: 股票代码
+    #     :param startdate: 开始日期
+    #     :param days: 天数
+    #     :return: 股票交易信息（元组）
+    #     '''
+    #     code = self._code
+    #     if code is None:
+    #         return
+    #     field_list = ["a.id", "a.stock_code", "a.ts_date", "a.open_price", "a.close_price", "a.high_price",
+    #                   "a.low_price", "a.volume", "b.k", "b.d", "b.j"]
+    #     field = ""
+    #     for i in field_list:
+    #         field += "%s," % i
+    #     field = field.rstrip(",")
+    #     t = self._dbObject.fetchall(table='stock_trade_history_info as a,qualification as b',
+    #                                 field=field,
+    #                                 where="a.stock_code=b.stock_code and a.ts_date=b.ts_date and "
+    #                                       "a.stock_code='%s' and a.ts_date%s='%s' order by a.ts_date desc"
+    #                                       % (code, ('>' if days > 0 else '<'), self._ts_date),
+    #                                 limit=str(abs(days)))
+    #
+    #     return pd.DataFrame(list(t),columns=field_list)
 
     #计算均线价格
-    @gf.typeassert(days=int)
-    def MA(self, days=5):
-        '''
-            参数示例：5
-            返回类型：float,float,None
-        '''
-        if days not in [5,10,15,20,30,60,120,250,360]:
-            print("MA参数不符合定义")
-            return
-        list_MA=[]
-        df_MA = self.getStockInfo(0-days)
-        if df_MA.shape[0]>=days:
-            return round(df_MA['a.close_price'].mean(), 2)
-        else:                                       #数据长度不足，返回0.0
-            return 0.0
-
-
-    def getMA(self,*args):
-        for i in args:
-            ma = self.MA(i)
-            field = "MA"+str(i)
-            self._writeQualifi(field,ma)
-
-
-    @gf.typeassert(N=int)
-    def KDJ(self, N=9):
-        if N < 0:
-            print("N值不能为负数")
-            return
-        t_stock = None
-        if self._code is not None and self._ts_date is not None:
-            df_stock = self.getStockInfo(0-N)
-            #寻找N日内收盘价
-            if df_stock.shape[0] < N:
-                k = d = 50
-                j = 3 * k - 2 * d
-                self._writeQualifi(k=k,d=d,j=j)
-            else:
-                #n日RSV=（Cn－Ln）/（Hn－Ln）×100
-                Cn = Decimal.from_float(self.close_price)                     #当日收盘价
-                Ln = df_stock["a.low_price"].min()                            #N日最低价
-                Hn = df_stock["a.high_price"].max()                           #N日最高价
-                Rsv = (Cn-Ln)/(Hn-Ln)*100
-                #获取前一日K值与D值
-                k_last = df_stock.loc[1, "b.k"]           #前一日K值
-                d_last = df_stock.loc[1, "b.d"]           #前一日D值
-                #当日K值=2/3×前一日K值+1/3×当日RSV
-                k = round(Decimal.from_float(2/3)*k_last+Decimal.from_float(1/3)*Rsv,2)
-                d = round(Decimal.from_float(2/3)*d_last+Decimal.from_float(1/3)*k,2)
-                j = 3*k-2*d
-
-                self._writeQualifi(k=k, d=d, j=j)
-
-
-    def _writeQualifi(self,*args,**kwargs):
-        if len(args) !=0:
-            kwargs[args[0]]=args[1]
-        for key,value in kwargs.items():
-            #先判断qualification表中是否有k列，如果没有则添加
-            try:
-                #如果原来就有这列，则pass
-                t = self._dbObject.fetchall(table="qualification",field=key)
-            except:
-                #没有这一列，则添加
-                sql = '''
-                ALTER TABLE `tushare`.`qualification` 
-                ADD COLUMN `%s` DECIMAL(15,2) NULL;
-                '''%key
-                self._dbObject.execute(sql)
-            #开始写入
-            stock_code = self._code
-            ts_date = self._ts_date
-            t = self._dbObject.fetchall(table="qualification",
-                                        where="stock_code='%s' and ts_date='%s'" % (stock_code,ts_date))
-
-            if len(t) == 0:
-                sql_insert = "insert into qualification set stock_code='%s',ts_date='%s',%s='%s'"% (stock_code,ts_date,key,value)
-                self._dbObject.execute(sql_insert)
-                print("%s(%s)记录成功" % (stock_code, ts_date))
-            else:
-                sql_update = "update qualification set %s='%s' where stock_code='%s' and ts_date='%s'" % (key,value,stock_code,ts_date)
-                self._dbObject.execute(sql_update)
-                print("%s(%s)更新成功" % (stock_code, ts_date))
+    # @gf.typeassert(days=int)
+    # def MA(self, days=5):
+    #     '''
+    #         参数示例：5
+    #         返回类型：float,float,None
+    #     '''
+    #     if days not in [5,10,15,20,30,60,120,250,360]:
+    #         print("MA参数不符合定义")
+    #         return
+    #     list_MA=[]
+    #     df_MA = self.getStockInfo(0-days)
+    #     if df_MA.shape[0]>=days:
+    #         return round(df_MA['a.close_price'].mean(), 2)
+    #     else:                                       #数据长度不足，返回0.0
+    #         return 0.0
+    #
+    #
+    # def getMA(self,*args):
+    #     for i in args:
+    #         ma = self.MA(i)
+    #         field = "MA"+str(i)
+    #         self._writeQualifi(field,ma)
+    #
+    #
+    # @gf.typeassert(N=int)
+    # def KDJ(self, N=9):
+    #     if N < 0:
+    #         print("N值不能为负数")
+    #         return
+    #     t_stock = None
+    #     if self._code is not None and self._ts_date is not None:
+    #         df_stock = self.getStockInfo(0-N)
+    #         #寻找N日内收盘价
+    #         if df_stock.shape[0] < N:
+    #             k = d = 50
+    #             j = 3 * k - 2 * d
+    #             self._writeQualifi(k=k,d=d,j=j)
+    #         else:
+    #             #n日RSV=（Cn－Ln）/（Hn－Ln）×100
+    #             Cn = Decimal.from_float(self.close_price)                     #当日收盘价
+    #             Ln = df_stock["a.low_price"].min()                            #N日最低价
+    #             Hn = df_stock["a.high_price"].max()                           #N日最高价
+    #             Rsv = (Cn-Ln)/(Hn-Ln)*100
+    #             #获取前一日K值与D值
+    #             k_last = df_stock.loc[1, "b.k"]           #前一日K值
+    #             d_last = df_stock.loc[1, "b.d"]           #前一日D值
+    #             #当日K值=2/3×前一日K值+1/3×当日RSV
+    #             k = round(Decimal.from_float(2/3)*k_last+Decimal.from_float(1/3)*Rsv,2)
+    #             d = round(Decimal.from_float(2/3)*d_last+Decimal.from_float(1/3)*k,2)
+    #             j = 3*k-2*d
+    #
+    #             self._writeQualifi(k=k, d=d, j=j)
+    #
+    #
+    # def _writeQualifi(self,*args,**kwargs):
+    #     if len(args) !=0:
+    #         kwargs[args[0]]=args[1]
+    #     for key,value in kwargs.items():
+    #         #先判断qualification表中是否有k列，如果没有则添加
+    #         try:
+    #             #如果原来就有这列，则pass
+    #             t = self._dbObject.fetchall(table="qualification",field=key)
+    #         except:
+    #             #没有这一列，则添加
+    #             sql = '''
+    #             ALTER TABLE `tushare`.`qualification`
+    #             ADD COLUMN `%s` DECIMAL(15,2) NULL;
+    #             '''%key
+    #             self._dbObject.execute(sql)
+    #         #开始写入
+    #         stock_code = self._code
+    #         ts_date = self._ts_date
+    #         t = self._dbObject.fetchall(table="qualification",
+    #                                     where="stock_code='%s' and ts_date='%s'" % (stock_code,ts_date))
+    #
+    #         if len(t) == 0:
+    #             sql_insert = "insert into qualification set stock_code='%s',ts_date='%s',%s='%s'"% (stock_code,ts_date,key,value)
+    #             self._dbObject.execute(sql_insert)
+    #             print("%s(%s)记录成功" % (stock_code, ts_date))
+    #         else:
+    #             sql_update = "update qualification set %s='%s' where stock_code='%s' and ts_date='%s'" % (key,value,stock_code,ts_date)
+    #             self._dbObject.execute(sql_update)
+    #             print("%s(%s)更新成功" % (stock_code, ts_date))
 
         # #取出参数中的技术指标
         # k = kwargs['k']
@@ -318,21 +332,6 @@ class Stock(object):
 
 
 
-def Main(t):
-
-    code = t[0]
-    date = str(t[1])
-    s = Stock(code, date)
-    s.KDJ()
-    s.getMA(5,10,15,20,30,60,120,250)
-
-if __name__ == "__main__":
-    s = Stock("600000", "2017-01-03")
-    li = s.next_some_days(days=7)
-    li2 = s.next_some_days("2019-01-04",7)
-    print(li)
-    print(li2)
-    print()
 
 
 

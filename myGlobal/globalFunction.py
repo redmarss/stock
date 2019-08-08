@@ -54,13 +54,13 @@ def code_to_symbol(code):
 
 def isStockA(code):
     '''
-    查询股票是否存于stock_basic_table表中（修改于20190409）
+    查询股票是否存于stock_basic_table表中（修改于20190808）
     :param code: 需查询的代码
     :return: True or False
     '''
     symbol = code_to_symbol(code)       #代码标准化
-    sql = "select * from stock_basic_table where stockcode = '%s' and ts_flag=0" % symbol
-    t = DBHelper().fetchall()
+    sql = f"select * from stock_basic_table where stockcode = '{symbol}' and ts_flag=0"             #未退市的A股
+    t = DBHelper().fetchall(sql)
     if len(t) > 0:          #查到该股票代码存于stock_basic_table表中
         return True
     else:
@@ -68,11 +68,11 @@ def isStockA(code):
 
 def isBroker(code):
     '''
-    判断code是否机构代码(修改于20190409)
+    判断code是否机构代码(修改于20190808)
     :param code: str类型，机构代码
     :return: 如果从broker_info找到相应代码，则返回True，否则返回False
     '''
-    sql = "select * from broker_info where broker_code ='%s'"%code
+    sql = f"select * from broker_info where broker_code ='{code}'"
     t = DBHelper().fetchall(sql)
     if len(t) > 0:
         return True
@@ -101,14 +101,14 @@ def ChangeRange(priceLastClose,priceNow):
     changerange = (priceNow-priceLastClose)/priceLastClose
     return round(changerange, 4)
 
-@typeassert(date=str)
+
 def is_holiday(date):
     '''
     #判断是否为交易日(休息日)，工作日返回False or 节假日返回True(修改于20190412)
     :param date: 日期(str格式)
     :return: 工作日返回FALSE，节假日返回True，日期输入有误返回None
     '''
-    sql = "select isholiday from is_holiday where date='%s'" % date
+    sql = f"select isholiday from is_holiday where date='{date}'"
     flag = DBHelper().fetchone(sql)
     if flag is not None:
         if flag[0] == '1':
@@ -118,7 +118,6 @@ def is_holiday(date):
     else:
         print("日期输入错误")
 
-@typeassert(code=str,ts_date=str)
 def stock_is_tradeday(code, ts_date):
     '''
     判断股票在数据库中是否有交易数据(修改于20190412)
@@ -134,7 +133,6 @@ def stock_is_tradeday(code, ts_date):
     else:
         return False
 
-@typeassert(strdate=str)
 def lastTddate(strdate):
     '''
     返回A股上一交易日（修改于20190412）
@@ -150,9 +148,6 @@ def lastTddate(strdate):
     except:
         print("日期输入有误")
         return
-
-
-
 
 def postData(textByte,urlPost,flag=None):
     '''
@@ -190,7 +185,7 @@ def postData(textByte,urlPost,flag=None):
     except HTTPError as e:
         return e.code
 
-def getAllBroker(table='broker_info',field='broker_code',where='1=1'):
+def getBroker(table='broker_info',field='broker_code',where='1=1'):
     '''
     从数据表（默认为broker_info）中获取机构代码（修改于20190412）
     :param table:表名，默认为broker_info
@@ -199,7 +194,7 @@ def getAllBroker(table='broker_info',field='broker_code',where='1=1'):
     :return:机构列表
     '''
     broker_list=[]
-    sql = ' select %s from %s where %s' %(field,table,where)
+    sql = f' select {field} from {table} where {where}'
     try:
         t_broker = DBHelper().fetchall(sql)
         for t in t_broker:
@@ -207,9 +202,9 @@ def getAllBroker(table='broker_info',field='broker_code',where='1=1'):
                 broker_list.append(t[0])
         return broker_list
     except:
-        print('%s出错'%getAllBroker.__name__)
+        print('%s出错'%getBroker.__name__)
 
-def getAllStockFromTable(table='stock_basic_table',field='stockcode',where='1=1'):
+def getStockFromTable(table='stock_basic_table',field='stockcode',where='1=1'):
     '''
     从数据表stock_basic_table中获取所有股票代码（修改于20190412）
     :param where: 检索条件
@@ -218,7 +213,7 @@ def getAllStockFromTable(table='stock_basic_table',field='stockcode',where='1=1'
     '''
     li = []
     # 创建数据库对象（单例模式）
-    sql = 'select %s from %s where %s order by stockcode' % (field,table,where)
+    sql = f'select {field} from {table} where {where} order by stockcode'
     try:
         t_stock = DBHelper().fetchall(sql)
         for key in t_stock:
@@ -226,9 +221,9 @@ def getAllStockFromTable(table='stock_basic_table',field='stockcode',where='1=1'
                 li.append(key[0])
         return li
     except:
-        print('%s出错' % getAllStockFromTable.__name__)
+        print('%s出错' % getStockFromTable.__name__)
 
-
+@typeassert(openPrice=float,nowPrice=float)
 def isLimit(code, openPrice, nowPrice , flag=1):
     '''
     判断该股票是否涨停板，名称中含S的股票（ST，S），涨幅为5%，超出涨幅则返回None
@@ -240,15 +235,15 @@ def isLimit(code, openPrice, nowPrice , flag=1):
     '''
     #先判断flag参数是否合规，只能为1或-1
     if flag !=1 or flag!=-1:
+        print("flag参数错误，1为判断是否涨停，-1为判断是否跌停")
         return
-    #格式化code参数
+    #格式化code
     symbol = code_to_symbol(code)
     if symbol is None:            #所输入代码非沪深A股
         return
     #获取股票名称
     sql = "select stockname from stock_basic_table where stockcode = '%s'" % (symbol)
     name = DBHelper().fetchone(sql)[0]
-
 
     if name.upper().find('S')>0:                #名字中包含S，涨幅为5%
         if nowPrice == round((1+0.05*flag)*openPrice, 2):

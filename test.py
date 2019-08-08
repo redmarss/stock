@@ -4,10 +4,8 @@ from urllib.request import urlopen,Request
 from bs4 import BeautifulSoup
 
 import myGlobal.globalFunction as gf
+from myGlobal.myCls.Stock import Stock
 
-#code = ["sz600000","600000","600000.sz","600000sz"]
-code = ["sz6000001","60000000","60000000.sz","6000000sz"]
-
-for i in code:
-    code_output= gf.code_to_symbol(i)
-    print(code_output)
+s = Stock('000915','2018-06-22')
+print(s.code)
+print(s.getbuyBroker)
