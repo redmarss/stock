@@ -14,10 +14,12 @@ class Broker(object):
     def __init__(self,broker_code,ts_date):
         self._broker_code = broker_code
         self._ts_date = ts_date
-        self._stocklist = []                #self._getBuyStock()
+                #self._getBuyStock()
 
     #获取该日期broker_code购买的股票列表
-    def _getBuyStock(self):
+    @property
+    def getBuyStock(self):
+        stocklist = []
         #查询当天该机构购买的股票列表
         sql_brokerbuy = f'''SELECT * FROM 
                             broker_buy_stock_info info
@@ -31,8 +33,9 @@ class Broker(object):
         if len(t_broker_buy) > 0:
             for stock in t_broker_buy:
                 stock = gf.code_to_symbol(str(stock[0]))
-                if stock not in self._stocklist:
-                    self._stocklist.append(stock)
+                if stock not in stocklist:
+                    stocklist.append(stock)
+        return stocklist
 
 
 

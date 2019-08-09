@@ -29,7 +29,7 @@ def typeassert(*type_args, **type_kwargs):
 
 def code_to_symbol(code):
     '''
-    标准化股票代码并输出（20190609修改）
+    标准化股票代码并输出（20190807修改）
     :param code: 股票代码，可接受如【sh600000,600000sh,600000.sh，600000】
     :return: sh600000    若输入错误，返回以code_error开头的字符串
     '''

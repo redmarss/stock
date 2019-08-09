@@ -9,7 +9,6 @@ import re
 
 stockAll = gf.getAllStockFromTable()
 
-
 # region 多线程获取每日股票信息
 def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多线程参数一定要放第一个
     url = 'http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayqfq2017&param=%s,day,%s,%s,640,qfq'\
@@ -45,6 +44,7 @@ def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多�
     print("%s股票从%s至%s数据导入完成"%(code,start,end))
 
 
+
 def RunGetDayData(start,end,stock_li=[]):
     if len(stock_li)==0:
         stock_li = stockAll
@@ -71,15 +71,13 @@ def brokerInfo(startDate=None, endDate=None, pagesize=200000):
 if __name__ == '__main__':
     if datetime.datetime.today().hour > 18:     #运行时间大于18点
         start = str(datetime.datetime.today().date()-datetime.timedelta(days=7))
-        end = str(datetime.datetime.today().date() + datetime.timedelta(days=1))
-
-
     else:
         start = str(datetime.datetime.today().date() - datetime.timedelta(days=8))
-        end = str(datetime.datetime.today().date())
+
+    end = str(datetime.datetime.today().date() + datetime.timedelta(days=1))
 
 
     #每日获取股票相关数据
     RunGetDayData(start=start,end=end)
     #每日获取机构数据
-    #brokerInfo(startDate=start,endDate=end)
+    brokerInfo(startDate=start,endDate=end)

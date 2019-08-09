@@ -29,52 +29,28 @@ from myGlobal.myCls.BrokerCls import Broker
 
 #根据输入的机构代码，开始、结束日期，写入tablename表
 class BrokerSimulate(Broker):
-    def __init__(self,broker_code,ts_date, tablename='simulate_buy'):
+    def __init__(self,broker_code,ts_date, tablename='simulate_buy',ftype=1):
         Broker(broker_code,ts_date)
         self._tablename = tablename
+        self._ftype= ftype
 
 
-    def _createtable(self):
-        sql = '''
-        CREATE TABLE `tushare`.`%s` (
-        `id` INT NOT NULL AUTO_INCREMENT,
-        `ts_date` VARCHAR(45) NOT NULL,
-        `broker_code` VARCHAR(45) NOT NULL,
-        `stock_code` VARCHAR(45) NOT NULL,
-        `stock_name` VARCHAR(45) NOT NULL,
-        `buy_date` VARCHAR(45) NULL,
-        `sell_date` VARCHAR(45) NULL,
-        `buy_price` VARCHAR(45) NULL,
-        `sell_price` VARCHAR(45) NULL,
-        `get_day` VARCHAR(45) NULL,
-        `amount` VARCHAR(45) NULL,
-        `gainmoney` VARCHAR(45) NULL,
-        `gainpercent` VARCHAR(45) NULL,
-        `ftype` VARCHAR(5) NULL,
-        `getscore` VARCHAR(20) NULL,
-        PRIMARY KEY (`id`),
-        UNIQUE INDEX `id_UNIQUE` (`id` ASC),
-        UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC,`ftype` ASC)
-        )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=DEFAULT ;
-        ''' % self._tablename
-        DBHelper().execute(sql)
-
-    def simulatebuy(self, stock_code,amount=1000,ftype=1):
-        if stock_code =='code_error':               #非沪深A股
+    def simulatebuy(self, stock_code,amount=1000):
+        if stock_code.startswith('code_error'):               #非沪深A股
             return
         if DBHelper().isTableExists(self._tablename) is False:        #表不存在，则创建表
             self._createtable(self._tablename)
         # 取出数据库broker_buy_stock_info中simulate_flag状态，然后进行判断
         simulate_flag = self.__get_simulate_flag(stock_code)
         #判断simulate_flag在ftype是否写入过数据库
-        if self.__is_simulate(simulate_flag,ftype) is True:        #已写入过数据库
+        if self.__is_simulate(simulate_flag,self.ftype) is True:        #已写入过数据库
             return
         else:
 
-            result = self.__CaculateStock(stock_code,amount, ftype)
+            result = self.__CaculateStock(stock_code,amount, self.ftype)
             self.__recordToSql(result)
             #把broker_buy_stock_info表中simulate_flag状态的第ftype位（从右往左数）置为1 ，表示已计算
-            self.__update_brokerbuystockinfo(ftype)
+            self.__update_brokerbuystockinfo(self.ftype)
 
 
     def __is_simulate(self, t, ftype):
