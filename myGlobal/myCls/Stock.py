@@ -126,7 +126,7 @@ class Stock(object):
         SELECT broker_code FROM
         broker_buy_summary INNER JOIN broker_buy_stock_info 
         WHERE broker_buy_stock_info.broker_buy_summary_id = broker_buy_summary.id
-        AND stock_code LIKE '{self.code[2:]}%'
+        AND stock_code LIKE '{gf.symbol_to_sqlcode(self.code)}%'
         AND ts_date = '{self.ts_date}';
         """
         t = DBHelper().fetchall(sql)

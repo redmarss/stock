@@ -39,7 +39,7 @@ def code_to_symbol(code):
         return "code_error(NotA)"                 #去除以2,9开头的代码（B股）
     code = str.lower(code)
     if len(code) == 8 and code.startswith(('sh', 'sz')):              #形似“sh600000,sz000001”，则原样返回
-        return 'sh%s'%code[2:] if code[2] in ['6'] else 'sz%s'%code
+        return 'sh%s'%code[2:] if code[2] in ['6'] else 'sz%s'%code[2:]
     elif len(code) == 9 and code[-3]!=".":
         return "code_error(Else)"
     elif len(code)<=9 and code.endswith(('sh','sz')):              #形似"600000.sh,000001.sz,600000sh,000001sz"，则返回sh600000
@@ -51,6 +51,13 @@ def code_to_symbol(code):
             return "code_error(Else)"
     else:                                               #其余情况则返回None
         return "code_error(Else)"
+
+def symbol_to_sqlcode(code):
+    code = code_to_symbol(code)
+    if code.startswith('code_error'):
+        return code
+    else:
+        return code[2:]+'.'+code[:2].upper()
 
 def isStockA(code):
     '''
