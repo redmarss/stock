@@ -8,6 +8,14 @@
 import myGlobal.globalFunction as gf
 from myGlobal.myCls.msql import DBHelper
 
+# def set_bit(v, index, x):
+#   """Set the index:th bit of v to x, and return the new value."""
+#   mask = 1 << index
+#   v &= ~mask
+#   if x:
+#     v |= mask
+#   return v
+
 def _getSimulateFlag(brokercode,stockcode,ts_date):
     '''
     从机构购买股票信息中获取ftype值，以判断是否模拟计算过
@@ -33,4 +41,4 @@ def _getSimulateFlag(brokercode,stockcode,ts_date):
 def _setSimulaFlag(brokercode,stockcode,ts_date,ftype):
     flag = _getSimulateFlag(brokercode,stockcode,ts_date)
 
-print(_getSimulateFlag(brokercode='80100185',stockcode='sz000063',ts_date='2017-03-16'))
+print(gf.set_bit(5,7))
