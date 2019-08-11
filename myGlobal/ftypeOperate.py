@@ -8,13 +8,31 @@
 import myGlobal.globalFunction as gf
 from myGlobal.myCls.msql import DBHelper
 
-# def set_bit(v, index, x):
-#   """Set the index:th bit of v to x, and return the new value."""
-#   mask = 1 << index
-#   v &= ~mask
-#   if x:
-#     v |= mask
-#   return v
+TYPE_LEN = 16
+
+def list_to_bin(list1):
+    if len(set(list1))==2:                          #如果list1中有两个元素，则必须是0和1
+        if '1' not in list1 or '0' not in list1:
+            return
+    if len(set(list1))>=3:                          #如果list1中有三个不同的元素，则报错
+        return
+    result = 0
+    for i in range(len(list1)):
+        result = result + list1[len(list1)-i-1]*(2**len(list1)-1-i)
+    return result
+
+
+def set_bit(value, index,key=1):
+    global TYPE_LENLEN
+    if index>TYPE_LEN:
+        print(f"index参数超过{TYPE_LEN}，本函数只支持{TYPE_LEN}位")
+        return value
+    #判断value的index位是否等于key，如果是，则直接返回value，如果不是，则加上1<<(index-1)
+    result =value + (1<<(index-1))            #在第几位
+    return result
+
+
+
 
 def _getSimulateFlag(brokercode,stockcode,ts_date):
     '''
@@ -41,4 +59,4 @@ def _getSimulateFlag(brokercode,stockcode,ts_date):
 def _setSimulaFlag(brokercode,stockcode,ts_date,ftype):
     flag = _getSimulateFlag(brokercode,stockcode,ts_date)
 
-print(gf.set_bit(5,7))
+print(set_bit(5,3))

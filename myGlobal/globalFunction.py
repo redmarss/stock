@@ -269,20 +269,7 @@ def isLimit(code, openPrice, nowPrice , flag=1):
         else:
             return False
 
-def set_bit(value, index,key=1):
-    LEN = 16
-    if index>LEN:
-        print(f"index参数超过{LEN}，本函数只支持{LEN}位")
-        return value
-    v = bin(value)
-    v = v[2:].zfill(LEN)
-    l = list(v[2:])
-    if l[index]!=key:
-        l[index] = key
-    sum=0
-    for i in range(len(l)):
-        sum+=int(l[i])*(2**(i-1))
-    print(sum)
+
 
 
 
