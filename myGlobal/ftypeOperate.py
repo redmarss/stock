@@ -23,14 +23,34 @@ def list_to_bin(list1):
 
 
 def set_bit(value, index,key=1):
+    '''
+    将value转换二进制并将从右起第index位设置为key
+    :param value: 原始值
+    :param index: 位数
+    :param key: 0或1
+    :return: 返回值
+    '''
     global TYPE_LENLEN
-    if index>TYPE_LEN:
-        print(f"index参数超过{TYPE_LEN}，本函数只支持{TYPE_LEN}位")
+    if index>TYPE_LEN or index < 1:
+        print(f"index参数超过{TYPE_LEN}，本函数只支持{TYPE_LEN}位,最小不能低于1")
+        return value
+    if not 0<=value<=65535:
+        print("value值必须是0-65535之间")
         return value
     #判断value的index位是否等于key，如果是，则直接返回value，如果不是，则加上1<<(index-1)
-    result =value + (1<<(index-1))            #在第几位
-    return result
-
+    list_bin = list(bin(value)[2:].zfill(16))
+    if list_bin[len(list_bin)-index] == str(key):
+        return value
+    else:
+        if key == 1:
+            result = value + (1<<(index-1))            #在第几位
+            return result
+        elif key == 0:
+            result =value - (1<<(index-1))
+            return result
+        else:
+            print("key值只能为0或1")
+            return value
 
 
 
@@ -59,4 +79,4 @@ def _getSimulateFlag(brokercode,stockcode,ts_date):
 def _setSimulaFlag(brokercode,stockcode,ts_date,ftype):
     flag = _getSimulateFlag(brokercode,stockcode,ts_date)
 
-print(set_bit(5,3))
+print(set_bit(1111111111111111117,3,0))
