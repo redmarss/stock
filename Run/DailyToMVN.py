@@ -7,7 +7,7 @@ from functools import partial
 import datetime
 import re
 
-stockAll = gf.getAllStockFromTable()
+stockAll = gf.getStockFromTable()
 
 # region 多线程获取每日股票信息
 def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多线程参数一定要放第一个
