@@ -11,20 +11,6 @@ from abc import ABC,abstractmethod,ABCMeta
 from myGlobal.myCls.mylogger import mylogger
 from myGlobal.myCls.BrokerCls import Broker
 
-# # region Simulate抽象类
-# class Simulate(metaclass=ABCMeta):                  #抽象类
-#     def __init__(self):
-#         __metaclass__ = ABCMeta
-#
-#     @abstractmethod
-#     def _createtable(self, sql):
-#         return
-#
-#     @abstractmethod
-#     def simulatebuy(self, broker_code, ts_date, stock_code, amount=1000, ftype=1):
-#         return
-# # endregion
-
 
 
 #根据输入的机构代码，开始、结束日期，写入tablename表
@@ -34,6 +20,33 @@ class BrokerSimulate(Broker):
         self._tablename = tablename
         self._ftype= ftype
 
+    # region _createtable     创建tablename表
+    def _createtable(self,tablename):
+        sql_create = f"""
+        CREATE TABLE `tushare`.`{tablename}` (
+        `id` INT NOT NULL AUTO_INCREMENT,
+        `ts_date` VARCHAR(45) NOT NULL,
+        `broker_code` VARCHAR(45) NOT NULL,
+        `stock_code` VARCHAR(45) NOT NULL,
+        `buy_date` VARCHAR(45) NULL,
+        `sell_date` VARCHAR(45) NULL,
+        `buy_price` VARCHAR(45) NULL,
+        `sell_price` VARCHAR(45) NULL,
+        `amount` VARCHAR(45) NULL,
+        `gainmoney` VARCHAR(45) NULL,
+        `gainpercent` VARCHAR(45) NULL,
+        `ftype` VARCHAR(5) NULL,
+        PRIMARY KEY (`id`),
+        UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+        UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC)
+        )ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+        """
+        try:
+            DBHelper().execute(sql_create)
+            print(f"创建{tablename}表成功")
+        except:
+            mylogger.error(f"创建{tablename}表出错")
+    # endregion
 
     def simulatebuy(self, stock_code,amount=1000):
         if stock_code.startswith('code_error'):               #非沪深A股
