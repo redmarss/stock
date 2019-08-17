@@ -1,16 +1,12 @@
 #!/bin/usr/env python
 #-*- coding: utf-8 -*-
 
-from myGlobal.myCls.mylogger import mylogger
-from myGlobal.myCls.Stock import Stock
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as mTime
+from myGlobal.myCls.Stock import Stock
 from myGlobal.myCls.msql import DBHelper
-import datetime
-from abc import ABC,abstractmethod,ABCMeta
 from myGlobal.myCls.mylogger import mylogger
 from myGlobal.myCls.BrokerCls import Broker
-
 
 
 #根据输入的机构代码，开始、结束日期，写入tablename表
@@ -19,6 +15,7 @@ class BrokerSimulate(Broker):
         Broker(broker_code,ts_date)
         self._tablename = tablename
         self._ftype= ftype
+        self._buystocklist = self.getBuyStock()
 
     # region _createtable     创建tablename表
     def _createtable(self,tablename):
@@ -48,7 +45,18 @@ class BrokerSimulate(Broker):
             mylogger.error(f"创建{tablename}表出错")
     # endregion
 
-    def simulatebuy(self, stock_code,amount=1000):
+    def simulateBuy(self,ftype=1,amount=1000):
+        if len(self._buystocklist) > 0:
+            for stockcode in self._buystocklist:
+                #1.查看simulateflag是否已模拟，如果模拟了，则什么都不做
+                #2.模拟买入，并返回一个元组
+                t = self._stockbuy(stockcode,ftype, amount)
+                #3.将元组存入数据库
+                #4.更新flag值
+
+                print(f"模拟{self.brokercode}于{self.ts_date}购买{stockcode}成功，模拟方式：{ftype}，购买数量：{amount}")
+
+    def _stockbuy(self, ftype,stock_code,amount):
         if stock_code.startswith('code_error'):               #非沪深A股
             return
         if DBHelper().isTableExists(self._tablename) is False:        #表不存在，则创建表

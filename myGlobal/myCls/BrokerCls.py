@@ -37,7 +37,13 @@ class Broker(object):
                     stocklist.append(stock)
         return stocklist
 
+    @property
+    def brokercode(self):
+        return self._broker_code
 
+    @property
+    def ts_date(self):
+        return self._ts_date
 
 
 
