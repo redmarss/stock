@@ -2,6 +2,7 @@
 #-*- coding: utf-8 -*-
 
 import myGlobal.globalFunction as gf
+import myGlobal.ftypeOperate as fto
 import myGlobal.myTime as mTime
 from myGlobal.myCls.Stock import Stock
 from myGlobal.myCls.msql import DBHelper
@@ -49,10 +50,13 @@ class BrokerSimulate(Broker):
         if len(self._buystocklist) > 0:
             for stockcode in self._buystocklist:
                 #1.查看simulateflag是否已模拟，如果模拟了，则什么都不做
-                #2.模拟买入，并返回一个元组
-                t = self._stockbuy(stockcode,ftype, amount)
-                #3.将元组存入数据库
-                #4.更新flag值
+                if not self.__is_simulate(stockcode,ftype,key=1):
+                    #2.模拟买入，并返回一个元组
+                    t = self._stockbuy(stockcode,ftype, amount)
+                    #3.将元组存入数据库
+                    #4.更新flag值
+                else:
+                    pass
 
                 print(f"模拟{self.brokercode}于{self.ts_date}购买{stockcode}成功，模拟方式：{ftype}，购买数量：{amount}")
 
@@ -74,16 +78,27 @@ class BrokerSimulate(Broker):
             self.__update_brokerbuystockinfo(self.ftype)
 
 
-    def __is_simulate(self, t, ftype):
-        if t & (1<<(ftype-1))>0:            #数字t的第ftype位为1
+    def __is_simulate(self,stockcode,ftype,key=1):
+        sql =f"""
+            SELECT simulate_flag FROM
+            broker_buy_stock_info AS a
+            INNER JOIN
+            broker_buy_summary AS b ON a.broker_buy_summary_id = b.id
+            WHERE
+            broker_code = '{self.brokercode}'
+            AND ts_date = '{self.ts_date}'
+            AND stock_code = '{gf.symbol_to_sqlcode(stockcode)}';
+        """
+        simulate_flag = int(DBHelper().execute(sql)[0])
+        if fto.judgeftype(simulate_flag,ftype,key):
             return True
         else:
             return False
 
 
-    def __get_simulate_flag(self,stock_code):
+    def __get_simulate_flag(self,stockcode):
         sql = "SELECT simulate_flag FROM broker_buy_stock_info as a,broker_buy_summary as b where b.ts_date='%s' and b.broker_code='%s' and a.broker_buy_summary_id=b.id and a.stock_code like '%s'" % (
-        self._ts_date, self._broker_code, '%%%s%%' % stock_code[2:9])
+        self._ts_date, self._broker_code, '%%%s%%' % stockcode[2:9])
         t = DBHelper().fetchone(sql)[0]
         return t
 
