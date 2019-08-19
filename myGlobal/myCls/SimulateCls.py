@@ -104,14 +104,14 @@ class BrokerSimulate(Broker):
 
 
 
-    #计算相应股票数据，返回元组，后续存入数据库
-    def __CaculateStock(self, stock_code):
-        # switch = {
-        #     1: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype),
-        #     2: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype)
-        # }
-        # return switch.get(self._ftype)
-        return self.__strategy1(stock_code,self._ts_date,self._ftype,self._amount)
+    # #计算相应股票数据，返回元组，后续存入数据库
+    # def __CaculateStock(self, stock_code):
+    #     # switch = {
+    #     #     1: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype),
+    #     #     2: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype)
+    #     # }
+    #     # return switch.get(self._ftype)
+    #     return self.__strategy1(stock_code,self._ts_date,self._ftype,self._amount)
 
     def __recordToSql(self,t):
         #策略找不到相关历史数据，t的位置返回None
