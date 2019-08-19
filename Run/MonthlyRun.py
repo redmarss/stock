@@ -7,68 +7,56 @@ import requests
 from bs4 import BeautifulSoup
 import myGlobal.myCls.msql as msql
 import datetime
+import pandas as pd
+from pandas.compat import StringIO
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as myTime
 from myGlobal.myCls.msql import DBHelper
 from myGlobal.myCls.multiProcess import threads
 
 
-# region 多线程获取股票名称及代码，存入或更新stock_basic_table表
-def _basicinfotosql(code,stockname,tablename="stock_basic_table"):
-    sql_select = f'select * from {tablename} where stockcode="{code}"'
-    sql1 = f'insert into {tablename} (stockcode,stockname) VALUES ("{code}","{stockname}")'
-    sql2 = f'update {tablename} set stockname="{stockname}" where stockcode = "{code}"'
-    t = DBHelper().fetchone(sql_select)
-    if t is not None:
-        DBHelper().execute(sql2)
-        print("修改%s名称为%s" % (code,stockname))
-    else:
-        DBHelper().execute(sql1)
-        print("新增%s名称为%s" % (code,stockname))
 
 
-#获取股票的代码和名称，并存入数据库
-def _getStock(code):
-    url = "http://quote.eastmoney.com/%s.html" % code
-    try:
-        page = urlopen(url).read().decode('gbk')
-        soup = BeautifulSoup(page, 'html5lib')
-        stockname = soup.find(id='name').string             #取网页上的股票名称
-        _basicinfotosql(code,stockname,"stock_basic_table")          #存入stock_basic_table表
-        #处理已退市
 
-    except HTTPError as e:
-        if e.code == 404:
-            pass                   #股票代码不存在，什么都不做
-            #是否要去数据库删除该记录？
-
-#多线程访问东方财富网，判断股票是否退市或上市，并存入数据库
-@threads(10)
 def getAllStock():
-    sh_list = ['sh{:0>6d}'.format(i) for i in range(600000, 604000)]         #上海股票代码，目前为从600000至603999(读者传媒)
-    sz_list = ['sz{:0>6d}'.format(i) for i in range(1,2999)]            #深圳股票代码，目前从‘000001’至‘002999’
-    cy_list = ['sz{:0>6d}'.format(i) for i in range(300000,300999)]     #创业板股票代码，目前从‘300000’至‘300999’
-    kc_list = ['sh{:0>6d}'.format(i) for i in range(688000, 688999)]    #科创板股票
-    stock_all = sh_list+sz_list+cy_list+kc_list                 #拼接
+    """
+        获取沪深上市公司基本情况
+    Parameters
+    date:日期YYYY-MM-DD，默认为上一个交易日，目前只能提供2016-08-09之后的历史数据
 
-    [_getStock(code) for code in stock_all]
-# endregion
+    Return
+    --------
+    DataFrame
+               code,代码
+               name,名称
+               industry,细分行业
+               area,地区
+               pe,市盈率
+               outstanding,流通股本
+               totals,总股本(万)
+               totalAssets,总资产(万)
+               liquidAssets,流动资产
+               fixedAssets,固定资产
+               reserved,公积金
+               reservedPerShare,每股公积金
+               eps,每股收益
+               bvps,每股净资
+               pb,市净率
+               timeToMarket,上市日期
+    """
+    url = 'http://file.tushare.org/tsdata/all.csv'
+    request = Request(url)
+
+    text = urlopen(request, timeout=10).read()
+    text = text.decode('GBK')
+    text = text.replace('--', '')
+    df = pd.read_csv(StringIO(text), dtype={'code': 'object'})
+    df = df.set_index('code')
+    return df
 
 
-#判断股票是否退市（每判断一次都要访问一个网页，效率有点低）
-def getStauts(code):
-    url="http://quote.eastmoney.com/"
-    if code.startswith('6'):
-        url += 'sh%s.html'%code
-    elif code.startswith('30') or code.startswith('00'):
-        url += 'sz%s.html'%code
-    page = urlopen(url).read().decode('gbk')
-    soup = BeautifulSoup(page, 'html5lib')
-    status = soup.find(id='price9')
-    if 'data-bind' in status.attrs.keys():      #status有'data-bind'字段说明未退市，否则为已退市或停牌
-        return True
-    else:
-        return False
+
+
 
 #将机构代码、机构名称写入broker_info表（每月运行）
 def getBrokerInfo():
