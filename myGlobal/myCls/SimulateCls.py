@@ -1,24 +1,23 @@
 #!/bin/usr/env python
 #-*- coding: utf-8 -*-
 
-from myGlobal.myCls.mylogger import mylogger
-from myGlobal.myCls.Stock import Stock
 import myGlobal.globalFunction as gf
+import myGlobal.ftypeOperate as fto
 import myGlobal.myTime as mTime
+from myGlobal.myCls.Stock import Stock
 from myGlobal.myCls.msql import DBHelper
-import datetime
-from abc import ABC,abstractmethod,ABCMeta
 from myGlobal.myCls.mylogger import mylogger
 from myGlobal.myCls.BrokerCls import Broker
 
 
-
 #根据输入的机构代码，开始、结束日期，写入tablename表
 class BrokerSimulate(Broker):
-    def __init__(self,broker_code,ts_date, tablename='simulate_buy',ftype=1):
+    def __init__(self,broker_code,ts_date, tablename='simulate_buy',ftype=1,amount=1000):
         Broker(broker_code,ts_date)
         self._tablename = tablename
         self._ftype= ftype
+        self._amount = amount
+        self._buystocklist = self.getBuyStock()
 
     # region _createtable     创建tablename表
     def _createtable(self,tablename):
@@ -48,34 +47,52 @@ class BrokerSimulate(Broker):
             mylogger.error(f"创建{tablename}表出错")
     # endregion
 
-    def simulatebuy(self, stock_code,amount=1000):
+    def simulateBuy(self):
+        if len(self._buystocklist) > 0:
+            for stockcode in self._buystocklist:
+                #1.查看simulateflag是否已模拟，如果模拟了，则什么都不做
+                if not self.__is_simulate(stockcode,self._ftype):
+                    #2.模拟买入，并返回一个元组
+                    t = self._stockbuy(stockcode,self.amount)
+                    #3.将元组存入数据库
+                    if t is not None:
+                        pass
+                    #4.更新flag值,并存入数据库
+                else:
+                    pass
+
+                print(f"模拟{self.brokercode}于{self.ts_date}购买{stockcode}成功，模拟方式：{self._ftype}，购买数量：{self._amount}")
+
+    def _stockbuy(self, stock_code):
         if stock_code.startswith('code_error'):               #非沪深A股
             return
         if DBHelper().isTableExists(self._tablename) is False:        #表不存在，则创建表
             self._createtable(self._tablename)
-        # 取出数据库broker_buy_stock_info中simulate_flag状态，然后进行判断
-        simulate_flag = self.__get_simulate_flag(stock_code)
-        #判断simulate_flag在ftype是否写入过数据库
-        if self.__is_simulate(simulate_flag,self.ftype) is True:        #已写入过数据库
-            return
-        else:
-
-            result = self.__CaculateStock(stock_code,amount, self.ftype)
-            self.__recordToSql(result)
-            #把broker_buy_stock_info表中simulate_flag状态的第ftype位（从右往左数）置为1 ，表示已计算
-            self.__update_brokerbuystockinfo(self.ftype)
+        result = self.__CaculateStock(stock_code, self._ftype,self._amount)
+        self.__recordToSql(result)
+        #把broker_buy_stock_info表中simulate_flag状态的第ftype位（从右往左数）置为1 ，表示已计算
+        self.__update_brokerbuystockinfo(self.ftype)
 
 
-    def __is_simulate(self, t, ftype):
-        if t & (1<<(ftype-1))>0:            #数字t的第ftype位为1
+    def __is_simulate(self,stockcode,ftype,key=1):
+        simulate_flag = self.__get_simulate_flag(stockcode)
+        if fto.judgeftype(simulate_flag,ftype,key):
             return True
         else:
             return False
 
 
-    def __get_simulate_flag(self,stock_code):
-        sql = "SELECT simulate_flag FROM broker_buy_stock_info as a,broker_buy_summary as b where b.ts_date='%s' and b.broker_code='%s' and a.broker_buy_summary_id=b.id and a.stock_code like '%s'" % (
-        self._ts_date, self._broker_code, '%%%s%%' % stock_code[2:9])
+    def __get_simulate_flag(self,stockcode):
+        sql = f"""
+            SELECT simulate_flag FROM
+            broker_buy_stock_info AS a
+            INNER JOIN
+            broker_buy_summary AS b ON a.broker_buy_summary_id = b.id
+            WHERE
+            broker_code = '{self.brokercode}'
+            AND ts_date = '{self.ts_date}'
+            AND stock_code = '{gf.symbol_to_sqlcode(stockcode)}';
+        """
         t = DBHelper().fetchone(sql)[0]
         return t
 
@@ -88,13 +105,13 @@ class BrokerSimulate(Broker):
 
 
     #计算相应股票数据，返回元组，后续存入数据库
-    def __CaculateStock(self, stock_code,amount, ftype):
+    def __CaculateStock(self, stock_code):
         # switch = {
         #     1: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype),
         #     2: self.__strategyOpenbuyOpensell(stock_code,ts_date,amount,ftype)
         # }
-        # return switch.get(ftype)
-        return self.__strategyOpenbuyOpensell(stock_code,self._ts_date,amount,ftype)
+        # return switch.get(self._ftype)
+        return self.__strategy1(stock_code,self._ts_date,self._ftype,self._amount)
 
     def __recordToSql(self,t):
         #策略找不到相关历史数据，t的位置返回None
@@ -107,7 +124,7 @@ class BrokerSimulate(Broker):
         ftype= t[13]
         amount=t[10]
         sql = "select * from %s where ts_date='%s' and broker_code='%s' and stock_code='%s' and ftype='%s'" \
-             % (tablename,ts_date,broker_code,stock_code,ftype)
+             % (self._tablename,ts_date,broker_code,stock_code,ftype)
         result = DBHelper().fetchall(sql)
         if len(result)==0:
             sql2 = "insert into %s values %s" %(self._tablename,t)
@@ -124,29 +141,29 @@ class BrokerSimulate(Broker):
 
 
     # region 策略1(2)：上榜后第二天开盘买，第三(四)天开盘卖
-    def __strategyOpenbuyOpensell(self,stock_code,ts_date,amount,ftype):
+    def __strategy1(self,stock_code):
         stockA = Stock(stock_code,self.ts_date)     #实例化股票对象，以便后续计算
-        t_price = stockA.next_some_days(int(ftype)+2)          #从买入当天，取3天数据
-        if len(t_price)!= int(ftype)+2:
-            mylogger().error("无法获取%s于%s买入后%s天交易数据"%(stock_code,ts_date,int(ftype)+2))
+        t_price = stockA.next_some_days(int(self._ftype)+2)          #从买入当天，取3天数据
+        if len(t_price)!= int(self._ftype)+2:
+            mylogger().error("无法获取%s于%s买入后%s天交易数据"%(stock_code,self._ts_date,int(self._ftype)+2))
             return
         #第二天开盘涨幅大于8%，不买
         if gf.ChangeRange(t_price[0].close_price,t_price[1].open_price) > 0.08:
             return
         #计算返回值信息
-        ts_date = ts_date
+        ts_date = self._ts_date
         broker_code = self.broker_code
         stock_code = stock_code
         stock_name = stockA.name
         buy_date = mTime.diffDay(ts_date,1)
-        sell_date = mTime.diffDay(ts_date,int(ftype)+1)
+        sell_date = mTime.diffDay(ts_date,int(self._ftype)+1)
         buy_price = t_price[1].open_price
-        sell_price = t_price[int(ftype)+1].open_price
-        get_day = ftype             #持有天数
-        amount= amount
+        sell_price = t_price[int(self._ftype)+1].open_price
+        get_day = self._ftype             #持有天数
+        amount= self._amount
         gainmoney = round((sell_price-buy_price) * amount, 2)
         gainpercent = round(gainmoney/(buy_price*amount), 4)
-        ftype = ftype
+        ftype = self._ftype
         getscore = self.__cacuscore(ftype,gainmoney,gainpercent)
         #第一个字段随便设个int值作为id（会自动增长）
         return 0,ts_date,broker_code,stock_code,stock_name,buy_date,sell_date,buy_price,sell_price,get_day,amount,gainmoney,gainpercent,ftype,getscore

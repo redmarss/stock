@@ -80,6 +80,12 @@ def update_ftype(brokercode,stockcode,ts_date,value):
 def judgeftype(value,index,key=1):
     # if list_bin[len(list_bin)-index] == str(key):
     #     return value
+    if not isinstance(value,int):
+        try:
+            value = int(value)
+        except:
+            print(f"{value}无法转换成int类型")
+            return False
     if index > FTYPE_LEN or index < 1:
         print(f"index参数超过{FTYPE_LEN}，本函数只支持{FTYPE_LEN}位,最小不能低于1")
         return False
