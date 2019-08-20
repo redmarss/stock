@@ -11,12 +11,10 @@ from myGlobal.myCls.mylogger import mylogger
 from myGlobal.myCls.SimulateCls import BrokerSimulate
 from myGlobal.myCls.Stock import Stock
 
-class Strategy(BrokerSimulate):
-    def __init__(self,brokercode,stockcode,tsdate,ftype,amount):
-        #BrokerSimulate(brokercode,tsdate,ftype,amount)
-        #Stock(stockcode,tsdate)
-        pass
-
+class Strategy(BrokerSimulate,Stock):
+    def __init__(self,stockcode,tsdate,brokercode,ftype,amount):
+        BrokerSimulate.__init__(self,brokercode,tsdate,ftype,amount)
+        Stock.__init__(self,stockcode,tsdate)
 
 
     def strategy(self):
@@ -30,7 +28,7 @@ class Strategy(BrokerSimulate):
     def __strategyOpenbuyOpensell(self):
         t_price = self.next_some_days(self._ftype + 2)  # 从买入当天，取ftype+2天数据
         if len(t_price) != int(self._ftype) + 2:
-            mylogger().error(f"无法获取{self.brokercode}于{self.ts_date}买入后{self._ftype+2}天交易数据")
+            mylogger().error(f"无法获取{self.code}于{self.ts_date}买入后{self._ftype+2}天交易数据")
             return
         # 第二天开盘涨幅大于8%，不买
         if gf.ChangeRange(t_price[0].close_price, t_price[1].open_price) > 0.08:
@@ -56,6 +54,4 @@ class Strategy(BrokerSimulate):
 
 
 if __name__ == '__main__':
-    print()
-    #Strategy("80065939","600000","2017-09-12","1","1000")
-    Strategy("brokercode","stockcode","ts_date",1,1000)
+    print(Strategy("600000","2017-09-12","80065939",2,2000).strategy())

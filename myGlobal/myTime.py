@@ -6,7 +6,7 @@ import time
 import myGlobal.globalFunction as gf
 from myGlobal.myCls.msql import DBHelper
 
-@gf.typeassert(strdate=str)
+
 def isDate(strdate):
     try:
         date = datetime.datetime.strptime(strdate,"%Y-%m-%d")

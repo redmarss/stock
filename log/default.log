@@ -28,3 +28,15 @@
     where broker_buy_stock_info.broker_buy_summary_id=broker_buy_summary.id 
     and stock_code='000063.SZ' and ts_date='2017-03-32' and broker_code='80100185'
     ]
+[2019-08-20 23:20:28]-[\stock\log\default.log]-[ERROR]:[无法获取80065939于2017-09-12买入后1002天交易数据]
+[2019-08-20 23:20:28]-[\stock\log\default.log]-[ERROR]:[无法获取80065939于2017-09-12买入后1002天交易数据]
+[2019-08-20 23:20:28]-[\stock\log\default.log]-[ERROR]:[无法获取80065939于2017-09-12买入后1002天交易数据]
+[2019-08-20 23:21:56]-[\stock\log\default.log]-[ERROR]:[无法获取80065939于2017-09-12买入后1002天交易数据]
+[2019-08-20 23:21:56]-[\stock\log\default.log]-[ERROR]:[无法获取80065939于2017-09-12买入后1002天交易数据]
+[2019-08-20 23:21:56]-[\stock\log\default.log]-[ERROR]:[无法获取80065939于2017-09-12买入后1002天交易数据]
+[2019-08-20 23:28:53]-[\stock\log\default.log]-[ERROR]:[无法获取80065939于2017-09-12买入后4天交易数据]
+[2019-08-20 23:28:53]-[\stock\log\default.log]-[ERROR]:[无法获取80065939于2017-09-12买入后4天交易数据]
+[2019-08-20 23:28:53]-[\stock\log\default.log]-[ERROR]:[无法获取80065939于2017-09-12买入后4天交易数据]
+[2019-08-20 23:29:45]-[\stock\log\default.log]-[ERROR]:[无法获取sh600000于2017-09-12买入后4天交易数据]
+[2019-08-20 23:29:45]-[\stock\log\default.log]-[ERROR]:[无法获取sh600000于2017-09-12买入后4天交易数据]
+[2019-08-20 23:29:45]-[\stock\log\default.log]-[ERROR]:[无法获取sh600000于2017-09-12买入后4天交易数据]

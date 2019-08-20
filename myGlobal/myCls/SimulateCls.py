@@ -12,12 +12,12 @@ from myGlobal.myCls.BrokerCls import Broker
 
 #根据输入的机构代码，开始、结束日期，写入tablename表
 class BrokerSimulate(Broker):
-    def __init__(self,broker_code,ts_date, tablename='simulate_buy',ftype=1,amount=1000):
-        Broker(broker_code,ts_date)
+    def __init__(self,broker_code,ts_date, ftype=1,amount=1000,tablename='simulate_buy'):
+        Broker.__init__(self,broker_code,ts_date)
         self._tablename = tablename
         self._ftype= ftype
         self._amount = amount
-        self._buystocklist = self.getBuyStock()
+        self._buystocklist = self._getBuyStock()
 
     # region _createtable     创建tablename表
     def _createtable(self,tablename):

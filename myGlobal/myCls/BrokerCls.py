@@ -9,11 +9,10 @@ class Broker(object):
     def __init__(self,broker_code,ts_date):
         self._broker_code = broker_code
         self._ts_date = ts_date
-                #self._getBuyStock()
 
     #获取该日期broker_code购买的股票列表
-    @property
-    def getBuyStock(self):
+
+    def _getBuyStock(self):
         stocklist = []
         #查询当天该机构购买的股票列表
         sql_brokerbuy = f'''SELECT * FROM 
