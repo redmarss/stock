@@ -8,18 +8,15 @@
 import myGlobal.myTime as mt
 import myGlobal.globalFunction as gf
 from myGlobal.myCls.mylogger import mylogger
-from myGlobal.myCls.BrokerCls import Broker
+from myGlobal.myCls.SimulateCls import BrokerSimulate
 from myGlobal.myCls.Stock import Stock
 
-class Strategy(Broker,Stock):
+class Strategy(BrokerSimulate):
     def __init__(self,brokercode,stockcode,tsdate,ftype,amount):
-        Broker(brokercode,tsdate)
-        Stock(stockcode,tsdate)
-        self._amount = amount
-        try:
-            self._ftype = int(ftype)
-        except:
-            print(f"{ftype}无法转换为int类型")
+        #BrokerSimulate(brokercode,tsdate,ftype,amount)
+        #Stock(stockcode,tsdate)
+        pass
+
 
 
     def strategy(self):
@@ -55,3 +52,10 @@ class Strategy(Broker,Stock):
         getscore = self.__cacuscore(ftype, gainmoney, gainpercent)
         # 第一个字段随便设个int值作为id（会自动增长）
         return 0, ts_date, broker_code, stock_code,stock_name,buy_date,sell_date,buy_price,sell_price,get_day,amount,gainmoney,gainpercent,ftype,getscore
+
+
+
+if __name__ == '__main__':
+    print()
+    #Strategy("80065939","600000","2017-09-12","1","1000")
+    Strategy("brokercode","stockcode","ts_date",1,1000)
