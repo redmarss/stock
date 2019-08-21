@@ -136,7 +136,7 @@ class BrokerSimulate(Broker):
                 mylogger().error()
 
     #根据策略类型及其他相关数据计算此次得分
-    def __cacuscore(self,ftype,gainmoney,gainpercent):
+    def _cacuscore(self,ftype,gainmoney,gainpercent):
         return gainpercent
 
 
@@ -173,5 +173,3 @@ class BrokerSimulate(Broker):
 
 
 
-if __name__ == '__main__':
-    BrokerSimulate('80154611','2017-04-12',1,1000)
