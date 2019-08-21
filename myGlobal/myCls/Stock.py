@@ -81,7 +81,8 @@ class Stock(object):
 
     @property
     def stockname(self):
-        sql = f'select stockname from stock_basic_table where stockcode="{self._stockcode}"'
+        stockcode = gf.code_to_symbol(self._stockcode)
+        sql = f'select stockname from stock_basic_table where stockcode="{stockcode}"'
         t = DBHelper().fetchone(sql)[0]
         return t
 
