@@ -15,7 +15,7 @@ class Broker(object):
     def _getBuyStock(self):
         stocklist = []
         #查询当天该机构购买的股票列表
-        sql_brokerbuy = f'''SELECT * FROM 
+        sql_brokerbuy = f'''SELECT stock_code,stock_name,broker_code,ts_date FROM 
                             broker_buy_stock_info info
                             INNER JOIN
                             broker_buy_summary summary 

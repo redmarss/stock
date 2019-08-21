@@ -62,26 +62,26 @@ class Stock(object):
                 mylogger().error(f"语句{sql}错误，请检查")
                 return StockError(args[0], args[1], 'sql_error')
 
-    def __init__(self, code, ts_date):
+    def __init__(self, stockcode, ts_date):
         self._ts_date = ts_date
-        self._code = gf.code_to_symbol(code)
+        self._stockcode = gf.code_to_symbol(stockcode)
 
         # 获取股票当日交易信息
-        sql_stock = f'select * from stock_trade_history_info where stock_code="{self._code}" and ts_date="{self._ts_date}"'
+        sql_stock = f'select * from stock_trade_history_info where stock_code="{self._stockcode}" and ts_date="{self._ts_date}"'
         self.__tuplestock = DBHelper().fetchone(sql_stock)
 
     # region property
     @property
-    def code(self):
-        return self._code
+    def stockcode(self):
+        return self._stockcode
 
     @property
     def ts_date(self):
         return self._ts_date
 
     @property
-    def name(self):
-        sql = f'select stockname from stock_basic_table where stockcode="{self._code}"'
+    def stockname(self):
+        sql = f'select stockname from stock_basic_table where stockcode="{self._stockcode}"'
         t = DBHelper().fetchone(sql)[0]
         return t
 
@@ -126,8 +126,8 @@ class Stock(object):
         SELECT broker_code FROM
         broker_buy_summary INNER JOIN broker_buy_stock_info 
         WHERE broker_buy_stock_info.broker_buy_summary_id = broker_buy_summary.id
-        AND stock_code LIKE '{gf.symbol_to_sqlcode(self.code)}%'
-        AND ts_date = '{self.ts_date}';
+        AND stock_code LIKE '{gf.symbol_to_sqlcode(self._stockcode)}%'
+        AND ts_date = '{self._ts_date}';
         """
         t = DBHelper().fetchall(sql)
         for i in range(len(t)):
@@ -147,15 +147,15 @@ class Stock(object):
             startdate = self._ts_date
         else:
             if myTime.isDate(startdate) is False:
-                return StockError(self._code,'date_error','date_error').next_some_days(days)
+                return StockError(self._stockcode,'date_error','date_error').next_some_days(days)
 
         stocklist=[]
         i = 0
         date = startdate
         #当stocklist函数长度小于days且数据库中有数据
         while len(stocklist) < days:
-            if gf.stock_is_tradeday(self._code, date):
-                s = Stock(self._code, date)
+            if gf.stock_is_tradeday(self._stockcode, date):
+                s = Stock(self._stockcode, date)
                 stocklist.append(s)
             date = myTime.diffDay(date, 1)          #已自动跳过双休日
             if date is None:
@@ -167,37 +167,9 @@ class Stock(object):
                 break
         return stocklist
 
-    #计算买入卖出策略，stype为各种策略编号
-    #返回ts_date,broker_code,stock_code,buy_date,sell_date,buy_price,sell_price,amount,gainmoney,gainpercent
-    def strategy(self, broker_code, amount, ftype):
-        # if self._ts_date is None:
-        #     return
-        #第一种策略:第二天开盘买，第三天开盘卖
-        if ftype == 1:
-            return self.__strategy1(broker_code,amount)
 
 
-    #实现第一种策略:第二天开盘买，第三天开盘卖
-    def __strategy1(self, broker_code, amount):
-        dict1 = {}
-        price_list = self.next_some_days(3)
-        if len(price_list) != 3:
-            return
-        #第二天开盘涨幅超过8%，不买了
-        if gf.ChangeRange(price_list[0].close_price, price_list[1].open_price) > 0.08:
-            return
-        dict1['ts_date'] = self._ts_date
-        dict1['broker_code'] = broker_code
-        dict1['stock_code'] = self._code
-        dict1['buy_date'] = myTime.diffDay(self._ts_date, 1)
-        dict1['sell_date'] = myTime.diffDay(self._ts_date, 2)
-        dict1['buy_price'] = price_list[1].open_price
-        dict1['sell_price'] = price_list[2].open_price
-        dict1['amount'] = amount
-        dict1['gainmoney'] = round((dict1['sell_price'] - dict1['buy_price']) * amount, 2)
-        dict1['gainpercent'] = round(dict1['gainmoney']/(dict1['buy_price']*amount), 2)
-        dict1['ftype'] = '1'
-        return dict1
+
 
     # @gf.typeassert(days=int)
     # def getStockInfo(self, days=7):

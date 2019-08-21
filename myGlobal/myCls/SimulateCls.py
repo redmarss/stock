@@ -13,7 +13,8 @@ from myGlobal.myCls.BrokerCls import Broker
 #根据输入的机构代码，开始、结束日期，写入tablename表
 class BrokerSimulate(Broker):
     def __init__(self,broker_code,ts_date, ftype=1,amount=1000,tablename='simulate_buy'):
-        Broker.__init__(self,broker_code,ts_date)
+        self._broker_code = broker_code
+        self._ts_date = ts_date
         self._tablename = tablename
         self._ftype= ftype
         self._amount = amount
@@ -172,3 +173,5 @@ class BrokerSimulate(Broker):
 
 
 
+if __name__ == '__main__':
+    BrokerSimulate('80154611','2017-04-12',1,1000)

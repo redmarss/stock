@@ -35,7 +35,7 @@ def code_to_symbol(code):
     '''
     if code is None:
         return "code_error(None)"
-    if code.startswith(('1','2','4','5','7','8','9')) or code[-6] in ['1','2','4','5','7','8','9']:
+    if code.startswith(('1','2','4','5','7','8','9')):
         return "code_error(NotA)"                 #去除以2,9开头的代码（B股）
     code = str.lower(code)
     if len(code) == 8 and code.startswith(('sh', 'sz')):              #形似“sh600000,sz000001”，则原样返回

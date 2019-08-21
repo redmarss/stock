@@ -13,8 +13,11 @@ from myGlobal.myCls.Stock import Stock
 
 class Strategy(BrokerSimulate,Stock):
     def __init__(self,stockcode,tsdate,brokercode,ftype,amount):
-        BrokerSimulate.__init__(self,brokercode,tsdate,ftype,amount)
-        Stock.__init__(self,stockcode,tsdate)
+        self._stockcode = stockcode
+        self._ts_date = tsdate
+        self._brokercode = brokercode
+        self._ftype = ftype
+        self._amount = amount
 
 
     def strategy(self):
@@ -26,18 +29,18 @@ class Strategy(BrokerSimulate,Stock):
 
     #策略1:第二天开盘买入，第三天开盘卖出；策略2：第二天开盘买入，第四天开盘卖出
     def __strategyOpenbuyOpensell(self):
-        t_price = self.next_some_days(self._ftype + 2)  # 从买入当天，取ftype+2天数据
+        t_price = self.next_some_days(self._ts_date,self._ftype + 2)  # 从买入当天，取ftype+2天数据
         if len(t_price) != int(self._ftype) + 2:
-            mylogger().error(f"无法获取{self.code}于{self.ts_date}买入后{self._ftype+2}天交易数据")
+            mylogger().error(f"无法获取{self._stockcode}于{self._ts_date}买入后{self._ftype+2}天交易数据")
             return
         # 第二天开盘涨幅大于8%，不买
         if gf.ChangeRange(t_price[0].close_price, t_price[1].open_price) > 0.08:
             return
         # 计算返回值信息
-        ts_date = self.ts_date
-        broker_code = self.brokercode
-        stock_code = self.code
-        stock_name = self.name
+        ts_date = self._ts_date
+        broker_code = self._brokercode
+        stock_code = self._stockcode
+        stock_name = self.stockname
         buy_date = mt.diffDay(ts_date, 1)
         sell_date = mt.diffDay(ts_date, int(self._ftype) + 1)
         buy_price = t_price[1].open_price
@@ -54,4 +57,4 @@ class Strategy(BrokerSimulate,Stock):
 
 
 if __name__ == '__main__':
-    print(Strategy("600000","2017-09-12","80065939",2,2000).strategy())
+    print(Strategy("600000","2017-09-12","80065939",1,1000).strategy())
