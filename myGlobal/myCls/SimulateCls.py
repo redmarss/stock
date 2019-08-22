@@ -141,6 +141,7 @@ class BrokerSimulate(Broker):
 
 
 
+
     # region 策略1(2)：上榜后第二天开盘买，第三(四)天开盘卖
     def __strategy1(self,stock_code):
         stockA = Stock(stock_code,self.ts_date)     #实例化股票对象，以便后续计算
