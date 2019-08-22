@@ -59,3 +59,9 @@ class StockError(object):
             li.append(StockError('code_error', 'date_error'))
         return li
 
+class BrokerSimulateError(object):
+    def __init__(self, brokercode, ts_date,msg='error'):
+        self._brokercode = brokercode
+        self._ts_date = ts_date
+        self._msg = msg
+

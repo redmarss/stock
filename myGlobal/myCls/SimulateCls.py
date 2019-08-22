@@ -8,18 +8,42 @@ from myGlobal.myCls.Stock import Stock
 from myGlobal.myCls.msql import DBHelper
 from myGlobal.myCls.mylogger import mylogger
 from myGlobal.myCls.BrokerCls import Broker
+from myGlobal.myCls.ErrorCls import BrokerSimulateError
 
 
 #根据输入的机构代码，开始、结束日期，写入tablename表
 class BrokerSimulate(Broker):
-    def __init__(self,broker_code,ts_date, ftype=1,amount=1000,tablename='simulate_buy'):
-        self._broker_code = broker_code
+    def __new__(cls, *args, **kwargs):
+        '''
+        更新日期：20190613
+        判断code是否合规；
+        判断日期是否合规；
+        合规后运行init函数，否则报错并退出
+        :param args[0]:机构代码
+        :param args[1]: 交易日期
+        :param args[2]: 模拟策略类型
+        :param args[3]: 模拟买入数量
+        :param args[4]: 模拟表，默认为:simulate_buy
+        :return: 跳转至__init__函数
+        '''
+        #判断args[0]:brokercode是否合法
+
+        #判断args[1]:ts_date是否合法
+        if not mTime.isDate(args[1]):
+            print(f"{args[1]}非日期格式")
+            return BrokerSimulateError(args[0],'date_error')
+        else:
+            return super().__new__(cls)
+
+
+    def __init__(self, brokercode, ts_date, ftype=1,amount=1000,tablename='simulate_buy'):
+        self._brokercode = brokercode
         self._ts_date = ts_date
         self._tablename = tablename
         self._ftype= ftype
         self._amount = amount
         self._buystocklist = self._getBuyStock()
-
+        print(self._brokercode)
     # region _createtable     创建tablename表
     def _createtable(self,tablename):
         sql_create = f"""
@@ -173,3 +197,5 @@ class BrokerSimulate(Broker):
 
 
 
+if __name__ == '__main__':
+    BrokerSimulate("80000000","2019-03-151")

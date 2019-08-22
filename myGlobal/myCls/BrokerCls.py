@@ -6,8 +6,8 @@ from myGlobal.myCls.msql import DBHelper
 class Broker(object):
 
     #构造函数，参数为broker_code
-    def __init__(self,broker_code,ts_date):
-        self._broker_code = broker_code
+    def __init__(self,brokercode,ts_date):
+        self._brokercode = brokercode
         self._ts_date = ts_date
 
     #获取该日期broker_code购买的股票列表
@@ -21,7 +21,7 @@ class Broker(object):
                             broker_buy_summary summary 
                             ON info.broker_buy_summary_id = summary.id
                             WHERE
-                            summary.broker_code = '{self._broker_code}'
+                            summary.broker_code = '{self._brokercode}'
                             AND summary.ts_date = '{self._ts_date}';'''
         t_broker_buy = DBHelper().fetchall(sql_brokerbuy)
         if len(t_broker_buy) > 0:
@@ -33,7 +33,7 @@ class Broker(object):
 
     @property
     def brokercode(self):
-        return self._broker_code
+        return self._brokercode
 
     @property
     def ts_date(self):
