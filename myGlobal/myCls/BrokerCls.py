@@ -1,17 +1,35 @@
-#!/bin/usr/env python
+#!/usr/bin/env/python
 # -*- coding:utf-8 -*-
+# Author:zwd
+# DateTime:2019/8/25-00:01
+# Project:stock
+# File:BrokerCls
 import myGlobal.globalFunction as gf
+import myGlobal.myTime as mt
+from myGlobal.myCls.ErrorCls import BrokerError
 from myGlobal.myCls.msql import DBHelper
 
 class Broker(object):
+    def __new__(cls, *args, **kwargs):
+        '''
+        初始化Broker类并判断参数是否合规
+        :param args:args[0]:机构代码，args[0]:交易日期
+        :param kwargs:
+        :return: 前往init函数
+        '''
+        if not mt.isDate(args[1]):
+            return BrokerError(args[0],"date_error")
+        elif len(args[0]) != 8:           #机构代码长度应为8
+            return BrokerError("BrokerCodeError", args[1])
+        else:
+            return super.__new__(cls)
 
-    #构造函数，参数为broker_code
+    #构造函数，参数为brokercode,ts_date
     def __init__(self,brokercode,ts_date):
         self._brokercode = brokercode
         self._ts_date = ts_date
 
     #获取该日期broker_code购买的股票列表
-
     def _getBuyStock(self):
         stocklist = []
         #查询当天该机构购买的股票列表
@@ -39,27 +57,6 @@ class Broker(object):
     def ts_date(self):
         return self._ts_date
 
-
-
-    # #模拟买入并写入数据库
-    # def simulate(self,tablename,ts_date,amount=1000,ftype=1):
-    #
-    #     if len(self.stocklist) > 0:
-    #         for stock_code in self.stocklist:
-    #             #调用simulatebuy函数，如果没有，调用子函数（BrokerSimulate）的
-    #             self.simulatebuy(tablename,stock_code,ts_date,amount,ftype)
-    #     else:
-    #         print("%s机构%s没有买入股票" % (self.broker_code,self.ts_date))
-    #
-    # # 根据ts_date，计算日期前所有模拟交易的分值，并返回最终分数写入数据库
-    # def score(self,ftype=1):
-    #     #获取simulate表中，该日期前该机构的得分，存入一个List中
-    #     sql = "select getscore from simulate where broker_code='%s' and ts_date<='%s'" %(self.broker_code,self.ts_date)
-    #     score_list = []
-    #     t = DBHelper().execute(sql)
-    #     for i in range(len(t)):
-    #         score_list.append(t[i][0])
-    #     print(score_list)
 
 
 

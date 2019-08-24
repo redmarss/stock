@@ -26,12 +26,12 @@ class BrokerSimulate(Broker):
         :param args[4]: 模拟表，默认为:simulate_buy
         :return: 跳转至__init__函数
         '''
-        #判断args[0]:brokercode是否合法
-
         #判断args[1]:ts_date是否合法
         if not mTime.isDate(args[1]):
-            print(f"{args[1]}非日期格式")
-            return BrokerSimulateError(args[0],'date_error')
+            return BrokerSimulateError(args[0], 'date_error')
+        #判断args[0]:brokercode是否合法
+        elif len(args[0]) != 8:                  #brokercode长度为8
+            return BrokerSimulateError("brokercode_error", args[1])
         else:
             return super().__new__(cls)
 
@@ -43,7 +43,7 @@ class BrokerSimulate(Broker):
         self._ftype= ftype
         self._amount = amount
         self._buystocklist = self._getBuyStock()
-        print(self._brokercode)
+
     # region _createtable     创建tablename表
     def _createtable(self,tablename):
         sql_create = f"""

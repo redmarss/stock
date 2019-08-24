@@ -65,3 +65,21 @@ class BrokerSimulateError(object):
         self._ts_date = ts_date
         self._msg = msg
 
+class BrokerError(object):
+    def __init__(self,brokercode,ts_date,msg='error'):
+        self._brokercode = brokercode
+        self._ts_date = ts_date
+        self._msg = msg
+
+    def _getBuyStock(self):
+        return []
+
+    @property
+    def brokercode(self):
+        return self._brokercode
+
+    @property
+    def ts_date(self):
+        return self._ts_date
+
+
