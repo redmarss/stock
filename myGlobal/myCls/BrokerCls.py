@@ -6,8 +6,10 @@
 # File:BrokerCls
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as mt
+from myGlobal.myCls.mylogger import mylogger
 from myGlobal.myCls.ErrorCls import BrokerError
 from myGlobal.myCls.msql import DBHelper
+
 
 class Broker(object):
     def __new__(cls, *args, **kwargs):
@@ -18,11 +20,19 @@ class Broker(object):
         :return: 前往init函数
         '''
         if not mt.isDate(args[1]):
-            return BrokerError(args[0],"date_error")
-        elif len(args[0]) != 8:           #机构代码长度应为8
-            return BrokerError("BrokerCodeError", args[1])
-        else:
-            return super.__new__(cls)
+            print(f"{args[1]}不是日期格式")
+            return BrokerError(args[0], "date_error")
+        sql_broker = f"select broker_code from broker_info where broker_code={args[0]}"
+        try:
+            t = DBHelper().execute(sql_broker)
+            if len(t) == 0:
+                print(f"{args[0]}不是合法的机构代码")
+                return BrokerError("BrokerCodeError", args[1])
+            else:
+                return super.__new__(cls)
+        except:
+            mylogger().error(f"数据库语句错误：{sql_broker}")
+            return BrokerError(args[0],args[1],"sql_error")
 
     #构造函数，参数为brokercode,ts_date
     def __init__(self,brokercode,ts_date):

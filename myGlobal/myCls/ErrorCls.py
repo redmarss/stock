@@ -53,6 +53,9 @@ class StockError(object):
     def volume(self):
         return 0.00
 
+    def getbuyBroker(self):
+        return [self._msg]
+
     def next_some_days(self,startdate,days=7):
         li = []
         for i in range(days):
