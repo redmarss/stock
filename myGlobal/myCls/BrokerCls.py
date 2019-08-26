@@ -32,8 +32,11 @@ class Broker(object):
             elif not mt.isDate(args[1]):
                 print(f"'{args[1]}'不是有效的日期格式")
                 return BrokerError(args[0], "date_error","date_error")
+            elif gf.is_holiday(args[1]):
+                print(f"{args[1]}是休息日")
+                return BrokerError(args[0], "holiday", "holiday")
             else:
-                return super().__new__(cls)
+                return object.__new__(cls)
         except Exception as e:
             print(e)
             mylogger().error(f"数据库语句错误：{sql_broker}")
@@ -73,12 +76,7 @@ class Broker(object):
         return self._ts_date
 
 
-if __name__ == '__main__':
-    b = Broker("10000018","2019-08-112")
-    print(b)
-    print(b.brokercode)
-    print(b.ts_date)
-    print(b.msg)
+
 
 
 

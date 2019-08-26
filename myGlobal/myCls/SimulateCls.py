@@ -9,6 +9,7 @@ from myGlobal.myCls.msql import DBHelper
 from myGlobal.myCls.mylogger import mylogger
 from myGlobal.myCls.BrokerCls import Broker
 from myGlobal.myCls.ErrorCls import BrokerSimulateError
+from myGlobal.myCls.ErrorCls import BrokerError
 
 
 #根据输入的机构代码，开始、结束日期，写入tablename表
@@ -26,25 +27,39 @@ class BrokerSimulate(Broker):
         :param args[4]: 模拟表，默认为:simulate_buy
         :return: 跳转至__init__函数
         '''
-        sql_broker = f"select broker_code from broker_info where broker_code='{args[0]}'"  # 查询机构代码是否合法语句
-        try:
-            t = DBHelper().fetchall(sql_broker)
-            if len(t) == 0:
-                if not mt.isDate(args[1]):
-                    print(f"'{args[0]}'不是合法机构代码且'{args[1]}'不是合法日期格式")
-                    return BrokerSimulateError("broker_error", "date_error", "broker_date_all_error")
-                else:
-                    print(f"{args[0]}不是合法的机构代码")
-                    return BrokerSimulateError("broker_error", args[1], "broker_error")
-            elif not mt.isDate(args[1]):
-                print(f"'{args[1]}'不是有效的日期格式")
-                return BrokerSimulateError(args[0], "date_error", "date_error")
+        # sql_broker = f"select broker_code from broker_info where broker_code='{args[0]}'"  # 查询机构代码是否合法语句
+        # try:
+        #     t = DBHelper().fetchall(sql_broker)
+        #     if len(t) == 0:
+        #         if not mt.isDate(args[1]):
+        #             print(f"'{args[0]}'不是合法机构代码且'{args[1]}'不是合法日期格式")
+        #             return BrokerSimulateError("broker_error", "date_error", "broker_date_all_error")
+        #         else:
+        #             print(f"{args[0]}不是合法的机构代码")
+        #             return BrokerSimulateError("broker_error", args[1], "broker_error")
+        #     elif not mt.isDate(args[1]):
+        #         print(f"'{args[1]}'不是有效的日期格式")
+        #         return BrokerSimulateError(args[0], "date_error", "date_error")
+        #     else:
+        #         return super().__new__(cls)
+        # except Exception as e:
+        #     print(e)
+        #     mylogger().error(f"数据库语句错误：{sql_broker}")
+        #     return BrokerSimulateError(args[0], args[1], "sql_error")
+        b = super().__new__(cls,*args,**kwargs)
+        if isinstance(b,BrokerError):
+            if b.msg == "broker_error":
+                return BrokerSimulateError("broker_error",args[1],"broker_error")
+            elif b.msg == "broker_date_all_error":
+                return BrokerSimulateError("broker_error","date_error","broker_date_all_error")
+            elif b.msg == "date_error":
+                return BrokerSimulateError(args[0],"date_error","date_error")
+            elif b.msg == "holiday":
+                return BrokerSimulateError(args[0],"holiday","holiday")
             else:
-                return super().__new__(cls)
-        except Exception as e:
-            print(e)
-            mylogger().error(f"数据库语句错误：{sql_broker}")
-            return BrokerSimulateError(args[0], args[1], "sql_error")
+                return BrokerSimulateError(args[0], args[1], "error")
+        else:
+            return object.__new__(cls)
 
 
     def __init__(self, brokercode, ts_date, ftype=1,amount=1000,tablename='simulate_buy'):
@@ -207,4 +222,5 @@ class BrokerSimulate(Broker):
 
 
 
-
+if __name__ == '__main__':
+    bs = BrokerSimulate("10000018","2019-01-03")

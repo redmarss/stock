@@ -43,7 +43,7 @@ class Stock(object):
             #日期合法，但是休息日
         elif gf.is_holiday(args[1]) is True:
             print(f"{args[1]}是休息日")
-            return StockError(args[0], args[1], "holiday")
+            return StockError(args[0], "holiday", "holiday")
         else:
             #不判断日期、代码是否合法，直接读数据库
             sql = f"select * from stock_trade_history_info where stock_code='{code}' and ts_date='{args[1]}'"
@@ -55,7 +55,7 @@ class Stock(object):
                     return StockError(args[0], args[1], 'suspension')       #停牌
                 else:
                     #去往初始化函数
-                    return super().__new__(cls)
+                    return object.__new__(cls)
             except Exception as e:
                 print(e)
                 mylogger().error(f"语句{sql}错误，请检查")

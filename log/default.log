@@ -1,0 +1,6 @@
+[2019-08-26 14:36:06]-[\stock\log\default.log]-[ERROR]:[execute failed: select broker_code from broker_info where broker_code='('199', '2019-01-01')']
+[2019-08-26 14:36:06]-[\stock\log\default.log]-[ERROR]:[Êý¾Ý¿âÓï¾ä´íÎó£ºselect broker_code from broker_info where broker_code='('199', '2019-01-01')']
+[2019-08-26 14:36:06]-[\stock\log\default.log]-[ERROR]:[Êý¾Ý¿âÓï¾ä´íÎó£ºselect broker_code from broker_info where broker_code='('199', '2019-01-01')']
+[2019-08-26 14:36:36]-[\stock\log\default.log]-[ERROR]:[execute failed: select broker_code from broker_info where broker_code='('199', '2019-01-01')']
+[2019-08-26 14:36:36]-[\stock\log\default.log]-[ERROR]:[Êý¾Ý¿âÓï¾ä´íÎó£ºselect broker_code from broker_info where broker_code='('199', '2019-01-01')']
+[2019-08-26 14:36:36]-[\stock\log\default.log]-[ERROR]:[Êý¾Ý¿âÓï¾ä´íÎó£ºselect broker_code from broker_info where broker_code='('199', '2019-01-01')']

@@ -10,7 +10,7 @@
 
 ​	_getbuyBroker()
 
-​	_next_some_days(startdate=None ,days=7)
+​	_next_some_days(*startdate=None ,days=7*)
 
 ​	@property   stockname
 
@@ -28,5 +28,9 @@
 
 ​	@property   volume
 
-#### Simulate.BrokerSimulate
+#### Simulate.BrokerSimulate(*brokercode,ts_date,ftype=1,amount=1000,tablename="simulate_buy"*)
+
+​	_createtable(*tablename*)
+
+​	
 
