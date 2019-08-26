@@ -43,3 +43,8 @@
 [2019-08-21 21:20:58]-[\stock\log\default.log]-[ERROR]:[无法获取600000于2017-09-12买入后3天交易数据]
 [2019-08-21 21:20:58]-[\stock\log\default.log]-[ERROR]:[无法获取600000于2017-09-12买入后3天交易数据]
 [2019-08-21 21:20:58]-[\stock\log\default.log]-[ERROR]:[无法获取600000于2017-09-12买入后3天交易数据]
+[2019-08-26 09:59:55]-[\stock\log\default.log]-[ERROR]:[数据库语句错误：select broker_code from broker_info where broker_code=1234]
+[2019-08-26 10:00:28]-[\stock\log\default.log]-[ERROR]:[数据库语句错误：select broker_code from broker_info where broker_code='1234']
+[2019-08-26 10:02:06]-[\stock\log\default.log]-[ERROR]:[数据库语句错误：select broker_code from broker_info where broker_code='1234']
+[2019-08-26 10:13:21]-[\stock\log\default.log]-[ERROR]:[数据库语句错误：select broker_code from broker_info where broker_code='10000018']
+[2019-08-26 10:13:24]-[\stock\log\default.log]-[ERROR]:[数据库语句错误：select broker_code from broker_info where broker_code='10000018']

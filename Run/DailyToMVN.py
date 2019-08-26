@@ -5,6 +5,7 @@ from urllib.request import urlopen, Request,HTTPError
 from multiprocessing import Pool
 from functools import partial
 import datetime
+import time
 import re
 
 stockAll = gf.getStockFromTable()
@@ -35,13 +36,14 @@ def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多�
             # 将str格式转换成byte
             textByte = bytes(lines[0], encoding='utf-8')
     urlPost = 'http://localhost:8080/stock/tradeHistory'
-    status = gf.postData(textByte,urlPost,flag='stock')          #flag标记为每日股票数据
-    # if status == 500:
-    #     sql = "update tushare.stock_basic_table set tui_flag='1' where stockcode = '%s'" %code
-    #     DBHelper().execute(sql)
-    #     print("%s或已退市,已标记"%code)
-    # else:
-    print("%s股票从%s至%s数据导入完成"%(code,start,end))
+    try:
+        status = gf.postData(textByte,urlPost,flag='stock')          #flag标记为每日股票数据
+    except:                     #如果超时，再运行两次
+        for _ in range(2):
+            status = gf.postData(textByte, urlPost, flag='stock')  # flag标记为每日股票数据
+    else:
+        print("%s股票从%s至%s数据导入完成"%(code,start,end))
+
 
 
 
@@ -70,9 +72,9 @@ def brokerInfo(startDate=None, endDate=None, pagesize=200000):
 
 if __name__ == '__main__':
     if datetime.datetime.today().hour > 18:     #运行时间大于18点
-        start = str(datetime.datetime.today().date()-datetime.timedelta(days=7))
+        start = str(datetime.datetime.today().date()-datetime.timedelta(days=21))
     else:
-        start = str(datetime.datetime.today().date() - datetime.timedelta(days=8))
+        start = str(datetime.datetime.today().date() - datetime.timedelta(days=22))
 
     end = str(datetime.datetime.today().date() + datetime.timedelta(days=1))
 

@@ -3,7 +3,7 @@
 
 import myGlobal.globalFunction as gf
 import myGlobal.ftypeOperate as fto
-import myGlobal.myTime as mTime
+import myGlobal.myTime as mt
 from myGlobal.myCls.Stock import Stock
 from myGlobal.myCls.msql import DBHelper
 from myGlobal.myCls.mylogger import mylogger
@@ -26,14 +26,25 @@ class BrokerSimulate(Broker):
         :param args[4]: 模拟表，默认为:simulate_buy
         :return: 跳转至__init__函数
         '''
-        #判断args[1]:ts_date是否合法
-        if not mTime.isDate(args[1]):
-            return BrokerSimulateError(args[0], 'date_error')
-        #判断args[0]:brokercode是否合法
-        elif len(args[0]) != 8:                  #brokercode长度为8
-            return BrokerSimulateError("brokercode_error", args[1])
-        else:
-            return super().__new__(cls)
+        sql_broker = f"select broker_code from broker_info where broker_code='{args[0]}'"  # 查询机构代码是否合法语句
+        try:
+            t = DBHelper().fetchall(sql_broker)
+            if len(t) == 0:
+                if not mt.isDate(args[1]):
+                    print(f"'{args[0]}'不是合法机构代码且'{args[1]}'不是合法日期格式")
+                    return BrokerSimulateError("broker_error", "date_error", "broker_date_all_error")
+                else:
+                    print(f"{args[0]}不是合法的机构代码")
+                    return BrokerSimulateError("broker_error", args[1], "broker_error")
+            elif not mt.isDate(args[1]):
+                print(f"'{args[1]}'不是有效的日期格式")
+                return BrokerSimulateError(args[0], "date_error", "date_error")
+            else:
+                return super().__new__(cls)
+        except Exception as e:
+            print(e)
+            mylogger().error(f"数据库语句错误：{sql_broker}")
+            return BrokerSimulateError(args[0], args[1], "sql_error")
 
 
     def __init__(self, brokercode, ts_date, ftype=1,amount=1000,tablename='simulate_buy'):
@@ -180,8 +191,8 @@ class BrokerSimulate(Broker):
         broker_code = self.broker_code
         stock_code = stock_code
         stock_name = stockA.name
-        buy_date = mTime.diffDay(ts_date,1)
-        sell_date = mTime.diffDay(ts_date,int(self._ftype)+1)
+        buy_date = mt.diffDay(ts_date,1)
+        sell_date = mt.diffDay(ts_date,int(self._ftype)+1)
         buy_price = t_price[1].open_price
         sell_price = t_price[int(self._ftype)+1].open_price
         get_day = self._ftype             #持有天数
@@ -197,5 +208,3 @@ class BrokerSimulate(Broker):
 
 
 
-if __name__ == '__main__':
-    BrokerSimulate("80000000","2019-03-151")

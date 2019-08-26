@@ -19,18 +19,23 @@ class Broker(object):
         :param kwargs:
         :return: 前往init函数
         '''
-        if not mt.isDate(args[1]):
-            print(f"{args[1]}不是日期格式")
-            return BrokerError(args[0], "date_error")
-        sql_broker = f"select broker_code from broker_info where broker_code={args[0]}"
+        sql_broker = f"select broker_code from broker_info where broker_code='{args[0]}'"   #查询机构代码是否合法语句
         try:
-            t = DBHelper().execute(sql_broker)
+            t = DBHelper().fetchall(sql_broker)
             if len(t) == 0:
-                print(f"{args[0]}不是合法的机构代码")
-                return BrokerError("BrokerCodeError", args[1])
+                if not mt.isDate(args[1]):
+                    print(f"'{args[0]}'不是合法机构代码且'{args[1]}'不是合法日期格式")
+                    return BrokerError("broker_error", "date_error", "broker_date_all_error")
+                else:
+                    print(f"{args[0]}不是合法的机构代码")
+                    return BrokerError("broker_error", args[1], "broker_error")
+            elif not mt.isDate(args[1]):
+                print(f"'{args[1]}'不是有效的日期格式")
+                return BrokerError(args[0], "date_error","date_error")
             else:
-                return super.__new__(cls)
-        except:
+                return super().__new__(cls)
+        except Exception as e:
+            print(e)
             mylogger().error(f"数据库语句错误：{sql_broker}")
             return BrokerError(args[0],args[1],"sql_error")
 
@@ -68,7 +73,12 @@ class Broker(object):
         return self._ts_date
 
 
-
+if __name__ == '__main__':
+    b = Broker("10000018","2019-08-112")
+    print(b)
+    print(b.brokercode)
+    print(b.ts_date)
+    print(b.msg)
 
 
 

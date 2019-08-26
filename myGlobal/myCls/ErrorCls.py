@@ -85,4 +85,7 @@ class BrokerError(object):
     def ts_date(self):
         return self._ts_date
 
+    @property
+    def msg(self):
+        return self._msg
 

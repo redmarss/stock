@@ -56,7 +56,8 @@ class Stock(object):
                 else:
                     #去往初始化函数
                     return super().__new__(cls)
-            except:
+            except Exception as e:
+                print(e)
                 mylogger().error(f"语句{sql}错误，请检查")
                 return StockError(args[0], args[1], 'sql_error')
 
