@@ -32,5 +32,9 @@
 
 ​	_createtable(*tablename*)
 
+​	**simulateBuy()**
+
+​	__is_simulate(*stockcode,ftype*)
+
 ​	
 
