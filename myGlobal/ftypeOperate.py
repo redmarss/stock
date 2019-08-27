@@ -74,12 +74,12 @@ def update_ftype(brokercode,stockcode,ts_date,value):
     '''
     try:
         DBHelper().execute(sql)
+        return True
     except:
         print("sql错误")
+        return False
 
 def judgeftype(value,index,key=1):
-    # if list_bin[len(list_bin)-index] == str(key):
-    #     return value
     if not isinstance(value,int):
         try:
             value = int(value)
