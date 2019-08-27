@@ -39,7 +39,7 @@ def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多�
     try:
         status = gf.postData(textByte,urlPost,flag='stock')          #flag标记为每日股票数据
     except:                     #如果超时，再运行两次
-        for _ in range(2):
+        for _ in range(5):
             status = gf.postData(textByte, urlPost, flag='stock')  # flag标记为每日股票数据
     else:
         print("%s股票从%s至%s数据导入完成"%(code,start,end))

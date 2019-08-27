@@ -17,9 +17,8 @@ class BrokerSimulate(Broker):
     def __new__(cls, *args, **kwargs):
         '''
         更新日期：20190613
-        判断code是否合规；
-        判断日期是否合规；
-        合规后运行init函数，否则报错并退出
+        运行父函数Broker的__new__函数，判断参数args[0],args[1]是否合规，如果不合规，则会返回BrokerError类，再判断
+        如果合规，则跳转至__init__函数
         :param args[0]:机构代码
         :param args[1]: 交易日期
         :param args[2]: 模拟策略类型
@@ -27,26 +26,8 @@ class BrokerSimulate(Broker):
         :param args[4]: 模拟表，默认为:simulate_buy
         :return: 跳转至__init__函数
         '''
-        # sql_broker = f"select broker_code from broker_info where broker_code='{args[0]}'"  # 查询机构代码是否合法语句
-        # try:
-        #     t = DBHelper().fetchall(sql_broker)
-        #     if len(t) == 0:
-        #         if not mt.isDate(args[1]):
-        #             print(f"'{args[0]}'不是合法机构代码且'{args[1]}'不是合法日期格式")
-        #             return BrokerSimulateError("broker_error", "date_error", "broker_date_all_error")
-        #         else:
-        #             print(f"{args[0]}不是合法的机构代码")
-        #             return BrokerSimulateError("broker_error", args[1], "broker_error")
-        #     elif not mt.isDate(args[1]):
-        #         print(f"'{args[1]}'不是有效的日期格式")
-        #         return BrokerSimulateError(args[0], "date_error", "date_error")
-        #     else:
-        #         return super().__new__(cls)
-        # except Exception as e:
-        #     print(e)
-        #     mylogger().error(f"数据库语句错误：{sql_broker}")
-        #     return BrokerSimulateError(args[0], args[1], "sql_error")
         b = super().__new__(cls,*args,**kwargs)
+        print(kwargs)
         if isinstance(b,BrokerError):
             if b.msg == "broker_error":
                 return BrokerSimulateError("broker_error",args[1],"broker_error")
@@ -58,17 +39,24 @@ class BrokerSimulate(Broker):
                 return BrokerSimulateError(args[0],"holiday","holiday")
             else:
                 return BrokerSimulateError(args[0], args[1], "error")
+        elif not isinstance(args[2],int):
+            return BrokerSimulateError(args[0],args[1],"ftype_error")
+        elif not isinstance(args[3],int):
+            return BrokerSimulateError(args[0],args[1],"amount_error")
+        elif not isinstance(args[4],str):
+            return BrokerSimulateError(args[0],args[1],"table_error")
         else:
-            return object.__new__(cls)
+            return object.__new__(cls)          #跳转至自身的__init__函数
 
 
-    def __init__(self, brokercode, ts_date, ftype=1,amount=1000,tablename='simulate_buy'):
+    def __init__(self, brokercode, ts_date, ftype,amount,tablename):#tablename=simulate_buy
         self._brokercode = brokercode
         self._ts_date = ts_date
         self._tablename = tablename
         self._ftype= ftype
         self._amount = amount
-        self._buystocklist = self._getBuyStock()
+        self._buystocklist = super()._getBuyStock()
+        print(self._buystocklist)
 
     # region _createtable     创建tablename表
     def _createtable(self,tablename):
@@ -223,4 +211,4 @@ class BrokerSimulate(Broker):
 
 
 if __name__ == '__main__':
-    bs = BrokerSimulate("10000018","2019-01-03")
+    bs = BrokerSimulate("80065939","2017-09-12",1,1000,"simulate_buy")
