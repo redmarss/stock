@@ -101,20 +101,20 @@ class BrokerSimulate(Broker):
                 # 4.更新flag值,并存入数据库
                     self.__update_ftype(stockcode)
                     print(f"模拟{self.brokercode}于{self.ts_date}购买{stockcode}成功，模拟方式：{self._ftype}，购买数量：{self._amount}")
+                    return True
                 else:
-                    pass
+                    return False
             else:
-                pass
+                return False
 
 
+    # region 判断、更新是否模拟过
     def __is_simulate(self,stockcode,ftype):
         simulate_flag = fto.get_ftype(self._brokercode, stockcode, self._ts_date)
         if fto.judgeftype(simulate_flag, ftype):
             return True
         else:
             return False
-
-
 
     #更新simulate_flag状态
     def __update_ftype(self,stockcode):
@@ -131,6 +131,9 @@ class BrokerSimulate(Broker):
         except:
             mylogger().error()
             return False
+    # endregion
+
+
 
 
 

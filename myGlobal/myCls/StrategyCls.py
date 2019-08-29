@@ -49,12 +49,12 @@ class Strategy(Stock):
         gainmoney = round((sell_price - buy_price) * amount, 2)
         gainpercent = round(gainmoney / (buy_price * amount), 4)
         ftype = self._ftype
-        getscore = self._cacuscore(ftype, gainmoney, gainpercent)
+        getscore = self._cacuscore(gainmoney, gainpercent)
         # 第一个字段随便设个int值作为id（会自动增长）
         return 0, ts_date, broker_code, stock_code,stock_name,buy_date,sell_date,buy_price,sell_price,get_day,amount,gainmoney,gainpercent,ftype,getscore
 
     #根据策略类型及其他相关数据计算此次得分
-    def _cacuscore(self,ftype,gainmoney,gainpercent):
+    def _cacuscore(self,gainmoney,gainpercent):
         return gainpercent
 
 if __name__ == '__main__':

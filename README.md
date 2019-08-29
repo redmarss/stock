@@ -34,7 +34,25 @@
 
 ​	**simulateBuy()**
 
-​	__is_simulate(*stockcode,ftype*)
+​	__is_simulate(*stockcode,ftype*)		#判断brokercode,ts_date,stockcode,ftype是否模拟过
+
+​	__update_ftype							#更新ftype数值
+
+​	__recordToSql								#将模拟结果存入数据库
+
+
+
+#### Strategy(Stock)
+
+strategy()				#根据self.ftype来模拟计算
+
+_cacuscore()		#计算此次模拟的机构得分
+
+
+
+
+
+​	
 
 ​	
 
