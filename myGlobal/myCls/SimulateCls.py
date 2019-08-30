@@ -95,6 +95,10 @@ class BrokerSimulate(Broker):
                 #2.模拟买入，并返回一个元组
                 strategy = Strategy(stockcode,self._ts_date,self._brokercode,self._ftype,self._amount)
                 t = strategy.strategy()
+                if t is None:                           #买入后第二天开盘价>8%，则不买入
+                    print(f"{self.brokercode}于{self.ts_date}购买的{stockcode}第二天开盘涨幅超过8%，不买入")
+                    self.__update_ftype(stockcode,15)
+                    return True
                 #3.将元组存入数据库
                 result = self.__recordToSql(t)          #如果存入数据库成功，则result为True，否则为False
                 if result:
@@ -117,10 +121,13 @@ class BrokerSimulate(Broker):
             return False
 
     #更新simulate_flag状态
-    def __update_ftype(self,stockcode):
+    def __update_ftype(self,stockcode,flag=None):
         simulate_flag = fto.get_ftype(self._brokercode, stockcode, self._ts_date)
         new_flag = fto.set_ftype(simulate_flag,self._ftype,1)
-        result = fto.update_ftype(self._brokercode,stockcode,self._ts_date,new_flag)
+        if flag==15:
+            result = fto.update_ftype(self._brokercode,stockcode,self._ts_date,15)           #第二天开盘涨幅超过8%，则记录ftype值为15
+        else:
+            result = fto.update_ftype(self._brokercode,stockcode,self._ts_date,new_flag)
         return result
 
     def __recordToSql(self,t):

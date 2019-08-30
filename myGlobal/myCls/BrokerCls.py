@@ -33,7 +33,6 @@ class Broker(object):
                 print(f"'{args[1]}'不是有效的日期格式")
                 return BrokerError(args[0], "date_error","date_error")
             elif gf.is_holiday(args[1]):
-                print(f"{args[1]}是休息日")
                 return BrokerError(args[0], "holiday", "holiday")
             else:
                 return object.__new__(cls)

@@ -58,4 +58,4 @@ class Strategy(Stock):
         return gainpercent
 
 if __name__ == '__main__':
-    print(Strategy("600000","2017-09-12","80065939",1,1000).strategy())
+    print(Strategy("600733","2018-09-28","80000038",1,1000).strategy())

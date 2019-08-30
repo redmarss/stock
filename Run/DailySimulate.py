@@ -6,7 +6,8 @@
 # File:DailySimulate
 
 import datetime
-import time
+import myGlobal.ftypeOperate as fto
+from myGlobal.myCls.msql import DBHelper
 import myGlobal.globalFunction as gf
 from myGlobal.myCls.SimulateCls import BrokerSimulate
 
@@ -18,14 +19,40 @@ def DailySimulate(brokercode,ts_date,ftype,amount,tablename):
     return result
 
 
-if __name__ == '__main__':
-    broker_list = gf.getBroker()            #获取所有列表
-    startdate = datetime.datetime.strptime('2017-01-01',"%Y-%m-%d").date()
-    enddate = datetime.datetime.today().date()
+def getNotCacuTuple(ftype):
+    return_list = []
+    sql = '''
+    SELECT 
+    broker_code, DATE_FORMAT(ts_date,'%Y-%m-%d'), stock_code, simulate_flag
+    FROM
+    broker_buy_summary AS a
+    INNER JOIN
+    broker_buy_stock_info AS b ON a.id = b.broker_buy_summary_id
+    where simulate_flag!=15
+    '''
+    tuple_all = DBHelper().fetchall(sql)
+    for t in tuple_all:
+        if not fto.judgeftype(t[3],ftype,1):
+            return_list.append(t)
+    return return_list
 
-    print(broker_list)
-    for brokercode in broker_list:
-        simudate = startdate
-        while simudate < enddate:
-            DailySimulate(brokercode,str(simudate),1,1000,"simulate_buy")
-            simudate = simudate + datetime.timedelta(days=1)
+
+
+if __name__ == '__main__':
+    # broker_list = gf.getBroker()            #获取所有列表
+    # startdate = datetime.datetime.strptime('2017-01-01',"%Y-%m-%d").date()
+    # enddate = datetime.datetime.today().date()
+    #
+    # print(broker_list)
+    # for brokercode in broker_list:
+    #     simudate = startdate
+    #     while simudate < enddate:
+    #         DailySimulate(brokercode,str(simudate),1,1000,"simulate_buy")
+    #         print(f"计算{brokercode}于{simudate}的交易")
+    #         simudate = simudate + datetime.timedelta(days=1)
+
+    ftype = 1
+    cacu_list = getNotCacuTuple(ftype)                  #第一种方式
+    print(len(cacu_list))
+    for t in cacu_list:
+        DailySimulate(t[0],t[1],ftype,1000,"simulate_buy")
