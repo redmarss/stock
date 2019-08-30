@@ -85,31 +85,27 @@ class BrokerSimulate(Broker):
             mylogger.error(f"创建{tablename}表出错")
     # endregion
 
-    def simulateBuy(self):
-        #计算该机构在ts_date购买股票数，并模拟买入
-        if len(self._buystocklist) == 0:
-            return False
-        for stockcode in self._buystocklist:
-            #1.查看simulateflag是否已模拟，如果模拟了，则什么都不做
-            if not self.__is_simulate(stockcode,self._ftype):
-                #2.模拟买入，并返回一个元组
-                strategy = Strategy(stockcode,self._ts_date,self._brokercode,self._ftype,self._amount)
-                t = strategy.strategy()
-                if t is None:                           #买入后第二天开盘价>8%，则不买入
-                    print(f"{self.brokercode}于{self.ts_date}购买的{stockcode}第二天开盘涨幅超过8%，不买入")
-                    self.__update_ftype(stockcode,15)
-                    return True
-                #3.将元组存入数据库
-                result = self.__recordToSql(t)          #如果存入数据库成功，则result为True，否则为False
-                if result:
-                # 4.更新flag值,并存入数据库
-                    self.__update_ftype(stockcode)
-                    print(f"模拟{self.brokercode}于{self.ts_date}购买{stockcode}成功，模拟方式：{self._ftype}，购买数量：{self._amount}")
-                    return True
-                else:
-                    return False
+    def simulateBuy(self,stockcode):
+
+        #1.查看simulateflag是否已模拟，如果模拟了，则什么都不做
+        if not self.__is_simulate(stockcode,self._ftype):
+            #2.模拟买入，并返回一个元组
+            strategy = Strategy(stockcode,self._ts_date,self._brokercode,self._ftype,self._amount)
+            t = strategy.strategy()
+            if t is None:                           #买入后第二天开盘价>8%，则不买入
+                print(f"{self.brokercode}于{self.ts_date}购买的{stockcode}第二天开盘涨幅超过8%，不买入")
+                self.__update_ftype(stockcode,15)
+                return True
+            #3.将元组存入数据库
+            result = self.__recordToSql(t)          #如果存入数据库成功，则result为True，否则为False
+            if result:
+            # 4.更新flag值,并存入数据库
+                self.__update_ftype(stockcode)
+                print(f"模拟{self.brokercode}于{self.ts_date}购买{stockcode}成功，模拟方式：{self._ftype}，购买数量：{self._amount}")
+                return True
             else:
                 return False
+
 
 
     # region 判断、更新是否模拟过
@@ -146,5 +142,5 @@ class BrokerSimulate(Broker):
 
 
 if __name__ == '__main__':
-    bs = BrokerSimulate("80065939","2017-09-12",1,1000,"simulate_buy")
+    bs = BrokerSimulate("80065939","2017-05-02",1,1000,"simulate_buy")
     bs.simulateBuy()

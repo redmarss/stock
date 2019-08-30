@@ -12,10 +12,10 @@ import myGlobal.globalFunction as gf
 from myGlobal.myCls.SimulateCls import BrokerSimulate
 
 #根据日期，多线程模拟股票买卖
-def DailySimulate(brokercode,ts_date,ftype,amount,tablename):
+def DailySimulate(brokercode,ts_date,stockcode,ftype,amount,tablename):
     #创建BrokerSimulate类实例
     bs = BrokerSimulate(brokercode,ts_date,ftype,amount,tablename)
-    result = bs.simulateBuy()
+    result = bs.simulateBuy(stockcode)
     return result
 
 
@@ -55,4 +55,4 @@ if __name__ == '__main__':
     cacu_list = getNotCacuTuple(ftype)                  #第一种方式
     print(len(cacu_list))
     for t in cacu_list:
-        DailySimulate(t[0],t[1],ftype,1000,"simulate_buy")
+        DailySimulate(t[0],t[1],t[2],ftype,1000,"simulate_buy")
