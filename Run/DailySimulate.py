@@ -32,7 +32,7 @@ def getNotCacuTuple(ftype):
     '''
     tuple_all = DBHelper().fetchall(sql)
     for t in tuple_all:
-        if not fto.judgeftype(t[3],ftype,1):
+        if not fto.judgeftype(t[3],ftype,1) and not str.startswith(t[2],'2'):           #去除已模拟的及B股
             return_list.append(t)
     return return_list
 
