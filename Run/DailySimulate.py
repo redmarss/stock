@@ -10,12 +10,14 @@ import myGlobal.ftypeOperate as fto
 from myGlobal.myCls.msql import DBHelper
 import myGlobal.globalFunction as gf
 from myGlobal.myCls.SimulateCls import BrokerSimulate
+from multiprocessing import Pool
+from functools import partial
 
 #根据日期，多线程模拟股票买卖
-def DailySimulate(brokercode,ts_date,stockcode,ftype,amount,tablename):
+def DailySimulate(t,ftype,amount,tablename):
     #创建BrokerSimulate类实例
-    bs = BrokerSimulate(brokercode,ts_date,ftype,amount,tablename)
-    result = bs.simulateBuy(stockcode)
+    bs = BrokerSimulate(t[0],t[1],ftype,amount,tablename)
+    result = bs.simulateBuy(t[2])
     return result
 
 
@@ -32,7 +34,7 @@ def getNotCacuTuple(ftype):
     '''
     tuple_all = DBHelper().fetchall(sql)
     for t in tuple_all:
-        if not fto.judgeftype(t[3],ftype,1) and not str.startswith(t[2],'2'):           #去除已模拟的及B股
+        if not fto.judgeftype(t[3],ftype,1) and not t[2].startswith(('2','9')):           #去除已模拟的及B股
             return_list.append(t)
     return return_list
 
@@ -54,5 +56,12 @@ if __name__ == '__main__':
     ftype = 1
     cacu_list = getNotCacuTuple(ftype)                  #第一种方式
     print(len(cacu_list))
-    for t in cacu_list:
-        DailySimulate(t[0],t[1],t[2],ftype,1000,"simulate_buy")
+    # for t in cacu_list:
+    #     DailySimulate(t[0],t[1],t[2],ftype,1000,"simulate_buy")
+
+
+
+    pool = Pool(30)
+    pool.map(partial(DailySimulate,ftype=ftype,amount=1000,tablename="simulate_buy"),cacu_list)
+    pool.close()
+    pool.join()

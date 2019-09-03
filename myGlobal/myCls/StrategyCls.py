@@ -12,7 +12,7 @@ from myGlobal.myCls.Stock import Stock
 
 class Strategy(Stock):
     def __init__(self,stockcode,tsdate,brokercode,ftype,amount):
-        self._stockcode = stockcode
+        self._stockcode = gf.code_to_symbol(stockcode)
         self._ts_date = tsdate
         self._brokercode = brokercode
         self._ftype = ftype
