@@ -30,11 +30,11 @@ class Strategy(Stock):
     def __strategyOpenbuyOpensell(self):
         t_price = self._next_some_days(self._ts_date,self._ftype + 2)  # 从买入当天，取ftype+2天数据
         if len(t_price) != int(self._ftype) + 2:
-            mylogger().error(f"无法获取{self._stockcode}于{self._ts_date}买入后{self._ftype+2}天交易数据")
-            return
+            print(f"无法获取{self._stockcode}于{self._ts_date}买入后{self._ftype+2}天交易数据(停牌一个月以上)")
+            return "SUSPENSION_ERROR"
         # 第二天开盘涨幅大于8%，不买
         if gf.ChangeRange(t_price[0].close_price, t_price[1].open_price) > 0.08:
-            return
+            return "HIGH_OPEN_ERROR"
         # 计算返回值信息
         ts_date = self._ts_date
         broker_code = self._brokercode
