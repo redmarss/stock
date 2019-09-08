@@ -173,4 +173,20 @@ class Stock(object):
                 break
         return stocklist
 
+    def _before_some_days(self,startdate=None,days=5):
+        if startdate is None:
+            startdate = self._ts_date
+        else:
+            if myTime.isDate(startdate) is False:
+                return StockError(self._stockcode,'date_error','date_error').next_some_days(days)
+        stocklist = []
+        i = 0
+        date = startdate
+
+
+    def MA(self,days=5):
+        listStockClass = self._next_some_days(self.ts_date,)
+
+
+
 
