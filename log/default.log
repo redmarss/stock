@@ -1,0 +1,6 @@
+[2019-09-22 14:12:11]-[\stock\log\default.log]-[ERROR]:[execute failed: select broker_code,stock_code,ts_date,buy_date,sell_date,gainmoney,gainpercent,ftype from simulate_table 
+        where broker_code=80065939 and ts_date<=2019-09-20 and ftype=1]
+[2019-09-22 14:12:44]-[\stock\log\default.log]-[ERROR]:[execute failed: select broker_code,stock_code,ts_date,buy_date,sell_date,gainmoney,gainpercent,ftype from simulate_table 
+        where broker_code=80065939 and ts_date<=2019-09-20 and ftype=1]
+[2019-09-22 14:13:34]-[\stock\log\default.log]-[ERROR]:[execute failed: select broker_code,stock_code,ts_date,buy_date,sell_date,gainmoney,gainpercent,ftype from simulate_table 
+        where broker_code=80065939 and ts_date<=2019-09-20 and ftype=1]
