@@ -72,9 +72,9 @@ def brokerInfo(startDate=None, endDate=None, pagesize=200000):
 
 if __name__ == '__main__':
     if datetime.datetime.today().hour > 18:     #运行时间大于18点
-        start = str(datetime.datetime.today().date()-datetime.timedelta(days=21))
+        start = str(datetime.datetime.today().date()-datetime.timedelta(days=360))
     else:
-        start = str(datetime.datetime.today().date() - datetime.timedelta(days=22))
+        start = str(datetime.datetime.today().date() - datetime.timedelta(days=361))
 
     end = str(datetime.datetime.today().date() + datetime.timedelta(days=1))
 
