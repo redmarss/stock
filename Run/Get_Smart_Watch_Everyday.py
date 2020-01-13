@@ -5,9 +5,15 @@
 # Project:stock
 # File:Get_Smart_Watch_Everyday
 
+
+
+
 from urllib.request import Request,urlopen,HTTPError
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as mt
+import time
+
+
 
 
 
@@ -43,5 +49,8 @@ def _get_smart_watch_data(url):
 
 
 if __name__ == '__main__':
-    url = "http://push2ex.eastmoney.com/getAllStockChanges?type=8201,8202,8193,4,32,64,8207,8209,8211,8213,8215,8204,8203,8194,8,16,128,8208,8210,8212,8214,8216&cb=jQuery1720016971080795387117_1577338393530&pageindex=0&pagesize=200000000&ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wzchanges&_=1577338433689"
+    #1577338393
+    timestamp = str(time.time())
+    url = f"http://push2ex.eastmoney.com/getAllStockChanges?type=8201,8202,8193,4,32,64,8207,8209,8211,8213,8215,8204,8203,8194,8,16,128,8208,8210,8212,8214,8216&cb=jQuery1720016971080795387117_{timestamp}530&pageindex=0&pagesize=200000000&ut=7eea3edcaed734bea9cbfc24409ed989&dpt=wzchanges&_=1577338433689"
+    print(url)
     _get_smart_watch_data(url)
