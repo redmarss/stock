@@ -1,9 +1,0 @@
-CREATE TABLE `tushare`.`everyday_stock_simulate_buy` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `ts_date` VARCHAR(45) NOT NULL,
-  `stock` VARCHAR(45) NULL,
-  `amount` VARCHAR(45) NULL,
-  `gainmoney` VARCHAR(45) NULL,
-  `reason` VARCHAR(45) NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `DATE_STOCK_UNIQUE` (`ts_date` ASC, `stock` ASC));
