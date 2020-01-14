@@ -1,20 +1,19 @@
-#!/usr/bin/env python
 # -*- coding:utf8 -*-
 import myGlobal.globalFunction as gf
 from urllib.request import urlopen, Request,HTTPError
-from multiprocessing import Pool
+from multiprocessing import Pool        #多线程
 from functools import partial
 import datetime
 import time
 import re
+import subprocess
 
-stockAll = gf.getStockFromTable()
 
 # region 多线程获取每日股票信息
 def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多线程参数一定要放第一个
     url = 'http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=kline_dayqfq2017&param=%s,day,%s,%s,640,qfq'\
           %(code,start,end)
-    for _ in range(3):
+    for _ in range(5):
         try:
             request = Request(url)
             lines = urlopen(request, timeout=10).read()
@@ -35,22 +34,18 @@ def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多�
             lines = re.subn(reg, '', lines[0])
             # 将str格式转换成byte
             textByte = bytes(lines[0], encoding='utf-8')
-    urlPost = 'http://localhost:8080/stock/tradeHistory'
-    try:
-        status = gf.postData(textByte,urlPost,flag='stock')          #flag标记为每日股票数据
-    except:                     #如果超时，再运行两次
-        for _ in range(5):
-            status = gf.postData(textByte, urlPost, flag='stock')  # flag标记为每日股票数据
-    else:
-        print("%s股票从%s至%s数据导入完成"%(code,start,end))
+    urlPost = 'http://localhost:8080/stock/tradeHistory'            #MVN推送地址
+
+    status = gf.postData(textByte,urlPost,flag='stock')          #flag标记为每日股票数据
+    print("%s股票从%s至%s数据导入完成"%(code,start,end))
 
 
-
-
-def RunGetDayData(start,end,stock_li=[]):
+def RunGetDayDataToMVN(start,end,stock_li=[]):
+    '''
+    多线程运行_getDayData
+    '''
     if len(stock_li)==0:
-        stock_li = stockAll
-    #[_getDayData(code,start,end) for code in stock_li]
+        stock_li = gf.getStockFromTable()
     pool = Pool(30)
     pool.map(partial(_getDayData,start=start,end=end),stock_li)
     pool.close()
@@ -71,6 +66,15 @@ def brokerInfo(startDate=None, endDate=None, pagesize=200000):
 # endregion
 
 if __name__ == '__main__':
+    print("test")
+
+    filepath = 'C:/Users/hpcdc/Desktop/runjar.bat'
+    p = subprocess.Popen(filepath,shell=True,stdout=subprocess.PIPE)
+    stdout,stderr = p.communicate()
+    
+    
+    sleep(20)
+
     if datetime.datetime.today().hour > 18:     #运行时间大于18点
         start = str(datetime.datetime.today().date()-datetime.timedelta(days=360))
     else:

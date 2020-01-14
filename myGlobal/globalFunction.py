@@ -219,7 +219,6 @@ def getStockFromTable(table='stock_basic_table',field='stockcode',where='1=1'):
     :return: 股票列表
     '''
     li = []
-    # 创建数据库对象（单例模式）
     sql = f'select {field} from {table} where {where} order by stockcode'
     try:
         t_stock = DBHelper().fetchall(sql)
