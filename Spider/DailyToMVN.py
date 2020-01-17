@@ -1,13 +1,19 @@
 # -*- coding:utf8 -*-
+import sys
+sys.path.append("H:\\python\\stock\\")
 import myGlobal.globalFunction as gf
+
 from urllib.request import urlopen, Request,HTTPError
 from multiprocessing import Pool        #多线程
 from functools import partial
+
 import datetime
 import time
 import re
-import subprocess
-import jpype
+import subprocess,psutil
+
+
+
 
 # region 多线程获取每日股票信息
 def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多线程参数一定要放第一个
@@ -66,25 +72,25 @@ def brokerInfo(startDate=None, endDate=None, pagesize=200000):
 # endregion
 
 if __name__ == '__main__':
-    #运行jvm虚拟机
-    #调用jar文件
-    jvmPath = r'C:\Program Files\Java\jdk1.8.0_171\jre\bin\server\jvm.dll'
-    jpype.startJVM(jvmPath,"-Djava.class.path=H:\\github\\siteminder\\target\\siteminder-0.0.1-SNAPSHOT.jar") 
-    jpype.java.lang.System.out.println("hello world!")
-    jpype.shutdownJVM()
-    print("test")
-
-
+    proc = subprocess.Popen("C:\\Users\\hpcdc\\Desktop\\runjar.bat",creationflags=subprocess.CREATE_NEW_CONSOLE)
+    pobj = psutil.Process(proc.pid)
+    time.sleep(20)
+    
 
     if datetime.datetime.today().hour > 18:     #运行时间大于18点
-        start = str(datetime.datetime.today().date()-datetime.timedelta(days=360))
+        start = str(datetime.datetime.today().date()-datetime.timedelta(days=20))
     else:
-        start = str(datetime.datetime.today().date() - datetime.timedelta(days=361))
+        start = str(datetime.datetime.today().date() - datetime.timedelta(days=21))
 
     end = str(datetime.datetime.today().date() + datetime.timedelta(days=1))
 
 
     #每日获取股票相关数据
-    RunGetDayData(start=start,end=end)
+    RunGetDayDataToMVN(start=start,end=end)
     #每日获取机构数据
     brokerInfo(startDate=start,endDate=end)
+
+
+    # for c in pobj.children(recursive=True):
+    #     c.kill()
+    # pobj.kill()
