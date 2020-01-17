@@ -7,7 +7,7 @@ import datetime
 import time
 import re
 import subprocess
-
+import jpype
 
 # region 多线程获取每日股票信息
 def _getDayData(code=None,start="2017-01-01",end="2018-12-31"): #code作为多线程参数一定要放第一个
@@ -66,14 +66,15 @@ def brokerInfo(startDate=None, endDate=None, pagesize=200000):
 # endregion
 
 if __name__ == '__main__':
+    #运行jvm虚拟机
+    #调用jar文件
+    jvmPath = r'C:\Program Files\Java\jdk1.8.0_171\jre\bin\server\jvm.dll'
+    jpype.startJVM(jvmPath,"-Djava.class.path=H:\\github\\siteminder\\target\\siteminder-0.0.1-SNAPSHOT.jar") 
+    jpype.java.lang.System.out.println("hello world!")
+    jpype.shutdownJVM()
     print("test")
 
-    filepath = 'C:/Users/hpcdc/Desktop/runjar.bat'
-    p = subprocess.Popen(filepath,shell=True,stdout=subprocess.PIPE)
-    stdout,stderr = p.communicate()
-    
-    
-    sleep(20)
+
 
     if datetime.datetime.today().hour > 18:     #运行时间大于18点
         start = str(datetime.datetime.today().date()-datetime.timedelta(days=360))
