@@ -1,18 +1,24 @@
 #!/bin/usr/env python
 # -*-coding:utf-8 -*-
+import sys
+sys.path.append("H:\\python\\stock\\")
 
 from urllib.request import urlopen,Request
 from urllib.error import HTTPError
 import requests
 from bs4 import BeautifulSoup
-import myGlobal.myCls.msql as msql
-import datetime
-import pandas as pd
-from pandas.compat import StringIO
+
 import myGlobal.globalFunction as gf
 import myGlobal.myTime as myTime
 from myGlobal.myCls.msql import DBHelper
 from myGlobal.myCls.multiProcess import threads
+import myGlobal.myCls.msql as msql
+import datetime
+
+import pymysql
+import pandas as pd
+from pandas.compat import StringIO
+
 
 
 
@@ -52,10 +58,8 @@ def getAllStock():
     text = text.replace('--', '')
     df = pd.read_csv(StringIO(text), dtype={'code': 'object'})
     df = df.set_index('code')
-    return df
-
-
-
+    
+    
 
 
 #将机构代码、机构名称写入broker_info表（每月运行）
@@ -132,7 +136,10 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
 
 
 if __name__ == "__main__":
+    DBHelper().updateTupleToTable("stock_basic_table",
+    set="stockname='乐乐科技'",
+    where="id=3952")
     #每月运行一次，获取股票最新代码及股票名称
-    print(getAllStock())                               #每月运行一次，定于每月第一个周五上午8:30
+    #print(getAllStock())                               #每月运行一次，定于每月第一个周五上午8:30
     #getBrokerInfo()
     #is_holiday("2020-10-24","2020-12-31")       #每年更新一次即可，下次更新时间：2020年12月28日

@@ -49,9 +49,6 @@ class DBHelper(object):
             self.cur.execute(sql, params)
             self.conn.commit()
         except:
-            mylogger.mylogger().error("execute failed: " + sql)
-            if params is not None:
-                mylogger.mylogger().error("params: " + params)
             self.close()
             return False
         return True
@@ -78,4 +75,21 @@ class DBHelper(object):
             return True
         else:
             return False
+
+    def insertTupleToTable(self,tablename,value,field=""):
+        sql = f"insert into {tablename} {field} VALUES {value}"
+        try:
+            self.cur.execute(sql)
+            self.conn.commit()
+        except:
+            print(f"执行{sql}语句错误，请检查！")
+
+    
+    def updateTupleToTable(self,tablename,set,where):
+        sql = f"update {tablename} set {set} where {where}"
+        try:
+            self.cur.execute(sql)
+            self.conn.commit()
+        except:
+            print(f"执行{sql}语句错误，请检查！")
 
