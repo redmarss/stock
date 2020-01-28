@@ -58,6 +58,10 @@ def getAllStock():
     text = text.replace('--', '')
     df = pd.read_csv(StringIO(text), dtype={'code': 'object'})
     df = df.set_index('code')
+    print(type(df))
+#    for row in df.rows:
+#        print(row)
+#        print
     
     
 
@@ -136,9 +140,8 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
 
 
 if __name__ == "__main__":
-    DBHelper().updateTupleToTable("stock_basic_table",
-    set="stockname='乐乐科技'",
-    where="id=3952")
+    getAllStock()
+    """
     #每月运行一次，获取股票最新代码及股票名称
     #print(getAllStock())                               #每月运行一次，定于每月第一个周五上午8:30
     #getBrokerInfo()
