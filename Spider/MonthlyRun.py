@@ -20,6 +20,13 @@ import pandas as pd
 from pandas.compat import StringIO
 
 
+def _updateBasicTableInfo(code,t):
+    tablename = "stock_basic_table"
+    sql_search = f"select * from stock_basic_table where stockcode='{code}'"
+    t = DBHelper().fetchall()
+    if len(t) > 0:              #数据库中已有记录，则更新
+        set = f""
+        DBHelper().updateTupleToTable(tablename=tablename,set=)
 
 
 
@@ -53,16 +60,21 @@ def getAllStock():
     url = 'http://file.tushare.org/tsdata/all.csv'
     request = Request(url)
 
-    text = urlopen(request, timeout=10).read()
-    text = text.decode('GBK')
-    text = text.replace('--', '')
-    df = pd.read_csv(StringIO(text), dtype={'code': 'object'})
-    df = df.set_index('code')
-    print(type(df))
-#    for row in df.rows:
-#        print(row)
-#        print
-    
+    try:
+
+        text = urlopen(request, timeout=10).read()
+        text = text.decode('GBK')
+        text = text.replace('--', '')
+        df = pd.read_csv(StringIO(text), dtype={'code': 'object'})
+        df = df.set_index('code')
+    except:
+        print("读取《http://file.tushare.org/tsdata/all.csv》错误")
+        return
+
+    for index,row in df.iterrows():
+        code = gf.code_to_symbol(index)
+        t = tuple(row)
+
     
 
 
@@ -141,7 +153,6 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
 
 if __name__ == "__main__":
     getAllStock()
-    """
     #每月运行一次，获取股票最新代码及股票名称
     #print(getAllStock())                               #每月运行一次，定于每月第一个周五上午8:30
     #getBrokerInfo()
