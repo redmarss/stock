@@ -22,13 +22,21 @@ from pandas.compat import StringIO
 
 def _updateBasicTableInfo(code,t):
     tablename = "stock_basic_table"
-    sql_search = f"select * from stock_basic_table where stockcode='{code}'"
-    t = DBHelper().fetchall()
-    if len(t) > 0:              #数据库中已有记录，则更新
-        set = f""
-        DBHelper().updateTupleToTable(tablename=tablename,set=)
+    t_sql = f"select * from {tablename} where stockcode='{code}'"
+    t_result = DBHelper().fetchall(t_sql)          #查出数据库中股票代码为code的条数（一般为0或1）
+    field = '''(stockcode,stockname,industry,area,pe,outstanding,totals,totalAssets,liquidAssets,fixedAssets,
+            reserved,reservedPe,esp,bvps,pb,timeToMarket,undp,perundp,rev,profit,gpr,npr,holders)'''
 
-
+    if len(t_result) == 0:                              #数据库中不存在股票代码为code的记录
+        #插入数据
+        DBHelper().insertTupleToTable(tablename,t,field)
+        print(f"插入{code}信息成功")
+    elif len(t_result) == 1:
+        #更新数据
+        update_sql = f"delete from {tablename} where stockcode='{code}'"
+        DBHelper().execute(update_sql)
+        DBHelper().insertTupleToTable(tablename,t,field)
+        print(f"更新{code}信息成功")
 
 
 def getAllStock():
@@ -66,29 +74,31 @@ def getAllStock():
         text = text.decode('GBK')
         text = text.replace('--', '')
         df = pd.read_csv(StringIO(text), dtype={'code': 'object'})
-        df = df.set_index('code')
+        #df = df.set_index('code')
     except:
         print("读取《http://file.tushare.org/tsdata/all.csv》错误")
         return
 
     for index,row in df.iterrows():
-        code = gf.code_to_symbol(index)
+        row[0] = gf.code_to_symbol(row[0])
+        code = row[0]
         t = tuple(row)
+        _updateBasicTableInfo(code,t)
 
-    
 
 
-#将机构代码、机构名称写入broker_info表（每月运行）
+
+#将机构代码、机构名称写入broker_info表。同时将新的机构名称进行改名（清洗）（每月运行）
 def getBrokerInfo():
-    dbObject = msql.SingletonModel(host='localhost', port='3306', user='root', passwd='redmarss',
-                                   db='tushare', charset='utf8',mycursor='list')
-    list_broker = dbObject.fetchall(table='broker_buy_summary', field='broker_code')
+    #取出broker_buy_summary表中所有存在的broker_code 并去重
+    sql_select = "select broker_code,broker_name from broker_buy_summary"
+    list_broker = DBHelper().fetchall(sql_select)
     list_broker = list(set(list_broker))
 
     for i in range(len(list_broker)):
         broker_code = list_broker[i][0]
-        broker_name = dbObject.fetchone(table="broker_buy_summary",field="broker_name",
-                                        where="broker_code='%s'"%broker_code,order="ts_date desc")[0]
+        sql_brokername = f"select broker_name from broker_buy_summary where broker_code='{broker_code} order by ts_date desc'"
+        broker_name = DBHelper().fetchone(sql_brokername)[0]
         getcode = dbObject.fetchone(table='broker_info',where="broker_code='%s'"%broker_code)
         if getcode is None:
             dbObject.insert(table='broker_info',broker_code=broker_code,broker_name=broker_name)
@@ -152,8 +162,7 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
 
 
 if __name__ == "__main__":
-    getAllStock()
     #每月运行一次，获取股票最新代码及股票名称
-    #print(getAllStock())                               #每月运行一次，定于每月第一个周五上午8:30
-    #getBrokerInfo()
+    #getAllStock()                            #每月运行一次，定于每月第一个周五上午8:30
+    getBrokerInfo()
     #is_holiday("2020-10-24","2020-12-31")       #每年更新一次即可，下次更新时间：2020年12月28日

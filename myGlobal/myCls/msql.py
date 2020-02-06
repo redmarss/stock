@@ -85,7 +85,7 @@ class DBHelper(object):
             print(f"执行{sql}语句错误，请检查！")
 
     
-    def updateTupleToTable(self,tablename,set,where):
+    def updateTupleToTable(self,tablename,set_t,where):
         sql = f"update {tablename} set {set} where {where}"
         try:
             self.cur.execute(sql)

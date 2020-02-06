@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="8c825d1e-b5ed-464e-abc3-6771eb4c9ca5" name="默认更改列表" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spider/DailyToMVN.py" beforeDir="false" afterPath="$PROJECT_DIR$/Spider/DailyToMVN.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spider/MonthlyRun.py" beforeDir="false" afterPath="$PROJECT_DIR$/Spider/MonthlyRun.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myGlobal/myCls/msql.py" beforeDir="false" afterPath="$PROJECT_DIR$/myGlobal/myCls/msql.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,7 +20,7 @@
     <SUITE FILE_PATH="coverage/stock$mylogger.coverage" NAME="mylogger Coverage Results" MODIFIED="1560129045423" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/myGlobal/myCls" />
     <SUITE FILE_PATH="coverage/stock$Strategy.coverage" NAME="Strategy Coverage Results" MODIFIED="1566279695679" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/myGlobal/myCls" />
     <SUITE FILE_PATH="coverage/stock$SimulateCls.coverage" NAME="SimulateCls Coverage Results" MODIFIED="1567152282256" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/myGlobal/myCls" />
-    <SUITE FILE_PATH="coverage/stock$MonthlyRun__1_.coverage" NAME="MonthlyRun (1) Coverage Results" MODIFIED="1580193205497" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Spider" />
+    <SUITE FILE_PATH="coverage/stock$MonthlyRun__1_.coverage" NAME="MonthlyRun (1) Coverage Results" MODIFIED="1580961859590" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Spider" />
     <SUITE FILE_PATH="coverage/stock$DailyToMVN.coverage" NAME="DailyToMVN Coverage Results" MODIFIED="1576716701307" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Run" />
     <SUITE FILE_PATH="coverage/stock$AnaylyzeBroker.coverage" NAME="AnaylyzeBroker Coverage Results" MODIFIED="1555896210314" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Analyze" />
     <SUITE FILE_PATH="coverage/stock$Get_Smart_Watch_Everyday.coverage" NAME="Get_Smart_Watch_Everyday Coverage Results" MODIFIED="1578039271092" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Run" />
@@ -26,6 +28,7 @@
     <SUITE FILE_PATH="coverage/stock$BrokerCls.coverage" NAME="BrokerCls Coverage Results" MODIFIED="1566801313207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/myGlobal/myCls" />
     <SUITE FILE_PATH="coverage/stock$DailySimulate.coverage" NAME="DailySimulate Coverage Results" MODIFIED="1567494389923" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Run" />
     <SUITE FILE_PATH="coverage/stock$test.coverage" NAME="test Coverage Results" MODIFIED="1577951644718" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/stock$DailyToMVN__1_.coverage" NAME="DailyToMVN (1) Coverage Results" MODIFIED="1580976892096" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Spider" />
     <SUITE FILE_PATH="coverage/stock$myTime.coverage" NAME="myTime Coverage Results" MODIFIED="1557391242495" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/myGlobal" />
     <SUITE FILE_PATH="coverage/stock$DailyRun.coverage" NAME="DailyRun Coverage Results" MODIFIED="1557797463646" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Run" />
     <SUITE FILE_PATH="coverage/stock$StrategyCls.coverage" NAME="StrategyCls Coverage Results" MODIFIED="1567146136950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/myGlobal/myCls" />
@@ -36,45 +39,42 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test.py">
+        <entry file="file://$PROJECT_DIR$/Spider/MonthlyRun.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="387">
+              <caret line="107" column="67" selection-start-line="107" selection-start-column="67" selection-end-line="107" selection-end-column="67" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Spider/__init__.py">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Spider/DailyToMVN.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="405">
+              <caret line="106" column="22" selection-start-line="106" selection-start-column="22" selection-end-line="106" selection-end-column="22" />
+              <folding>
+                <element signature="e#307#327#0" />
+                <element signature="e#1849#1867#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Run/Insert_smart_watch_ref.py">
+        <entry file="file://H:/Anaconda/envs/stock/Lib/site-packages/pymysql/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="119">
-              <caret line="7" column="24" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="544">
-              <caret line="35" column="44" selection-start-line="35" selection-start-column="44" selection-end-line="35" selection-end-column="44" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Spider/MonthlyRun.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="27" column="16" selection-start-line="27" selection-start-column="16" selection-end-line="27" selection-end-column="16" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/myGlobal/myCls/msql.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-183">
-              <caret line="55" selection-start-line="55" selection-end-line="55" />
-              <folding>
-                <element signature="e#53#67#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="1377">
+              <caret line="92" selection-start-line="92" selection-end-line="92" />
             </state>
           </provider>
         </entry>
@@ -190,7 +190,6 @@
         <option value="$PROJECT_DIR$/myGlobal/myCls/mylogger.py" />
         <option value="$PROJECT_DIR$/myGlobal/myCls/msqlHelper.py" />
         <option value="$PROJECT_DIR$/myGlobal/myTime.py" />
-        <option value="$PROJECT_DIR$/myGlobal/myCls/msql.py" />
         <option value="$PROJECT_DIR$/myGlobal/globalFunction.py" />
         <option value="$PROJECT_DIR$/myGlobal/ftypeOperate.py" />
         <option value="$PROJECT_DIR$/dateu.py" />
@@ -208,7 +207,9 @@
         <option value="$PROJECT_DIR$/Run/Insert_smart_watch_ref.py" />
         <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py" />
+        <option value="$PROJECT_DIR$/myGlobal/myCls/msql.py" />
         <option value="$PROJECT_DIR$/Spider/MonthlyRun.py" />
+        <option value="$PROJECT_DIR$/Spider/DailyToMVN.py" />
       </list>
     </option>
   </component>
@@ -227,7 +228,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -270,6 +270,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -288,8 +289,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.MonthlyRun (1)">
-    <configuration name="DailyToMVN" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.DailyToMVN (1)">
+    <configuration name="DailyToMVN (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="stock" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -297,12 +298,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Run" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Spider" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Run/DailyToMVN.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Spider/DailyToMVN.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -423,19 +424,19 @@
     </configuration>
     <list>
       <item itemvalue="Python.Unnamed" />
-      <item itemvalue="Python.DailyToMVN" />
       <item itemvalue="Python.MonthlyRun" />
       <item itemvalue="Python.test" />
       <item itemvalue="Python.Get_Smart_Watch_Everyday" />
       <item itemvalue="Python.MonthlyRun (1)" />
+      <item itemvalue="Python.DailyToMVN (1)" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.DailyToMVN (1)" />
         <item itemvalue="Python.MonthlyRun (1)" />
         <item itemvalue="Python.Get_Smart_Watch_Everyday" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.MonthlyRun" />
-        <item itemvalue="Python.DailyToMVN" />
       </list>
     </recent_temporary>
   </component>
@@ -520,7 +521,11 @@
       <workItem from="1578018217192" duration="6131000" />
       <workItem from="1580180870243" duration="33000" />
       <workItem from="1580180908877" duration="2651000" />
-      <workItem from="1580193113453" duration="2056000" />
+      <workItem from="1580193113453" duration="2668000" />
+      <workItem from="1580364735472" duration="4210000" />
+      <workItem from="1580430996294" duration="9988000" />
+      <workItem from="1580886107968" duration="1722000" />
+      <workItem from="1580960022060" duration="6117000" />
     </task>
     <task id="LOCAL-00001" summary="company">
       <created>1554628003961</created>
@@ -851,39 +856,54 @@
       <option name="project" value="LOCAL" />
       <updated>1577954152041</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="company">
+      <created>1580200337265</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1580200337265</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="241742000" />
+    <option name="totallyTimeSpent" value="264391000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1296" height="1010" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.32281554" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.345749" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32990867" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4911003" visible="true" weight="0.32534248" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4911003" weight="0.32534248" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info active="true" anchor="bottom" id="TODO" order="6" visible="true" weight="0.32990867" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.33371824" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5088997" side_tool="true" weight="0.32990867" />
-      <window_info anchor="bottom" id="调试" order="11" sideWeight="0.4935275" weight="0.32947975" />
+      <window_info anchor="bottom" id="调试" order="11" sideWeight="0.4935275" weight="0.32876712" />
       <window_info anchor="bottom" id="Terminal" order="12" sideWeight="0.49919093" weight="0.3242009" />
       <window_info anchor="bottom" id="Python Console" order="13" />
-      <window_info anchor="right" id="Key Promoter X" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="SciView" order="3" weight="0.32873377" />
       <window_info anchor="right" id="Database" order="4" />
+      <window_info anchor="right" id="Key Promoter X" order="5" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -926,11 +946,29 @@
           <line>37</line>
           <option name="timeStamp" value="99" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Spider/MonthlyRun.py</url>
+          <line>97</line>
+          <option name="timeStamp" value="104" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Spider/MonthlyRun.py</url>
+          <line>94</line>
+          <option name="timeStamp" value="105" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Spider/DailyToMVN.py</url>
+          <line>90</line>
+          <option name="timeStamp" value="108" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="tuple(row)" language="Python" />
+        <watch expression="code_sql" language="Python" />
+        <watch expression="update_name_sql" language="Python" />
+        <watch expression="insert_broker_sql" language="Python" />
+        <watch expression="old_name == name" language="Python" />
       </configuration>
     </watches-manager>
   </component>
@@ -949,52 +987,52 @@
     </expressions>
     <expressions id="watch">
       <expression>
-        <expression-string>tuple(row)</expression-string>
+        <expression-string>old_name == name</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>list_bin[len(list_bin) - index]</expression-string>
+        <expression-string>insert_broker_sql</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>t[3]</expression-string>
+        <expression-string>update_name_sql</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>Strategy('sh600733',self._ts_date,self._brokercode,self._ftype,self._amount)</expression-string>
+        <expression-string>code_sql</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>Stock('sh600733','2018-09-28')</expression-string>
+        <expression-string>list(set(list_broker))</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>Stock()</expression-string>
+        <expression-string>sql_select</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>df</expression-string>
+        <expression-string>len(list_broker)</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>text</expression-string>
+        <expression-string>t</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>url</expression-string>
+        <expression-string>value</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>ct.ALL_STOCK_BASICS_FILE%(datepre, '' if date is None else wdate)</expression-string>
+        <expression-string>sql</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -1187,6 +1225,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/myGlobal/myCls/msql.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="18" selection-start-line="18" selection-end-line="18" />
+          <folding>
+            <element signature="e#53#67#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://H:/Anaconda/envs/stock/Lib/site-packages/pymysql/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1377">
+          <caret line="92" selection-start-line="92" selection-end-line="92" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/myGlobal/myTime.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
@@ -1227,20 +1282,27 @@
     <entry file="file://$PROJECT_DIR$/log/default.log">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/myGlobal/myCls/msql.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-183">
-          <caret line="55" selection-start-line="55" selection-end-line="55" />
-          <folding>
-            <element signature="e#53#67#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Spider/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/Spider/MonthlyRun.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="27" column="16" selection-start-line="27" selection-start-column="16" selection-end-line="27" selection-end-column="16" />
+        <state relative-caret-position="387">
+          <caret line="107" column="67" selection-start-line="107" selection-start-column="67" selection-end-line="107" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Spider/DailyToMVN.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="106" column="22" selection-start-line="106" selection-start-column="22" selection-end-line="106" selection-end-column="22" />
+          <folding>
+            <element signature="e#307#327#0" />
+            <element signature="e#1849#1867#0" />
+          </folding>
         </state>
       </provider>
     </entry>
