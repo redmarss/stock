@@ -4,8 +4,6 @@
     <list default="true" id="8c825d1e-b5ed-464e-abc3-6771eb4c9ca5" name="默认更改列表" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spider/DailyToMVN.py" beforeDir="false" afterPath="$PROJECT_DIR$/Spider/DailyToMVN.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spider/MonthlyRun.py" beforeDir="false" afterPath="$PROJECT_DIR$/Spider/MonthlyRun.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myGlobal/myCls/msql.py" beforeDir="false" afterPath="$PROJECT_DIR$/myGlobal/myCls/msql.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,7 +26,7 @@
     <SUITE FILE_PATH="coverage/stock$BrokerCls.coverage" NAME="BrokerCls Coverage Results" MODIFIED="1566801313207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/myGlobal/myCls" />
     <SUITE FILE_PATH="coverage/stock$DailySimulate.coverage" NAME="DailySimulate Coverage Results" MODIFIED="1567494389923" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Run" />
     <SUITE FILE_PATH="coverage/stock$test.coverage" NAME="test Coverage Results" MODIFIED="1577951644718" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/stock$DailyToMVN__1_.coverage" NAME="DailyToMVN (1) Coverage Results" MODIFIED="1580976892096" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Spider" />
+    <SUITE FILE_PATH="coverage/stock$DailyToMVN__1_.coverage" NAME="DailyToMVN (1) Coverage Results" MODIFIED="1581049423215" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Spider" />
     <SUITE FILE_PATH="coverage/stock$myTime.coverage" NAME="myTime Coverage Results" MODIFIED="1557391242495" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/myGlobal" />
     <SUITE FILE_PATH="coverage/stock$DailyRun.coverage" NAME="DailyRun Coverage Results" MODIFIED="1557797463646" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Run" />
     <SUITE FILE_PATH="coverage/stock$StrategyCls.coverage" NAME="StrategyCls Coverage Results" MODIFIED="1567146136950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/myGlobal/myCls" />
@@ -41,7 +39,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Spider/MonthlyRun.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="387">
+            <state relative-caret-position="1819">
               <caret line="107" column="67" selection-start-line="107" selection-start-column="67" selection-end-line="107" selection-end-column="67" />
             </state>
           </provider>
@@ -55,12 +53,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Spider/DailyToMVN.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="106" column="22" selection-start-line="106" selection-start-column="22" selection-end-line="106" selection-end-column="22" />
-              <folding>
-                <element signature="e#307#327#0" />
-                <element signature="e#1849#1867#0" />
-              </folding>
+            <state relative-caret-position="799">
+              <caret line="134" column="4" lean-forward="true" selection-start-line="134" selection-start-column="4" selection-end-line="134" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -525,7 +519,8 @@
       <workItem from="1580364735472" duration="4210000" />
       <workItem from="1580430996294" duration="9988000" />
       <workItem from="1580886107968" duration="1722000" />
-      <workItem from="1580960022060" duration="6117000" />
+      <workItem from="1580960022060" duration="6411000" />
+      <workItem from="1581047772505" duration="1760000" />
     </task>
     <task id="LOCAL-00001" summary="company">
       <created>1554628003961</created>
@@ -863,11 +858,18 @@
       <option name="project" value="LOCAL" />
       <updated>1580200337265</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="company">
+      <created>1580977273691</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1580977273691</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="264391000" />
+    <option name="totallyTimeSpent" value="266445000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -880,17 +882,18 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1296" height="1010" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.345749" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.351417" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32990867" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4911003" weight="0.32534248" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4911003" visible="true" weight="0.32534248" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info active="true" anchor="bottom" id="TODO" order="6" visible="true" weight="0.32990867" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32990867" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.33371824" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
@@ -956,19 +959,12 @@
           <line>94</line>
           <option name="timeStamp" value="105" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Spider/DailyToMVN.py</url>
-          <line>90</line>
-          <option name="timeStamp" value="108" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="code_sql" language="Python" />
-        <watch expression="update_name_sql" language="Python" />
-        <watch expression="insert_broker_sql" language="Python" />
-        <watch expression="old_name == name" language="Python" />
+        <watch expression="t" language="Python" />
+        <watch expression="old_name" language="Python" />
       </configuration>
     </watches-manager>
   </component>
@@ -986,6 +982,16 @@
       </expression>
     </expressions>
     <expressions id="watch">
+      <expression>
+        <expression-string>old_name</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>t</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>old_name == name</expression-string>
         <language-id>Python</language-id>
@@ -1022,17 +1028,7 @@
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
       <expression>
-        <expression-string>t</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
         <expression-string>value</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>sql</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -1235,6 +1231,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Spider/MonthlyRun.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1819">
+          <caret line="107" column="67" selection-start-line="107" selection-start-column="67" selection-end-line="107" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Spider/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://H:/Anaconda/envs/stock/Lib/site-packages/pymysql/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1377">
@@ -1282,27 +1291,10 @@
     <entry file="file://$PROJECT_DIR$/log/default.log">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Spider/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Spider/MonthlyRun.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="387">
-          <caret line="107" column="67" selection-start-line="107" selection-start-column="67" selection-end-line="107" selection-end-column="67" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Spider/DailyToMVN.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="106" column="22" selection-start-line="106" selection-start-column="22" selection-end-line="106" selection-end-column="22" />
-          <folding>
-            <element signature="e#307#327#0" />
-            <element signature="e#1849#1867#0" />
-          </folding>
+        <state relative-caret-position="799">
+          <caret line="134" column="4" lean-forward="true" selection-start-line="134" selection-start-column="4" selection-end-line="134" selection-end-column="4" />
         </state>
       </provider>
     </entry>

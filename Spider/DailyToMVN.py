@@ -84,12 +84,11 @@ def BrokerInfoClean(startdate,enddate):
     list_broker = DBHelper().fetchall(sql_select)
     list_broker = list(set(list_broker))
 
+    print(len(list_broker))
     for i in range(len(list_broker)):
-        # code = list_broker[i][0]
-        # name = list_broker[i][1]
+        code = list_broker[i][0]
+        name = list_broker[i][1]
 
-        code = '80561011'
-        name = '南京证券股份有限公司江阴澄杨路证券营业部'
 
         #查找该code 是否在broker_info表
         code_sql = f"select * from broker_info where broker_code='{code}'"
@@ -100,12 +99,14 @@ def BrokerInfoClean(startdate,enddate):
             old_name = DBHelper().fetchone(is_samename_sql)[0]
 
             if old_name != name:
+                print(f"正清洗机构代码{code}数据")
                 #更新broker_info表中机构名称
                 update_name_sql = f"update broker_info set broker_name='{name}' where broker_code='{code}'"
                 DBHelper().execute(update_name_sql)
                 #更新broker_buy_summary中历史数据
-                # TODO
-
+                update_broker_buy_summay_sql = f'update broker_buy_summary set broker_name="{name}" where broker_code="{code}"'
+                DBHelper().execute(update_broker_buy_summay_sql)
+                print(f"机构代码{code}数据清洗成功")
 
         else:
             #插入该机构代码及名称至broker_info表
@@ -117,10 +118,10 @@ def BrokerInfoClean(startdate,enddate):
 
 
 if __name__ == '__main__':
-    # proc = subprocess.Popen("C:\\Users\\hpcdc\\Desktop\\runjar.bat",creationflags=subprocess.CREATE_NEW_CONSOLE)
-    # pobj = psutil.Process(proc.pid)
-    # time.sleep(20)
-    #
+    proc = subprocess.Popen("C:\\Users\\hpcdc\\Desktop\\runjar.bat",creationflags=subprocess.CREATE_NEW_CONSOLE)
+    pobj = psutil.Process(proc.pid)
+    time.sleep(20)
+
 
     if datetime.datetime.today().hour > 18:     #运行时间大于18点
         start = str(datetime.datetime.today().date()-datetime.timedelta(days=20))
@@ -131,12 +132,12 @@ if __name__ == '__main__':
 
 
     #每日获取股票相关数据
-    #RunGetDayDataToMVN(start=start,end=end)
+    RunGetDayDataToMVN(start=start,end=end)
     #每日获取机构数据
-    #brokerInfo(startDate=start,endDate=end)
+    brokerInfo(startDate=start,endDate=end)
     #每日清洗broker_info表中数据
     BrokerInfoClean(start,end)
 
-    # for c in pobj.children(recursive=True):
-    #     c.kill()
-    # pobj.kill()
+    for c in pobj.children(recursive=True):
+        c.kill()
+    pobj.kill()
