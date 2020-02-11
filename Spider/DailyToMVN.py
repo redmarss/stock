@@ -135,6 +135,8 @@ if __name__ == '__main__':
     RunGetDayDataToMVN(start=start,end=end)
     #每日获取机构数据
     brokerInfo(startDate=start,endDate=end)
+    #清洗
+
     #每日清洗broker_info表中数据
     BrokerInfoClean(start,end)
 

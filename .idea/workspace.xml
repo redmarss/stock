@@ -3,7 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="8c825d1e-b5ed-464e-abc3-6771eb4c9ca5" name="默认更改列表" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Run/DailySimulate.py" beforeDir="false" afterPath="$PROJECT_DIR$/Run/DailySimulate.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py" beforeDir="false" afterPath="$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Run/Insert_smart_watch_ref.py" beforeDir="false" afterPath="$PROJECT_DIR$/Run/Insert_smart_watch_ref.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spider/DailyToMVN.py" beforeDir="false" afterPath="$PROJECT_DIR$/Spider/DailyToMVN.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Spider/MonthlyRun.py" beforeDir="false" afterPath="$PROJECT_DIR$/Spider/MonthlyRun.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -37,31 +41,12 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Spider/MonthlyRun.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1819">
-              <caret line="107" column="67" selection-start-line="107" selection-start-column="67" selection-end-line="107" selection-end-column="67" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Spider/__init__.py">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Spider/DailyToMVN.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="799">
-              <caret line="134" column="4" lean-forward="true" selection-start-line="134" selection-start-column="4" selection-end-line="134" selection-end-column="4" />
+            <state relative-caret-position="625">
+              <caret line="137" column="7" lean-forward="true" selection-start-line="137" selection-start-column="7" selection-end-line="137" selection-end-column="7" />
             </state>
           </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
@@ -85,14 +70,44 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Run/DailySimulate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="986">
-              <caret line="64" column="79" selection-start-line="64" selection-start-column="79" selection-end-line="64" selection-end-column="79" />
+            <state relative-caret-position="421">
+              <caret line="27" column="11" lean-forward="true" selection-start-line="27" selection-start-column="10" selection-end-line="27" selection-end-column="11" />
               <folding>
                 <element signature="e#123#138#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myGlobal/myCls/SimulateCls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="408">
+              <caret line="93" selection-start-line="93" selection-end-line="93" />
+              <folding>
+                <element signature="e#46#82#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="323">
+              <caret line="19" column="33" selection-start-line="19" selection-start-column="33" selection-end-line="19" selection-end-column="33" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Run/Insert_smart_watch_ref.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="119">
+              <caret line="7" column="26" selection-start-column="2" selection-end-line="57" selection-end-column="15" />
             </state>
           </provider>
         </entry>
@@ -194,15 +209,15 @@
         <option value="$PROJECT_DIR$/myGlobal/myCls/BrokerCls.py" />
         <option value="$PROJECT_DIR$/myGlobal/myCls/SimulateCls.py" />
         <option value="$PROJECT_DIR$/myGlobal/myCls/StrategyCls.py" />
-        <option value="$PROJECT_DIR$/Run/DailySimulate.py" />
         <option value="$PROJECT_DIR$/log/default.log" />
         <option value="$PROJECT_DIR$/Run/DailyToMVN.py" />
         <option value="$PROJECT_DIR$/Run/MonthlyRun.py" />
-        <option value="$PROJECT_DIR$/Run/Insert_smart_watch_ref.py" />
         <option value="$PROJECT_DIR$/test.py" />
-        <option value="$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py" />
         <option value="$PROJECT_DIR$/myGlobal/myCls/msql.py" />
         <option value="$PROJECT_DIR$/Spider/MonthlyRun.py" />
+        <option value="$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py" />
+        <option value="$PROJECT_DIR$/Run/Insert_smart_watch_ref.py" />
+        <option value="$PROJECT_DIR$/Run/DailySimulate.py" />
         <option value="$PROJECT_DIR$/Spider/DailyToMVN.py" />
       </list>
     </option>
@@ -222,6 +237,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -264,7 +280,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -520,14 +535,9 @@
       <workItem from="1580430996294" duration="9988000" />
       <workItem from="1580886107968" duration="1722000" />
       <workItem from="1580960022060" duration="6411000" />
-      <workItem from="1581047772505" duration="1760000" />
-    </task>
-    <task id="LOCAL-00001" summary="company">
-      <created>1554628003961</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1554628003961</updated>
+      <workItem from="1581047772505" duration="5571000" />
+      <workItem from="1581131809054" duration="615000" />
+      <workItem from="1581383979343" duration="5511000" />
     </task>
     <task id="LOCAL-00002" summary="company">
       <created>1554712370727</created>
@@ -865,11 +875,18 @@
       <option name="project" value="LOCAL" />
       <updated>1580977273691</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="company">
+      <created>1581049555714</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1581049555715</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="266445000" />
+    <option name="totallyTimeSpent" value="276382000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -884,12 +901,12 @@
     <frame x="-8" y="-8" width="1296" height="1010" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.351417" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.36437246" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32990867" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4911003" visible="true" weight="0.32534248" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4911003" weight="0.32534248" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -940,24 +957,9 @@
           <option name="timeStamp" value="94" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Run/DailySimulate.py</url>
-          <line>59</line>
-          <option name="timeStamp" value="97" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py</url>
           <line>37</line>
           <option name="timeStamp" value="99" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Spider/MonthlyRun.py</url>
-          <line>97</line>
-          <option name="timeStamp" value="104" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Spider/MonthlyRun.py</url>
-          <line>94</line>
-          <option name="timeStamp" value="105" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -1192,34 +1194,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/myGlobal/myCls/SimulateCls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1428">
-          <caret line="93" selection-start-line="93" selection-end-line="93" />
-          <folding>
-            <element signature="e#46#82#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Run/DailyToMVN.py" />
     <entry file="file://$PROJECT_DIR$/Run/MonthlyRun.py" />
     <entry file="file://$PROJECT_DIR$/test.py">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Run/Insert_smart_watch_ref.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="119">
-          <caret line="7" column="24" selection-start-line="7" selection-start-column="24" selection-end-line="7" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="544">
-          <caret line="35" column="44" selection-start-line="35" selection-start-column="44" selection-end-line="35" selection-end-column="44" />
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/myGlobal/myCls/msql.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -1231,18 +1209,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Spider/MonthlyRun.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1819">
-          <caret line="107" column="67" selection-start-line="107" selection-start-column="67" selection-end-line="107" selection-end-column="67" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Spider/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Spider/MonthlyRun.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2533">
+          <caret line="149" column="8" selection-start-line="149" selection-start-column="8" selection-end-line="149" selection-end-column="8" />
+        </state>
+      </provider>
     </entry>
     <entry file="file://H:/Anaconda/envs/stock/Lib/site-packages/pymysql/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -1261,13 +1239,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Run/DailySimulate.py">
+    <entry file="file://$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="986">
-          <caret line="64" column="79" selection-start-line="64" selection-start-column="79" selection-end-line="64" selection-end-column="79" />
-          <folding>
-            <element signature="e#123#138#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="323">
+          <caret line="19" column="33" selection-start-line="19" selection-start-column="33" selection-end-line="19" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Run/Insert_smart_watch_ref.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="26" selection-start-column="2" selection-end-line="57" selection-end-column="15" />
         </state>
       </provider>
     </entry>
@@ -1291,10 +1273,30 @@
     <entry file="file://$PROJECT_DIR$/log/default.log">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/myGlobal/myCls/SimulateCls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="93" selection-start-line="93" selection-end-line="93" />
+          <folding>
+            <element signature="e#46#82#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Spider/DailyToMVN.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="799">
-          <caret line="134" column="4" lean-forward="true" selection-start-line="134" selection-start-column="4" selection-end-line="134" selection-end-column="4" />
+        <state relative-caret-position="625">
+          <caret line="137" column="7" lean-forward="true" selection-start-line="137" selection-start-column="7" selection-end-line="137" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Run/DailySimulate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="421">
+          <caret line="27" column="11" lean-forward="true" selection-start-line="27" selection-start-column="10" selection-end-line="27" selection-end-column="11" />
+          <folding>
+            <element signature="e#123#138#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

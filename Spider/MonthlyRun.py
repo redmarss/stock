@@ -88,25 +88,7 @@ def getAllStock():
 
 
 
-#将机构代码、机构名称写入broker_info表。同时将新的机构名称进行改名（清洗）（每月运行）
-def getBrokerInfo():
-    #取出broker_buy_summary表中所有存在的broker_code 并去重
-    sql_select = "select broker_code,broker_name from broker_buy_summary"
-    list_broker = DBHelper().fetchall(sql_select)
-    list_broker = list(set(list_broker))
 
-    for i in range(len(list_broker)):
-        broker_code = list_broker[i][0]
-        sql_brokername = f"select broker_name from broker_buy_summary where broker_code='{broker_code} order by ts_date desc'"
-        broker_name = DBHelper().fetchone(sql_brokername)[0]
-        getcode = dbObject.fetchone(table='broker_info',where="broker_code='%s'"%broker_code)
-        if getcode is None:
-            dbObject.insert(table='broker_info',broker_code=broker_code,broker_name=broker_name)
-        else:
-            dbObject.update(table='broker_info',where="broker_code='%s'"%broker_code,broker_name=broker_name)
-
-        dbObject.update(table="broker_buy_summary",broker_name=broker_name,where="broker_code='%s'"%broker_code)
-        print("%s机构数据清洗完毕"%broker_code,i)
 
 #每年运行一次即可
 def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
@@ -164,5 +146,5 @@ def is_holiday(startdate='2017-01-01',enddate="2019-12-31"):
 if __name__ == "__main__":
     #每月运行一次，获取股票最新代码及股票名称
     #getAllStock()                            #每月运行一次，定于每月第一个周五上午8:30
-    getBrokerInfo()
     #is_holiday("2020-10-24","2020-12-31")       #每年更新一次即可，下次更新时间：2020年12月28日
+    pass

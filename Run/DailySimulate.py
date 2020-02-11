@@ -21,6 +21,7 @@ def DailySimulate(t,ftype,amount,tablename):
     return result
 
 
+#计算仍需模拟的条数
 def getNotCacuTuple(ftype):
     return_list = []
     sql = '''
@@ -41,27 +42,12 @@ def getNotCacuTuple(ftype):
 
 
 if __name__ == '__main__':
-    # broker_list = gf.getBroker()            #获取所有列表
-    # startdate = datetime.datetime.strptime('2017-01-01',"%Y-%m-%d").date()
-    # enddate = datetime.datetime.today().date()
-    #
-    # print(broker_list)
-    # for brokercode in broker_list:
-    #     simudate = startdate
-    #     while simudate < enddate:
-    #         DailySimulate(brokercode,str(simudate),1,1000,"simulate_buy")
-    #         print(f"计算{brokercode}于{simudate}的交易")
-    #         simudate = simudate + datetime.timedelta(days=1)
-
-    ftype = 1
-    cacu_list = getNotCacuTuple(ftype)                  #第一种方式
-    print(len(cacu_list))
-    # for t in cacu_list:
-    #     DailySimulate(t[0],t[1],t[2],ftype,1000,"simulate_buy")
+    typelist = [1]                  #一共有多少种方法
+    for ftype in typelist:
+        #cacu_list = getNotCacuTuple(ftype)                  #第一种方式
 
 
-
-    pool = Pool(30)
-    pool.map(partial(DailySimulate,ftype=ftype,amount=1000,tablename="simulate_buy"),cacu_list)
-    pool.close()
-    pool.join()
+        pool = Pool(30)
+        pool.map(partial(DailySimulate,ftype=ftype,amount=1000,tablename="simulate_buy"),cacu_list)
+        pool.close()
+        pool.join()
