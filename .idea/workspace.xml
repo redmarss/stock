@@ -3,11 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="8c825d1e-b5ed-464e-abc3-6771eb4c9ca5" name="默认更改列表" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Run/DailySimulate.py" beforeDir="false" afterPath="$PROJECT_DIR$/Run/DailySimulate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py" beforeDir="false" afterPath="$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Run/Insert_smart_watch_ref.py" beforeDir="false" afterPath="$PROJECT_DIR$/Run/Insert_smart_watch_ref.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Spider/DailyToMVN.py" beforeDir="false" afterPath="$PROJECT_DIR$/Spider/DailyToMVN.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Spider/MonthlyRun.py" beforeDir="false" afterPath="$PROJECT_DIR$/Spider/MonthlyRun.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myGlobal/myTime.py" beforeDir="false" afterPath="$PROJECT_DIR$/myGlobal/myTime.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -30,7 +27,7 @@
     <SUITE FILE_PATH="coverage/stock$BrokerCls.coverage" NAME="BrokerCls Coverage Results" MODIFIED="1566801313207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/myGlobal/myCls" />
     <SUITE FILE_PATH="coverage/stock$DailySimulate.coverage" NAME="DailySimulate Coverage Results" MODIFIED="1567494389923" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Run" />
     <SUITE FILE_PATH="coverage/stock$test.coverage" NAME="test Coverage Results" MODIFIED="1577951644718" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/stock$DailyToMVN__1_.coverage" NAME="DailyToMVN (1) Coverage Results" MODIFIED="1581049423215" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Spider" />
+    <SUITE FILE_PATH="coverage/stock$DailyToMVN__1_.coverage" NAME="DailyToMVN (1) Coverage Results" MODIFIED="1581580287235" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Spider" />
     <SUITE FILE_PATH="coverage/stock$myTime.coverage" NAME="myTime Coverage Results" MODIFIED="1557391242495" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/myGlobal" />
     <SUITE FILE_PATH="coverage/stock$DailyRun.coverage" NAME="DailyRun Coverage Results" MODIFIED="1557797463646" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Run" />
     <SUITE FILE_PATH="coverage/stock$StrategyCls.coverage" NAME="StrategyCls Coverage Results" MODIFIED="1567146136950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/myGlobal/myCls" />
@@ -40,11 +37,16 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Spider/DailyToMVN.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="625">
-              <caret line="137" column="7" lean-forward="true" selection-start-line="137" selection-start-column="7" selection-end-line="137" selection-end-column="7" />
+            <state relative-caret-position="340">
+              <caret line="164" column="24" selection-start-line="164" selection-start-column="24" selection-end-line="164" selection-end-column="24" />
+              <folding>
+                <element signature="e#349#369#0" />
+                <element signature="e#1891#1909#0" />
+                <element signature="e#2553#2580#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -61,8 +63,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/myGlobal/myTime.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="14" selection-start-line="14" selection-end-line="14" />
+            <state relative-caret-position="136">
+              <caret line="29" column="25" selection-start-line="29" selection-start-column="25" selection-end-line="29" selection-end-column="25" />
               <folding>
                 <element signature="e#46#61#0" expanded="true" />
               </folding>
@@ -70,11 +72,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Run/DailySimulate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="421">
-              <caret line="27" column="11" lean-forward="true" selection-start-line="27" selection-start-column="10" selection-end-line="27" selection-end-column="11" />
+            <state relative-caret-position="385">
+              <caret line="42" lean-forward="true" selection-start-line="42" selection-end-line="42" />
               <folding>
                 <element signature="e#123#138#0" expanded="true" />
               </folding>
@@ -85,7 +87,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/myGlobal/myCls/SimulateCls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
+            <state relative-caret-position="1428">
               <caret line="93" selection-start-line="93" selection-end-line="93" />
               <folding>
                 <element signature="e#46#82#0" expanded="true" />
@@ -198,7 +200,6 @@
         <option value="$PROJECT_DIR$/myGlobal/myCls/multiProcess.py" />
         <option value="$PROJECT_DIR$/myGlobal/myCls/mylogger.py" />
         <option value="$PROJECT_DIR$/myGlobal/myCls/msqlHelper.py" />
-        <option value="$PROJECT_DIR$/myGlobal/myTime.py" />
         <option value="$PROJECT_DIR$/myGlobal/globalFunction.py" />
         <option value="$PROJECT_DIR$/myGlobal/ftypeOperate.py" />
         <option value="$PROJECT_DIR$/dateu.py" />
@@ -218,6 +219,7 @@
         <option value="$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py" />
         <option value="$PROJECT_DIR$/Run/Insert_smart_watch_ref.py" />
         <option value="$PROJECT_DIR$/Run/DailySimulate.py" />
+        <option value="$PROJECT_DIR$/myGlobal/myTime.py" />
         <option value="$PROJECT_DIR$/Spider/DailyToMVN.py" />
       </list>
     </option>
@@ -537,14 +539,9 @@
       <workItem from="1580960022060" duration="6411000" />
       <workItem from="1581047772505" duration="5571000" />
       <workItem from="1581131809054" duration="615000" />
-      <workItem from="1581383979343" duration="5511000" />
-    </task>
-    <task id="LOCAL-00002" summary="company">
-      <created>1554712370727</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1554712370727</updated>
+      <workItem from="1581383979343" duration="5676000" />
+      <workItem from="1581469313973" duration="911000" />
+      <workItem from="1581562240878" duration="9269000" />
     </task>
     <task id="LOCAL-00003" summary="company">
       <created>1554794517619</created>
@@ -882,11 +879,18 @@
       <option name="project" value="LOCAL" />
       <updated>1581049555715</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="company">
+      <created>1581410197152</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1581410197153</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="276382000" />
+    <option name="totallyTimeSpent" value="286727000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -901,12 +905,12 @@
     <frame x="-8" y="-8" width="1296" height="1010" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.36437246" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.37732795" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32990867" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4911003" weight="0.32534248" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4911003" visible="true" weight="0.32534248" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -960,6 +964,11 @@
           <url>file://$PROJECT_DIR$/Run/Get_Smart_Watch_Everyday.py</url>
           <line>37</line>
           <option name="timeStamp" value="99" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Spider/DailyToMVN.py</url>
+          <line>129</line>
+          <option name="timeStamp" value="102" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -1229,12 +1238,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/myGlobal/myTime.py">
+    <entry file="file://$PROJECT_DIR$/myGlobal/myCls/SimulateCls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="14" selection-start-line="14" selection-end-line="14" />
+        <state relative-caret-position="1428">
+          <caret line="93" selection-start-line="93" selection-end-line="93" />
           <folding>
-            <element signature="e#46#61#0" expanded="true" />
+            <element signature="e#46#82#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1273,29 +1282,34 @@
     <entry file="file://$PROJECT_DIR$/log/default.log">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/myGlobal/myCls/SimulateCls.py">
+    <entry file="file://$PROJECT_DIR$/myGlobal/myTime.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="93" selection-start-line="93" selection-end-line="93" />
+        <state relative-caret-position="136">
+          <caret line="29" column="25" selection-start-line="29" selection-start-column="25" selection-end-line="29" selection-end-column="25" />
           <folding>
-            <element signature="e#46#82#0" expanded="true" />
+            <element signature="e#46#61#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Run/DailySimulate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="385">
+          <caret line="42" lean-forward="true" selection-start-line="42" selection-end-line="42" />
+          <folding>
+            <element signature="e#123#138#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Spider/DailyToMVN.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="625">
-          <caret line="137" column="7" lean-forward="true" selection-start-line="137" selection-start-column="7" selection-end-line="137" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Run/DailySimulate.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="421">
-          <caret line="27" column="11" lean-forward="true" selection-start-line="27" selection-start-column="10" selection-end-line="27" selection-end-column="11" />
+        <state relative-caret-position="340">
+          <caret line="164" column="24" selection-start-line="164" selection-start-column="24" selection-end-line="164" selection-end-column="24" />
           <folding>
-            <element signature="e#123#138#0" expanded="true" />
+            <element signature="e#349#369#0" />
+            <element signature="e#1891#1909#0" />
+            <element signature="e#2553#2580#0" />
           </folding>
         </state>
       </provider>

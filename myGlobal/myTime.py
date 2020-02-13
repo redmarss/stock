@@ -22,21 +22,31 @@ def strTodate(strdate):
     except:
         return None
 
-def today():
-    day = datetime.datetime.today().date()
-    return str(day)
+@gf.typeassert(strdate=str,days=int)
+def DateAddOrDiffDay(strdate,days):
+    try:
+        date = datetime.datetime.strptime(strdate,"%Y-%m-%d").date()
+        result = date + datetime.timedelta(days=days)
+        return str(result)
+    except:
+        return None
+
+
+def Today():
+    date = datetime.datetime.today().date()
+    return str(date)
 
 @gf.typeassert(strdate=(str,type(None)))
 def get_year(strdate = None):
     if strdate is None:
-        strdate = today()
+        strdate = Today()
     year = datetime.datetime.strptime(strdate, "%Y-%m-%d").year
     return int(year)
 
 @gf.typeassert(strdate=(str,type(None)))
 def get_month(strdate = None):
     if strdate is None:
-        strdate = today()
+        strdate = Today()
     month = datetime.datetime.strptime(strdate, "%Y-%m-%d").month
     return int(month)
 
@@ -44,7 +54,7 @@ def get_month(strdate = None):
 @gf.typeassert(strdate=(str,type(None)))
 def get_day(strdate = None):
     if strdate is None:
-        strdate = today()
+        strdate = Today()
     day = datetime.datetime.strptime(strdate, "%Y-%m-%d").day
     return day
 

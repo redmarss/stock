@@ -7,8 +7,10 @@ from urllib.request import urlopen, Request,HTTPError
 from multiprocessing import Pool        #多线程
 from functools import partial
 
-import datetime
+import myGlobal.myTime as mTime
+
 import time
+
 import re
 import subprocess,psutil
 
@@ -73,18 +75,14 @@ def brokerInfo(startDate=None, endDate=None, pagesize=200000):
         print(e)
 # endregion
 
-#每日清洗broker_info中数据
-def BrokerInfoClean(startdate,enddate):
-    startdate = '2017-01-01'
-    enddate = str(datetime.datetime.today().date())
-
+# region 每日清洗broker_info中数据
+def BrokerInfoClean(strdate):
 
     #取出broker_buy_summary表中所有存在的broker_code 并去重
-    sql_select = f"select broker_code,broker_name from broker_buy_summary where ts_date between '{startdate}' and '{enddate}'"
+    sql_select = f"select broker_code,broker_name from broker_buy_summary where ts_date = '{strdate}'"
     list_broker = DBHelper().fetchall(sql_select)
     list_broker = list(set(list_broker))
 
-    print(len(list_broker))
     for i in range(len(list_broker)):
         code = list_broker[i][0]
         name = list_broker[i][1]
@@ -112,6 +110,36 @@ def BrokerInfoClean(startdate,enddate):
             #插入该机构代码及名称至broker_info表
             insert_broker_sql = f'insert into broker_info (broker_code,broker_name) VALUES ("{code}","{name}")'
             DBHelper().execute(insert_broker_sql)
+# endregion
+
+def CleanMVN(strdate):
+    #删除龙虎榜买卖数据中所有B股（股票代码以‘2’‘9’开头）
+    select_sql = f'''
+    SELECT a.id,b.id,a.stock_code FROM
+    broker_buy_stock_info AS a
+        INNER JOIN
+    broker_buy_summary AS b ON a.broker_buy_summary_id = b.id
+    where (a.stock_code like '2%' or a.stock_code like '9%') and ts_date ='{strdate}'
+    '''
+    t_sql = DBHelper().fetchall(select_sql)
+
+    for i in range(len(t_sql)):
+        broker_buy_stock_info_id =t_sql[i][0]
+        broker_buy_summary_id = t_sql[i][1]
+        stock_code = t_sql[i][2]
+        del_broker_buy_stock_info = f'''
+        delete from broker_buy_stock_info where id="{broker_buy_stock_info_id}";
+        '''
+        del_broker_buy_summary = f'''
+        delete from broker_buy_summary where id = "{broker_buy_summary_id}"; 
+        '''
+
+        try:
+            DBHelper().execute(del_broker_buy_stock_info)
+            DBHelper().execute(del_broker_buy_summary)
+            print(f"删除{strdate}日股票代码为{stock_code}龙虎榜数据成功！")
+        except:
+            print("删除数据错误")
 
 
 
@@ -122,24 +150,22 @@ if __name__ == '__main__':
     pobj = psutil.Process(proc.pid)
     time.sleep(20)
 
+    #运行时间为每天8.30分
+    start = mTime.DateAddOrDiffDay(mTime.Today(),-21)
 
-    if datetime.datetime.today().hour > 18:     #运行时间大于18点
-        start = str(datetime.datetime.today().date()-datetime.timedelta(days=20))
-    else:
-        start = str(datetime.datetime.today().date() - datetime.timedelta(days=21))
-
-    end = str(datetime.datetime.today().date() + datetime.timedelta(days=1))
+    end = mTime.DateAddOrDiffDay(mTime.Today(),-1)
 
 
     #每日获取股票相关数据
     RunGetDayDataToMVN(start=start,end=end)
     #每日获取机构数据
     brokerInfo(startDate=start,endDate=end)
-    #清洗
-
+    #清洗当日龙虎榜、股票数据
+    CleanMVN(end)
     #每日清洗broker_info表中数据
-    BrokerInfoClean(start,end)
+    BrokerInfoClean(end)
 
     for c in pobj.children(recursive=True):
         c.kill()
     pobj.kill()
+
