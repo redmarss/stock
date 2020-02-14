@@ -37,7 +37,7 @@ def getNotCacuTuple(ftype):
     for t in tuple_all:
         if not fto.judgeftype(t[3],ftype,1) and not t[2].startswith(('2','9')):           #去除已模拟的及B股
             return_list.append(t)
-    return return_list1
+    return return_list
 
 
 
