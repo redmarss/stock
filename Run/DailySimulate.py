@@ -44,7 +44,7 @@ def getNotCacuTuple(ftype):
 if __name__ == '__main__':
     typelist = [1]                  #一共有多少种方法
     for ftype in typelist:
-        #cacu_list = getNotCacuTuple(ftype)                  #第一种方式
+        #cacu_list = getNotCacuTuple(ftype)
 
 
         pool = Pool(30)

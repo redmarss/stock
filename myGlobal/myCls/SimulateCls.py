@@ -96,8 +96,8 @@ class BrokerSimulate(Broker):
                 print(f"{self.brokercode}于{self.ts_date}购买的{stockcode}第二天开盘涨幅超过8%，不买入")
                 self.__update_ftype(stockcode,15)
                 return True
-            elif t == 'SUSPENSION_ERROR':
-                self.__update_ftype(stockcode,15)
+            elif t == 'SUSPENSION_ERROR':           #停牌
+                self.__update_ftype(stockcode,255)
                 return True
 
             #3.将元组存入数据库
