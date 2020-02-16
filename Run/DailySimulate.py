@@ -5,7 +5,7 @@
 # Project:stock
 # File:DailySimulate
 
-import datetime
+import myGlobal.myTime as mTime
 import myGlobal.ftypeOperate as fto
 from myGlobal.myCls.msql import DBHelper
 import myGlobal.globalFunction as gf
@@ -22,7 +22,8 @@ def DailySimulate(t,ftype,amount,tablename):
 
 
 #计算仍需模拟的条数
-def getNotCacuTuple(ftype):
+def getNotCacuTuple(ftype,strdate):
+    #strdate = mTime.
     return_list = []
     sql = '''
     SELECT 
@@ -35,7 +36,7 @@ def getNotCacuTuple(ftype):
     '''
     tuple_all = DBHelper().fetchall(sql)
     for t in tuple_all:
-        if not fto.judgeftype(t[3],ftype,1) and not t[2].startswith(('2','9')):           #去除已模拟的及B股
+        if not fto.judgeftype(t[3],ftype,1):           #去除已模拟的
             return_list.append(t)
     return return_list
 
@@ -43,11 +44,15 @@ def getNotCacuTuple(ftype):
 
 if __name__ == '__main__':
     typelist = [1]                  #一共有多少种方法
+
+
     for ftype in typelist:
-        #cacu_list = getNotCacuTuple(ftype)
+        tablename = "simulate_buy_way"+str(typelist)
+        cacu_list = getNotCacuTuple(ftype)
+        print(len(cacu_list))
 
 
         pool = Pool(30)
-        pool.map(partial(DailySimulate,ftype=ftype,amount=1000,tablename="simulate_buy"),cacu_list)
+        pool.map(partial(DailySimulate,ftype=ftype,amount=1000,tablename=tablename),cacu_list)
         pool.close()
         pool.join()
