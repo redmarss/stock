@@ -89,8 +89,8 @@ def judgeftype(value,index,key=1):
     if index > FTYPE_LEN or index < 1:
         print(f"index参数超过{FTYPE_LEN}，本函数只支持{FTYPE_LEN}位,最小不能低于1")
         return False
-    if not 0 <= value <= 65535:
-        print("value值必须是0-65535之间")
+    if not 0 <= value <= 2**FTYPE_LEN-1:
+        print(f"value值必须是0-{2**FTYPE_LEN-1}之间")
         return False
     list_bin = list(bin(value)[2:].zfill(FTYPE_LEN))
     if list_bin[len(list_bin) - index] == str(key):

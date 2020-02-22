@@ -58,9 +58,9 @@ class BrokerSimulate(Broker):
 
 
     # region _createtable     创建tablename表
-    def _createtable(self,tablename):
+    def _createtable(self):
         sql_create = f"""
-        CREATE TABLE `tushare`.`{tablename}` (
+        CREATE TABLE `tushare`.`{self._tablename}` (
         `id` INT NOT NULL AUTO_INCREMENT,
         `ts_date` VARCHAR(45) NOT NULL,
         `broker_code` VARCHAR(45) NOT NULL,
@@ -80,14 +80,18 @@ class BrokerSimulate(Broker):
         """
         try:
             DBHelper().execute(sql_create)
-            print(f"创建{tablename}表成功")
+            print(f"创建{self._tablename}表成功")
         except:
-            mylogger.error(f"创建{tablename}表出错")
+            mylogger.error(f"创建{self._tablename}表出错")
     # endregion
 
     def simulateBuy(self,stockcode):
+        #1.查看tablename表是否存在，如果不在，则创建
+        isTableExists = DBHelper().isTableExists(self._tablename)
+        if not isTableExists:
+            self._createtable()
 
-        #1.查看simulateflag是否已模拟，如果模拟了，则什么都不做
+        #2.查看simulateflag是否已模拟，如果模拟了，则什么都不做
         if not self.__is_simulate(stockcode,self._ftype):
             #2.模拟买入，并返回一个元组
             strategy = Strategy(stockcode,self._ts_date,self._brokercode,self._ftype,self._amount)
@@ -145,6 +149,6 @@ class BrokerSimulate(Broker):
 
 
 
-if __name__ == '__main__':
-    bs = BrokerSimulate("80065939","2017-05-02",1,1000,"simulate_buy")
-    bs.simulateBuy()
+# if __name__ == '__main__':
+#     bs = BrokerSimulate("80065939","2017-05-02",1,1000,"simulate_buy")
+#     bs.simulateBuy()
