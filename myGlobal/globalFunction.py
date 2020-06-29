@@ -156,6 +156,13 @@ def lastTddate(strdate):
         print("日期输入有误")
         return
 
+def nextTddate(strdate):
+    '''
+    返回A股下一个交易日（修改于
+    :param strdate:
+    :return:
+    '''
+
 def postData(textByte,urlPost,flag=None):
     '''
     将byte数据Post至jar服务中

@@ -26,10 +26,11 @@ class Strategy(Stock):
         }
         return switch.get(self._ftype)
 
-    #策略1:第二天开盘买入，第三天开盘卖出；策略2：第二天开盘买入，第四天开盘卖出
+    #策略1:第二天开盘买入，第三天开盘卖出
     def __strategyOpenbuyOpensell(self):
-        t_price = self._next_some_days(self._ts_date,self._ftype + 2)  # 从买入当天，取ftype+2天数据
-        if len(t_price) != int(self._ftype) + 2:
+        GET_DAY_NUM=3
+        t_price = self._next_some_days(self._ts_date,GET_DAY_NUM)  # 从买入当天，取3天数据
+        if len(t_price) != GET_DAY_NUM:
             print(f"无法获取{self._stockcode}于{self._ts_date}买入后{self._ftype+2}天交易数据(停牌一个月以上)")
             return "SUSPENSION_ERROR"
         # 第二天开盘涨幅大于8%，不买
@@ -41,10 +42,10 @@ class Strategy(Stock):
         stock_code = self._stockcode
         stock_name = self.stockname
         buy_date = mt.diffDay(ts_date, 1)
-        sell_date = mt.diffDay(ts_date, int(self._ftype) + 1)
+        sell_date = mt.diffDay(ts_date, GET_DAY_NUM-1)
         buy_price = t_price[1].open_price
-        sell_price = t_price[self._ftype+ 1].open_price
-        get_day = self._ftype  # 持有天数
+        sell_price = t_price[2].open_price
+        get_day = GET_DAY_NUM-2  # 持有天数
         amount = self._amount
         gainmoney = round((sell_price - buy_price) * amount, 2)
         gainpercent = round(gainmoney / (buy_price * amount), 4)

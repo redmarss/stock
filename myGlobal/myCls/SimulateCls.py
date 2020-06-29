@@ -65,14 +65,17 @@ class BrokerSimulate(Broker):
         `ts_date` VARCHAR(45) NOT NULL,
         `broker_code` VARCHAR(45) NOT NULL,
         `stock_code` VARCHAR(45) NOT NULL,
+        `stock_name` VARCHAR (45) NOT NULL,
         `buy_date` VARCHAR(45) NULL,
         `sell_date` VARCHAR(45) NULL,
         `buy_price` VARCHAR(45) NULL,
         `sell_price` VARCHAR(45) NULL,
+        `get_day` VARCHAR (45) NULL,
         `amount` VARCHAR(45) NULL,
         `gainmoney` VARCHAR(45) NULL,
         `gainpercent` VARCHAR(45) NULL,
         `ftype` VARCHAR(5) NULL,
+        `getscore` VARCHAR (20) NULL,
         PRIMARY KEY (`id`),
         UNIQUE INDEX `id_UNIQUE` (`id` ASC),
         UNIQUE INDEX `broker_UNIQUE` (`ts_date` ASC, `broker_code` ASC, `stock_code` ASC)
@@ -96,12 +99,13 @@ class BrokerSimulate(Broker):
             #2.模拟买入，并返回一个元组
             strategy = Strategy(stockcode,self._ts_date,self._brokercode,self._ftype,self._amount)
             t = strategy.strategy()
+
             if t == 'HIGH_OPEN_ERROR':                           #买入后第二天开盘价>8%，则不买入
                 print(f"{self.brokercode}于{self.ts_date}购买的{stockcode}第二天开盘涨幅超过8%，不买入")
-                self.__update_ftype(stockcode,15)
+                self.__update_ftype(stockcode)
                 return True
             elif t == 'SUSPENSION_ERROR':           #停牌
-                self.__update_ftype(stockcode,255)
+                self.__update_ftype(stockcode)
                 return True
 
             #3.将元组存入数据库
@@ -112,8 +116,8 @@ class BrokerSimulate(Broker):
                 print(f"模拟{self.brokercode}于{self.ts_date}购买{stockcode}成功，模拟方式：{self._ftype}，购买数量：{self._amount}")
                 return True
             else:
+                print(f"以方式{self._ftype}插入({stockcode},{self._ts_date},{self._brokercode})数据库出错")
                 return False
-
 
 
     # region 判断、更新是否模拟过
@@ -126,9 +130,10 @@ class BrokerSimulate(Broker):
 
     #更新simulate_flag状态
     def __update_ftype(self,stockcode,flag=None):
+        #获取当前状态
         simulate_flag = fto.get_ftype(self._brokercode, stockcode, self._ts_date)
         new_flag = fto.set_ftype(simulate_flag,self._ftype,1)
-        if flag==15:
+        if flag==15:                    #状态码15
             result = fto.update_ftype(self._brokercode,stockcode,self._ts_date,15)           #第二天开盘涨幅超过8%，则记录ftype值为15
         else:
             result = fto.update_ftype(self._brokercode,stockcode,self._ts_date,new_flag)
@@ -140,12 +145,14 @@ class BrokerSimulate(Broker):
             result = DBHelper().execute(sql_insert)
             return result
         except:
-            mylogger().error()
+            print("error")
             return False
     # endregion
 
 
-
+#根据股票代码，日期来模拟
+class StockSimulate(Stock):
+    pass
 
 
 

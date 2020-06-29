@@ -6,6 +6,7 @@ import myGlobal.globalFunction as gf
 from urllib.request import urlopen, Request,HTTPError
 from multiprocessing import Pool        #多线程
 from functools import partial
+import lxml.etree as etree
 
 import myGlobal.myTime as mTime
 
@@ -54,6 +55,7 @@ def RunGetDayDataToMVN(start,end,stock_li=[]):
     '''
     多线程运行_getDayData
     '''
+    #stock_li =['sz300790']
     if len(stock_li)==0:
         stock_li = gf.getStockFromTable()
     pool = Pool(30)
@@ -76,10 +78,10 @@ def brokerInfo(startDate=None, endDate=None, pagesize=200000):
 # endregion
 
 # region 每日清洗broker_info中数据
-def BrokerInfoClean(strdate):
+def BrokerInfoClean(startdate,enddate):
 
     #取出broker_buy_summary表中所有存在的broker_code 并去重
-    sql_select = f"select broker_code,broker_name from broker_buy_summary where ts_date = '{strdate}'"
+    sql_select = f"select broker_code,broker_name from broker_buy_summary where ts_date between '{startdate}' and '{enddate}'"
     list_broker = DBHelper().fetchall(sql_select)
     list_broker = list(set(list_broker))
 
@@ -119,7 +121,7 @@ def CleanMVN(strdate):
     broker_buy_stock_info AS a
         INNER JOIN
     broker_buy_summary AS b ON a.broker_buy_summary_id = b.id
-    where (a.stock_code like '2%' or a.stock_code like '9%') and ts_date ='{strdate}'
+    where (a.stock_code like '2%' or a.stock_code like '9%') and ts_date <'{strdate}'
     '''
     t_sql = DBHelper().fetchall(select_sql)
 
@@ -142,6 +144,66 @@ def CleanMVN(strdate):
             print("删除数据错误")
 
 
+#获取每日热门股吧股票
+def GetHotBar(tablename='hotbar'):
+    url = "http://guba.eastmoney.com/remenba.aspx?type=1"
+    li_stock=[]
+    for _ in range(3):      #为防止网络延迟，运行3次
+        try:
+            request = Request(url)
+            lines = urlopen(request, timeout=10).read()
+        except HTTPError as e:
+            print("读取热门股吧错误")
+        else:
+            lines = lines.decode('utf-8')
+
+            reg = re.compile(r'<ul class="list clearfix">.*?</ul>')     #用正则表达式找出热门股吧这列
+            lines = reg.findall(lines)
+            lines = lines[0].split('.html">')       #将含有股票姓名、股票代码这一列分离出来
+            lines = lines[1:]
+            for i in range(len(lines)):
+                temp = str(lines[i]).split('吧')[0]
+                if temp not in li_stock:
+                    li_stock.append(temp)
+
+    date =  mTime.Today()       #记录时间
+    if mTime.get_hour() < 12:       #上午
+        time = "08:30:00"
+    elif mTime.get_hour()<18:
+        time = "15:30:00"
+    else:
+        time = "20:30:00"
+
+    #创建表
+    create_table_sql = f'''
+        CREATE TABLE `tushare`.`{tablename}` (
+          `id` INT NOT NULL AUTO_INCREMENT,
+          `date` VARCHAR(45) NOT NULL,
+          `time` VARCHAR(45) NOT NULL,
+          `stockcode` VARCHAR(45) NOT NULL,
+          `stockname` VARCHAR(45) NOT NULL,
+          `is_simulate` VARCHAR(45) NULL DEFAULT 0,
+          PRIMARY KEY (`id`),
+          UNIQUE INDEX `index2` (`date` ASC, `time` ASC,`stockcode` ASC));
+    '''
+    if not DBHelper().isTableExists(tablename):
+        try:
+            DBHelper().execute(create_table_sql)
+            print(f"创建{tablename}表成功")
+        except:
+            print(f"创建{tablename}表失败")
+
+    for i in range(len(li_stock)):
+        stockcode = gf.code_to_symbol(li_stock[i].split(')')[0][1:])
+        stockname = li_stock[i].split(')')[1]
+        insert_sql = f'''
+            insert into {tablename} (date,time,stockcode,stockname) VALUES ('{date}','{time}','{stockcode}','{stockname}')
+        '''
+        DBHelper().execute(insert_sql)
+    print("收集热门股吧数据完成")
+
+
+
 
 
 
@@ -152,7 +214,7 @@ if __name__ == '__main__':
 
     #运行时间为每天8.30分
     start = mTime.DateAddOrDiffDay(mTime.Today(),-21)
-
+    #start = '2017-01-01'
     end = mTime.DateAddOrDiffDay(mTime.Today(),-1)
 
 
@@ -163,7 +225,10 @@ if __name__ == '__main__':
     #清洗当日龙虎榜、股票数据
     CleanMVN(end)
     #每日清洗broker_info表中数据
-    BrokerInfoClean(end)
+    BrokerInfoClean(startdate=start,enddate=end)
+    #收集热门股吧数据并入库
+    GetHotBar('hotbar')
+
 
     for c in pobj.children(recursive=True):
         c.kill()

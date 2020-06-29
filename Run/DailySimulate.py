@@ -46,23 +46,40 @@ def getCaclList(ftype,enddate,startdate='2017-01-01'):
     return return_list
 
 
+#模拟买入hotbar数据
+def HotBarSimulate(strdate):
+    #找出需模拟的数据条数
+    select_sql = f"""
+    select * from hotbar where date<='{strdate}' and is_simulate=0
+    """
+    select_t = DBHelper().fetchall(select_sql)
+    #模拟计算
+    for t in select_t:      #t like (1, '2020-03-11', '08:30:00', 'sz002503', '搜于特', '0')
+        print(t)
+
 
 if __name__ == '__main__':
-    typelist = [1]                  #将需要模拟的ftype存入这个list
+    # typelist = [1]                  #将需要模拟的ftype存入这个list
+    #
+    # #寻找今天前7个交易日，只能模拟<至少>3个交易日前的记录，否则会导致数据不全
+    # strToday = mTime.Today()
+    # strdate = mTime.diffDay(strToday,-7)
+    #
+    #
+    # for ftype in typelist:
+    #     tablename = "simulate_buy_way_"+str(ftype)
+    #     cacu_list = getCaclList(ftype,enddate=strdate)     #startdate默认为"2017-01-01"
+    #
+    #     # for l in cacu_list:
+    #     #     DailySimulate(l, ftype=ftype, amount=1000, tablename=tablename)
+    #
+    #     pool = Pool(30)
+    #     pool.map(partial(DailySimulate,ftype=ftype,amount=1000,tablename=tablename),cacu_list)
+    #     pool.close()
+    #     pool.join()
 
-    #寻找今天前7个交易日，只能模拟<至少>3个交易日前的记录，否则会导致数据不全
+    #每日模拟买入前3交易日前hotbar数据
     strToday = mTime.Today()
-    strdate = mTime.diffDay(strToday,-7)
+    strdate = mTime.diffDay(strToday,-2)
 
-
-    for ftype in typelist:
-        tablename = "simulate_buy_way_"+str(ftype)
-        cacu_list = getCaclList(ftype,enddate=strdate)     #startdate默认为"2017-01-01"
-
-        for l in cacu_list:
-            DailySimulate(l, ftype=ftype, amount=1000, tablename=tablename)
-
-        # pool = Pool(30)
-        # pool.map(partial(DailySimulate,ftype=ftype,amount=1000,tablename=tablename),cacu_list)
-        # pool.close()
-        # pool.join()
+    HotBarSimulate(strdate)
